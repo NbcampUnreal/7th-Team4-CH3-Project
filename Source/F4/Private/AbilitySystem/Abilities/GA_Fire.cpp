@@ -4,6 +4,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "GameFramework/Character.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "System/F4GameplayTags.h"
 
 UGA_Fire::UGA_Fire()
@@ -91,6 +92,7 @@ void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 	PerformFireTrace();
 }
 
+// TODO: trace 대신 무기 발사로직?
 void UGA_Fire::PerformFireTrace()
 {
 	// TODO: 캐릭터 클래스 sync?
@@ -107,56 +109,59 @@ void UGA_Fire::PerformFireTrace()
 
 	FVector End = Start + Forward * TraceDistance;
 
-	TArray<FHitResult> HitResults;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(AvatarCharacter);
+	TArray<AActor*> ActorsToIgnore;
+	ActorsToIgnore.Add(AvatarCharacter);
 
-	bool bHit = GetWorld()->LineTraceMultiByObjectType(
-		HitResults,
+	FHitResult HitResult;
+
+	// TODO: Trace 수정 (TO 투사체 등)
+	bool bHit = UKismetSystemLibrary::LineTraceSingle(
+		GetWorld(),
 		Start,
 		End,
-		FCollisionObjectQueryParams(ECC_Pawn),
-		Params
+		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1),
+		false,
+		ActorsToIgnore,
+		EDrawDebugTrace::ForDuration,
+		HitResult,
+		true,
+		FLinearColor::Red,
+		FLinearColor::Green,
+		5.0f
 	);
-
-	// TODO: Debug 용
-	UE_LOG(LogTemp, Warning, TEXT("Fire Ability Activated!"));
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5.0f, 0, 10.0f);
 
 	if (bHit)
 	{
-		for (const FHitResult& Hit : HitResults)
+		AActor* HitActor = HitResult.GetActor();
+		if (!HitActor)
 		{
-			AActor* HitActor = Hit.GetActor();
-			if (!HitActor)
-			{
-				continue;
-			}
+			return;
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Hit Actor"));
 
-			// TODO: 인터페이스 상속받은 적한테만 피격판정할꺼면 인터페이스 cast?
-			UAbilitySystemComponent* TargetASC = HitActor->FindComponentByClass<UAbilitySystemComponent>();
-			if (!TargetASC)
-			{
-				continue;
-			}
+		// TODO: 인터페이스 상속받은 적한테만 피격판정할꺼면 인터페이스 cast?
+		UAbilitySystemComponent* TargetASC = HitActor->FindComponentByClass<UAbilitySystemComponent>();
+		if (!TargetASC)
+		{
+			return;
+		}
 
-			FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-			EffectContext.AddHitResult(Hit);
-			EffectContext.AddSourceObject(AvatarCharacter);
+		FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+		EffectContext.AddHitResult(HitResult);
+		EffectContext.AddSourceObject(AvatarCharacter);
 
-			FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(
-				DamageEffectClass,
-				1.0f,
-				EffectContext
+		FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(
+			DamageEffectClass,
+			1.0f,
+			EffectContext
+		);
+
+		if (SpecHandle.IsValid())
+		{
+			GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
+				*SpecHandle.Data.Get(),
+				TargetASC
 			);
-
-			if (SpecHandle.IsValid())
-			{
-				GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
-					*SpecHandle.Data.Get(),
-					TargetASC
-				);
-			}
 		}
 	}
 }
