@@ -1,4 +1,4 @@
-#include "AbilitySystem/Abilities/GA_Fire.h"
+#include "AbilitySystem/Abilities/Combat/GA_Fire.h"
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
