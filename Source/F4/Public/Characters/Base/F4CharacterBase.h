@@ -8,7 +8,8 @@
 #include "AbilitySystemInterface.h"
 #include "F4CharacterBase.generated.h"
 
-class UGameplayAbility; 
+class UInputAction;
+class UGameplayAbility;
 class UF4AttributeSet; 
 
 struct FGameplayAbilitySpecHandle;
@@ -29,7 +30,10 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "GAS|Input")
+	TObjectPtr<UInputAction> IA_Aim;
+
 #pragma region Component
 	
 	
@@ -40,6 +44,9 @@ public:
 protected:
 	
 	void OnSpeedAttributeChanged();
+
+	void OnAimStarted();
+	void OnAimReleased();
 	
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")

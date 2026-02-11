@@ -6,6 +6,8 @@
 #include "AbilitySystem/F4AttributeSet.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
+#include "EnhancedInputComponent.h"
+#include "System/F4GameplayTags.h"
 
 
 AF4CharacterBase::AF4CharacterBase()
@@ -49,8 +51,15 @@ void AF4CharacterBase::PossessedBy(AController* NewController)
 	for (const TSubclassOf<UGameplayAbility>& EachAbility : InitialAbilities)
 	{
 		if (EachAbility == nullptr) continue;
+
+		FGameplayAbilitySpec EachSpec(EachAbility);
+
+		if (EachAbility->GetName().Contains(TEXT("Aim")))
+		{
+			EachSpec.InputID = 3;
+		}
 		
-		FGameplayAbilitySpecHandle EachSpecHandle = ASC->GiveAbility(EachAbility);
+		FGameplayAbilitySpecHandle EachSpecHandle = ASC->GiveAbility(EachSpec);
 		InitialAbilitySpecHandles.Add(EachSpecHandle);
 	}
 	
@@ -85,6 +94,15 @@ void AF4CharacterBase::Tick(float DeltaTime)
 void AF4CharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (UEnhancedInputComponent* EI = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		if (IA_Aim)
+		{
+			EI->BindAction(IA_Aim, ETriggerEvent::Started, this, &AF4CharacterBase::OnAimStarted);
+			EI->BindAction(IA_Aim, ETriggerEvent::Completed, this, &AF4CharacterBase::OnAimReleased);
+		}
+	}
 }
 
 
@@ -96,3 +114,21 @@ void AF4CharacterBase::OnSpeedAttributeChanged()
 	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 }
 
+void AF4CharacterBase::OnAimStarted()
+{
+	if (!ASC) return;
+
+	ASC->AbilityLocalInputPressed(3);
+
+	FGameplayTagContainer AbilityTags;
+	AbilityTags.AddTag(F4GameplayTags::Ability_Combat_Aim);
+	ASC->TryActivateAbilitiesByTag(AbilityTags);
+}
+
+void AF4CharacterBase::OnAimReleased()
+{
+	if (!ASC) return;
+
+	// 3. 입력이 '떼졌다'는 것을 ASC에 알림 -> 이제 GA_Aim의 WaitInputRelease가 발동함!
+	ASC->AbilityLocalInputReleased(3);
+}
