@@ -26,6 +26,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	virtual void PossessedBy(AController* NewController) override;
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
 #pragma region Component
@@ -37,19 +39,20 @@ public:
 #pragma region Gameplay Abilities 
 protected:
 	
-	void OnSpeedAttributeChanged(); 
+	void OnSpeedAttributeChanged();
+	
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
-	UAbilitySystemComponent* ASC; 
+	UAbilitySystemComponent* ASC; // 어빌리티 시스템 컴포넌트 
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS | Attributes")
-	UF4AttributeSet* AttributeSet; 
+	UF4AttributeSet* AttributeSet; // 어트리뷰트 셋 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS | Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> InitialAbilities;
+	TArray<TSubclassOf<UGameplayAbility>> InitialAbilities; // 기본 어빌리티 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS | Abilities")
-	TArray<FGameplayAbilitySpecHandle> InitailAbilitySpecHandles;
+	TArray<FGameplayAbilitySpecHandle> InitialAbilitySpecHandles;// 기본 어빌리티 SpecHandle 
 	
 #pragma endregion 
 	

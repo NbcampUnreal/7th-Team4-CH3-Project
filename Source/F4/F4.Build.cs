@@ -12,6 +12,8 @@ public class F4 : ModuleRules
 			"Core",
 			"CoreUObject", "Engine",
 			"InputCore",
+			"EnhancedInput",
+			
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",

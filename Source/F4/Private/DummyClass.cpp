@@ -3,10 +3,17 @@
 
 #include "DummyClass.h"
 
-DummyClass::DummyClass()
+namespace F4GameplayTags
 {
-}
-
-DummyClass::~DummyClass()
-{
+	// Ability Tags
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Jump, TEXT("Ability.Movement.Jump"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Sprint, TEXT("Ability.Movement.Sprint"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Roll, TEXT("Ability.Movement.Roll"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Crouch, TEXT("Ability.Movement.Crouch"));
+	
+	// Character State 
+	UE_DEFINE_GAMEPLAY_TAG(Character_State_InAir, TEXT("Character.State.InAir"));
+	UE_DEFINE_GAMEPLAY_TAG(Character_State_Sprinting, TEXT("Character.State.Sprinting"));
+	UE_DEFINE_GAMEPLAY_TAG(Character_State_Rolling, TEXT("Character.State.Rollings"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Crouching, TEXT("Character.State.Crouching"));
 }
