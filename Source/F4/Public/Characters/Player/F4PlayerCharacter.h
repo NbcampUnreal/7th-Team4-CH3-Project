@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Characters/Base/F4CharacterBase.h"
 #include "F4PlayerCharacter.generated.h"
+#include "Interface/Interactable.h"
 
 struct FInputActionValue;
 class UCameraComponent; 
@@ -13,7 +14,7 @@ class USpringArmComponent;
 
 class UInputAction; 
 UCLASS()
-class F4_API AF4PlayerCharacter : public AF4CharacterBase
+class F4_API AF4PlayerCharacter : public AF4CharacterBase, public IInteractable
 {
 	GENERATED_BODY()
 	
@@ -46,6 +47,8 @@ public:
 	void Attack(); 
 	
 	void Interact();
+	
+	virtual void DoInteract(AActor* Interactor) override;
 #pragma region component
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Camera", meta = (AllowPrivateAccess = "true"))
