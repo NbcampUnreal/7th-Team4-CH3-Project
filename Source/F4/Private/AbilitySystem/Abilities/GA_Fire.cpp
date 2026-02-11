@@ -12,11 +12,13 @@ UGA_Fire::UGA_Fire()
 
 	AbilityTags.AddTag(F4GameplayTags::Ability_Combat_Fire);
 
-	// 달리기 중이라면 끊기
+	// TODO: 달리기 중이라면 끊기
 	// CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Movement_Sprint)
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
+
+	// TODO: cost bullet 추가 필요
 }
 
 void UGA_Fire::ActivateAbility(
@@ -93,13 +95,13 @@ void UGA_Fire::PerformFireTrace()
 {
 	// TODO: 캐릭터 클래스 sync?
 	ACharacter* AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
-	if (!AvatarCharacter || AvatarCharacter->GetMesh())
+	if (!AvatarCharacter || !AvatarCharacter->GetMesh())
 	{
 		return;
 	}
 
 	// TODO: 소켓이름 sync
-	FName RightHandSocketName = TEXT("RightHand_01");
+	FName RightHandSocketName = TEXT("hand_r");
 	FVector Start = AvatarCharacter->GetMesh()->GetSocketLocation(RightHandSocketName);
 	FVector Forward = AvatarCharacter->GetActorForwardVector();
 
@@ -118,7 +120,8 @@ void UGA_Fire::PerformFireTrace()
 	);
 
 	// TODO: Debug 용
-	DrawDebugLine(GetWorld(), Start, End, FColor::Yellow, false, 1.0f, 0, 2.0f);
+	UE_LOG(LogTemp, Warning, TEXT("Fire Ability Activated!"));
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5.0f, 0, 10.0f);
 
 	if (bHit)
 	{

@@ -37,9 +37,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fire")
 	float TraceDistance = 1000.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fire")
-	float TraceRadius = 50.0f;
-
 	UFUNCTION()
 	void OnMontageCompleted();
 
