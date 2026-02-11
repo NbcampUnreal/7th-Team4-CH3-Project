@@ -167,4 +167,10 @@ void AF4PlayerCharacter::Attack()
 
 void AF4PlayerCharacter::Interact()
 {
+	
+}
+
+void AF4PlayerCharacter::DoInteract(AActor* Interactor)
+{
+	
 }
