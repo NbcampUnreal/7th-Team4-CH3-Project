@@ -1,0 +1,40 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "AbilitySystem/Movement/GA_Sprint.h"
+
+void UGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+	
+	if (SprintEffect)
+	{
+		SprintEffectHandle = ApplyGameplayEffectToOwner(
+			Handle, 
+			ActorInfo,
+			ActivationInfo, 
+			SprintEffect
+			.GetDefaultObject(), 
+			GetAbilityLevel()
+		);
+	}
+	
+}
+
+void UGA_Sprint::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo)
+{
+	if (SprintEffectHandle.IsValid())
+	{
+		BP_RemoveGameplayEffectFromOwnerWithHandle(SprintEffectHandle);
+	}
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+}
