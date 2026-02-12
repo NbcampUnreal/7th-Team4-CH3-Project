@@ -1,13 +1,13 @@
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/F4EnemyAttributeSet.h"
+#include "AbilitySystem/F4AttributeSetEnemy.h"
 #include "AIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 AF4EnemyBase::AF4EnemyBase()
 {
-	EnemyAttributeSet = CreateDefaultSubobject<UF4EnemyAttributeSet>(TEXT("EnemyAttributeSet"));
+	EnemyAttributeSet = CreateDefaultSubobject<UF4AttributeSetEnemy>(TEXT("EnemyAttributeSet"));
 }
 
 void AF4EnemyBase::BeginPlay()

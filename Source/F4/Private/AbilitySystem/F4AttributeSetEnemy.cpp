@@ -1,9 +1,9 @@
-#include "AbilitySystem/F4EnemyAttributeSet.h"
+#include "AbilitySystem/F4AttributeSetEnemy.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Pawn.h"
 
-UF4EnemyAttributeSet::UF4EnemyAttributeSet()
+UF4AttributeSetEnemy::UF4AttributeSetEnemy()
 {
 	InitAttackRange(200.0f);
 	InitTraceRange(1000.0f);
@@ -11,7 +11,7 @@ UF4EnemyAttributeSet::UF4EnemyAttributeSet()
 	InitAttackCooldown(1.0f);
 }
 
-void UF4EnemyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UF4AttributeSetEnemy::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 	
@@ -25,7 +25,7 @@ void UF4EnemyAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribut
 	}
 }
 
-void UF4EnemyAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+void UF4AttributeSetEnemy::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 	

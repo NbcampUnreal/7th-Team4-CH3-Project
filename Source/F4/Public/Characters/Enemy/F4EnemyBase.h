@@ -4,7 +4,7 @@
 #include "Characters/Base/F4CharacterBase.h"
 #include "F4EnemyBase.generated.h"
 
-class UF4EnemyAttributeSet;
+class UF4AttributeSetEnemy;
 
 UCLASS()
 class F4_API AF4EnemyBase : public AF4CharacterBase
@@ -36,7 +36,7 @@ public:
 protected:
 	// 적에게만 필요한 추가 어트리뷰트 (AttackRange, Cooldown 등)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "F4 | GAS | Attributes")
-	UF4EnemyAttributeSet* EnemyAttributeSet;
+	UF4AttributeSetEnemy* EnemyAttributeSet;
 	// 에디터에서 설정할 초기 스탯용 GE (예: HP, 공격력 설정)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | GAS | Attributes")
 	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
