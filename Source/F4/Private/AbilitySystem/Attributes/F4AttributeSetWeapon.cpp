@@ -1,14 +1,14 @@
-#include "Items/Weapons/F4WeaponAttributeSet.h"
+#include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
 #include "GameplayEffectExtension.h"
 
-UF4WeaponAttributeSet::UF4WeaponAttributeSet()
+UF4AttributeSetWeapon::UF4AttributeSetWeapon()
 {
 	InitBaseDamage(0.f);
 	InitMaxAmmo(0.f);
 	InitCurrentAmmo(0.f);
 }
 
-void UF4WeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UF4AttributeSetWeapon::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 	
@@ -28,7 +28,7 @@ void UF4WeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 	}
 }
 
-void UF4WeaponAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+void UF4AttributeSetWeapon::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 	

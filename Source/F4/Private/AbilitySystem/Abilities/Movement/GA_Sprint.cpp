@@ -1,5 +1,5 @@
 #include "AbilitySystem/Abilities/Movement/GA_Sprint.h"
-#include "DummyClass.h"
+#include "System/F4GameplayTags.h"
 
 UGA_Sprint::UGA_Sprint()
 {

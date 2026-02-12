@@ -1,7 +1,7 @@
 #include "AbilitySystem/Abilities/Movement/GA_Jump.h"
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
-#include "DummyClass.h"
+#include "System/F4GameplayTags.h"
 
 UGA_Jump::UGA_Jump()
 {
