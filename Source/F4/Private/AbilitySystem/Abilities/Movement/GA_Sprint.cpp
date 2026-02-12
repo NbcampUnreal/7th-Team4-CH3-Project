@@ -1,8 +1,5 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "AbilitySystem/Movement/GA_Sprint.h"
-#include "DummyClass.h"
+#include "AbilitySystem/Abilities/Movement/GA_Sprint.h"
+#include "System/F4GameplayTags.h"
 
 UGA_Sprint::UGA_Sprint()
 {

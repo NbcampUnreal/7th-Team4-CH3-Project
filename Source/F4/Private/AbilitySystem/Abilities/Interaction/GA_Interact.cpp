@@ -1,10 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "AbilitySystem/Interaction/GA_Interact.h"
+#include "AbilitySystem/Abilities/Interaction/GA_Interact.h"
 
 #include "Interface/Interactable.h"
-#include "DummyClass.h"
+#include "System/F4GameplayTags.h"
 
 UGA_Interact::UGA_Interact()
 {

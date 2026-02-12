@@ -3,16 +3,16 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include"AbilitySystemComponent.h"
-#include "F4AttributeSet.generated.h"
+#include "F4AttributeSetCharacter.generated.h"
 
 
 UCLASS()
-class F4_API UF4AttributeSet : public UAttributeSet
+class F4_API UF4AttributeSetCharacter : public UAttributeSet
 {
 	GENERATED_BODY()
 	
 public:
-	UF4AttributeSet(); 
+	UF4AttributeSetCharacter();
 	
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	
@@ -26,11 +26,11 @@ public:
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Health")
 	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSet, Health);
+	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSetCharacter, Health);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Health")
 	FGameplayAttributeData MaxHealth; 
-	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSetCharacter, MaxHealth);
 	
 #pragma endregion
 	
@@ -41,11 +41,11 @@ public:
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Stamina")
 	FGameplayAttributeData Stamina;
-	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSet, Stamina);
+	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSetCharacter, Stamina);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Stamina")
 	FGameplayAttributeData MaxStamina; 
-	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSet, MaxStamina);
+	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSetCharacter, MaxStamina);
 
 	// Stamina Regen Gameplay Effect 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attribute | Stamina | Regen")
@@ -59,15 +59,15 @@ public:
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Stats" )
 	FGameplayAttributeData WalkSpeed; 
-	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSet, WalkSpeed);
+	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSetCharacter, WalkSpeed);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Stats" )
 	FGameplayAttributeData ATK; 
-	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSet, ATK);
+	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSetCharacter, ATK);
 	
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Stats" )
 	FGameplayAttributeData DEF; 
-	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSet, DEF);
+	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSetCharacter, DEF);
 
 #pragma endregion
 };
