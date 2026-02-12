@@ -1,5 +1,6 @@
 #include "Items/Weapons/F4WeaponAttributeSet.h"
 #include "GameplayEffectExtension.h"
+#include "Chaos/Deformable/Utilities.h"
 #include "Net/UnrealNetwork.h"
 
 UF4WeaponAttributeSet::UF4WeaponAttributeSet()
@@ -16,7 +17,16 @@ void UF4WeaponAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 	// CurrentAmmo를 0 ~ MaxAmmo로 Clamp
 	if (Attribute == GetCurrentAmmoAttribute())
 	{
-		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxAmmo());
+		// MaxAmmo가  0이면 근접무기이므로 항상 0고정
+		float LocalMaxAmmo = GetMaxAmmo();
+		if (LocalMaxAmmo <= 0.0f)
+		{
+			NewValue = 0.0f;
+		}
+		else
+		{
+			NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxAmmo());
+		}
 	}
 }
 
