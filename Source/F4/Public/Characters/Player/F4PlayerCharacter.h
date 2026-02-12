@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Characters/Base/F4CharacterBase.h"
-#include "F4PlayerCharacter.generated.h"
 #include "Interface/Interactable.h"
+#include "F4PlayerCharacter.generated.h"
+
 
 struct FInputActionValue;
 class UCameraComponent; 
@@ -27,6 +27,8 @@ public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
+	virtual FText GetInteractionText() const override;
+	
 public:
 	// input Functions 
 	void Move(const FInputActionValue& Value);
@@ -39,7 +41,7 @@ public:
 	
 	void Roll(); 
 	
-	void Crouch(); 
+//	void Crouch(); 
 	
 	void StartSprint();
 	void StopSprint();

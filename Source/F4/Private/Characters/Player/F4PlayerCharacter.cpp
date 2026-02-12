@@ -76,7 +76,7 @@ void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 		
 		if (CrouchAction)
 		{
-			EIC->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Crouch);
+			// EIC->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Crouch);
 		}
 	
 		if (AttackAction)
@@ -84,6 +84,11 @@ void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 			EIC->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Attack);
 		}
 	}
+}
+
+FText AF4PlayerCharacter::GetInteractionText() const
+{
+	return FText::FromString(TEXT("Player"));
 }
 
 void AF4PlayerCharacter::Move(const FInputActionValue& Value)
@@ -140,13 +145,13 @@ void AF4PlayerCharacter::Roll()
 	ASC->TryActivateAbilitiesByTag(Container);
 }
 
-void AF4PlayerCharacter::Crouch()
-{
-	FGameplayTagContainer Container;
-	Container.AddTag(F4GameplayTags::Ability_Movement_Crouch);
-	
-	ASC->TryActivateAbilitiesByTag(Container);
-}
+// void AF4PlayerCharacter::Crouch()
+// {
+// 	FGameplayTagContainer Container;
+// 	Container.AddTag(F4GameplayTags::Ability_Movement_Crouch);
+// 	
+// 	ASC->TryActivateAbilitiesByTag(Container);
+// }
 
 void AF4PlayerCharacter::StartSprint()
 {
@@ -167,7 +172,7 @@ void AF4PlayerCharacter::Attack()
 
 void AF4PlayerCharacter::Interact()
 {
-	
+	// Interact -> GA_Interact(Trace) -> DoInteract(Interact)  
 }
 
 void AF4PlayerCharacter::DoInteract(AActor* Interactor)
