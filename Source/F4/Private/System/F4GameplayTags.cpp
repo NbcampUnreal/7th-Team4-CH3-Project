@@ -25,4 +25,8 @@ namespace F4GameplayTags
 	// Weapon Stats
 	UE_DEFINE_GAMEPLAY_TAG(Weapon_Stat_BaseDamage, TEXT("Weapon.Stat.BaseDamage"));
 	UE_DEFINE_GAMEPLAY_TAG(Weapon_Stat_MaxAmmo, TEXT("Weapon.Stat.MaxAmmo"));
+
+	UE_DEFINE_GAMEPLAY_TAG(State_Reloading, TEXT("State.Reloading"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Reload, TEXT("Ability.Combat.Reload"));
+	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_Reload, TEXT("Event.Montage.Reload"));
 }
