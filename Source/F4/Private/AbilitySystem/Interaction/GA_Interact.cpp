@@ -4,11 +4,13 @@
 #include "AbilitySystem/Interaction/GA_Interact.h"
 
 #include "Interface/Interactable.h"
-
+#include "DummyClass.h"
 
 UGA_Interact::UGA_Interact()
 {
-	
+	FGameplayTagContainer DefaultTagContainer;
+	DefaultTagContainer.AddTag(F4GameplayTags::Ability_Interaction_Interact);
+	SetAssetTags(DefaultTagContainer);
 }
 
 void UGA_Interact::ActivateAbility(

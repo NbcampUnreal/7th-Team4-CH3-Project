@@ -173,6 +173,11 @@ void AF4PlayerCharacter::Attack()
 void AF4PlayerCharacter::Interact()
 {
 	// Interact -> GA_Interact(Trace) -> DoInteract(Interact)  
+	
+	FGameplayTagContainer Container;
+	Container.AddTag(F4GameplayTags::Ability_Interaction_Interact);
+	
+	ASC->TryActivateAbilitiesByTag(Container);
 }
 
 void AF4PlayerCharacter::DoInteract(AActor* Interactor)

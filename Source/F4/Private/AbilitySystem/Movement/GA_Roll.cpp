@@ -7,9 +7,9 @@
 
 UGA_Roll::UGA_Roll()
 {
-	FGameplayTagContainer TagContainer;
-	TagContainer.AddTag(F4GameplayTags::Ability_Movement_Roll);
-	SetAssetTags(TagContainer);
+	FGameplayTagContainer DefaultTagContainer;
+	DefaultTagContainer.AddTag(F4GameplayTags::Ability_Movement_Roll);
+	SetAssetTags(DefaultTagContainer);
 }
 
 void UGA_Roll::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
