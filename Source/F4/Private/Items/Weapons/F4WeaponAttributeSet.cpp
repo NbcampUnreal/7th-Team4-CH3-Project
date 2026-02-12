@@ -1,7 +1,5 @@
 #include "Items/Weapons/F4WeaponAttributeSet.h"
 #include "GameplayEffectExtension.h"
-#include "Chaos/Deformable/Utilities.h"
-#include "Net/UnrealNetwork.h"
 
 UF4WeaponAttributeSet::UF4WeaponAttributeSet()
 {
