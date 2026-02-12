@@ -41,6 +41,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",
 		meta = (EditCondition = "WeaponType == EWeaponType::Gun"))
 	FName MagazineSocketName;
+	
+	// 총구 소켓 이름
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",
+		meta = (EditCondition = "WeaponType == EWeaponType::Gun"))
+	FName MuzzleSocketName;
 
 	// 3. GAS (능력 및 스탯)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|GAS")
