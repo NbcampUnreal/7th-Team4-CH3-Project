@@ -17,7 +17,9 @@ public class F4 : ModuleRules
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
-			"GameplayStateTreeModule"
+			"GameplayStateTreeModule",
+			
+			"AIModule"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
