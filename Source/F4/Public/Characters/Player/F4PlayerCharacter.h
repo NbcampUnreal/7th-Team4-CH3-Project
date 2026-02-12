@@ -1,10 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Characters/Base/F4CharacterBase.h"
+#include "Interface/Interactable.h"
 #include "F4PlayerCharacter.generated.h"
+
 
 struct FInputActionValue;
 class UCameraComponent; 
@@ -13,7 +14,7 @@ class USpringArmComponent;
 
 class UInputAction; 
 UCLASS()
-class F4_API AF4PlayerCharacter : public AF4CharacterBase
+class F4_API AF4PlayerCharacter : public AF4CharacterBase, public IInteractable
 {
 	GENERATED_BODY()
 	
@@ -25,6 +26,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
+	virtual FText GetInteractionText() const override;
 	
 public:
 	// input Functions 
@@ -38,7 +41,7 @@ public:
 	
 	void Roll(); 
 	
-	void Crouch(); 
+//	void Crouch(); 
 	
 	void StartSprint();
 	void StopSprint();
@@ -46,6 +49,8 @@ public:
 	void Attack(); 
 	
 	void Interact();
+	
+	virtual void DoInteract(AActor* Interactor) override;
 #pragma region component
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Camera", meta = (AllowPrivateAccess = "true"))

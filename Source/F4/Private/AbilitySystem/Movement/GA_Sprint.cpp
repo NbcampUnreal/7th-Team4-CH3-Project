@@ -2,9 +2,17 @@
 
 
 #include "AbilitySystem/Movement/GA_Sprint.h"
+#include "DummyClass.h"
+
+UGA_Sprint::UGA_Sprint()
+{
+	FGameplayTagContainer DefaultTagContainer;
+	DefaultTagContainer.AddTag(F4GameplayTags::Ability_Movement_Sprint);
+	SetAssetTags(DefaultTagContainer);
+}
 
 void UGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+                                 const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	

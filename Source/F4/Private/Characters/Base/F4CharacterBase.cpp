@@ -66,11 +66,6 @@ void AF4CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (ASC && AttributeSet)
-	{
-		
-	}
-	
 	// Init speed 
 	OnSpeedAttributeChanged(); 
 }

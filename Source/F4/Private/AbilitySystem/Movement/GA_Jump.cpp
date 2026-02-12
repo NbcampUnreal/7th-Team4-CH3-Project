@@ -9,9 +9,9 @@
 
 UGA_Jump::UGA_Jump()
 {
-	FGameplayTagContainer ActivationInfo;
-	ActivationInfo.AddTag(F4GameplayTags::Ability_Movement_Jump); 
-	SetAssetTags(ActivationInfo); 
+	FGameplayTagContainer DefaultTagContainer;
+	DefaultTagContainer.AddTag(F4GameplayTags::Ability_Movement_Jump); 
+	SetAssetTags(DefaultTagContainer); 
 }
 
 void UGA_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

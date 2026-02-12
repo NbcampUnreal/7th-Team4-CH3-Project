@@ -10,6 +10,7 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Sprint, TEXT("Ability.Movement.Sprint"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Roll, TEXT("Ability.Movement.Roll"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Crouch, TEXT("Ability.Movement.Crouch"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Interaction_Interact, TEXT("Ability.Interaction.Interact"));
 	
 	// Character State 
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_InAir, TEXT("Character.State.InAir"));

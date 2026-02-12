@@ -15,6 +15,8 @@ class F4_API UGA_Sprint : public UGameplayAbility
 	GENERATED_BODY()
 	
 public:
+	UGA_Sprint();
+	
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
