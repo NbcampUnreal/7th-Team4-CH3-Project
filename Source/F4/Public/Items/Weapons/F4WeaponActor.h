@@ -38,4 +38,9 @@ protected:
 	// 현재 할당된 데이터
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Weapon")
 	TObjectPtr<const UF4WeaponDataAsset> WeaponData;
+	
+public:
+	// 총구의 위치 반환 함수
+	UFUNCTION(BlueprintPure, Category = "Weapon|Gun")
+	FTransform GetMuzzleTransform() const;
 };

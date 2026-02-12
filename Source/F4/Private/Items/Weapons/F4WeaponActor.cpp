@@ -80,3 +80,20 @@ void AF4WeaponActor::InitializeWeapon(const UF4WeaponDataAsset* InWeaponData)
 		AttachmentMeshComponent->SetVisibility(false);
 	}
 }
+
+FTransform AF4WeaponActor::GetMuzzleTransform() const
+{
+	if (WeaponData && MainMeshComponent)
+	{
+		if (!WeaponData->MuzzleSocketName.IsNone())
+		{
+			if (MainMeshComponent->DoesSocketExist(WeaponData->MuzzleSocketName))
+			{
+				return MainMeshComponent->GetSocketTransform(WeaponData->MuzzleSocketName);
+			}
+		}
+	}
+	
+	UE_LOGFMT(LogTemp, Warning, "Weapon: Muzzle Socket is invalid! Using Actor Transform instead.");
+	return GetActorTransform();
+}
