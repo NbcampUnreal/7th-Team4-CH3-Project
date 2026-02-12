@@ -21,4 +21,8 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_Sprinting);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_Rolling);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Movement_Crouching);
+	
+	// Weapon Stats
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Stat_BaseDamage);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Stat_MaxAmmo);
 }
