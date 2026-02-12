@@ -1,9 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Characters/Base/F4CharacterBase.h"
 #include "Components/CapsuleComponent.h"
-#include "AbilitySystem/F4AttributeSet.h"
+#include "AbilitySystem/Attributes/F4AttributeSet.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
 
@@ -90,4 +87,3 @@ void AF4CharacterBase::OnSpeedAttributeChanged()
 	float NewSpeed = AttributeSet->GetWalkSpeed();
 	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 }
-

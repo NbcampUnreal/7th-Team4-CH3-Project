@@ -1,5 +1,5 @@
 
-#include "AbilitySystem/F4AttributeSet.h"
+#include "AbilitySystem/Attributes/F4AttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"

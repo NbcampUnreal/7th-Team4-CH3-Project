@@ -1,4 +1,4 @@
-#include "AbilitySystem/F4AttributeSetEnemy.h"
+#include "AbilitySystem/Attributes/F4AttributeSetEnemy.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Pawn.h"
