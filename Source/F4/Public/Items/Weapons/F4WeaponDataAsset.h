@@ -5,6 +5,7 @@
 #include "GameplayTagContainer.h"
 #include "F4WeaponDataAsset.generated.h"
 
+class UGameplayEffect;
 class UGameplayAbility;
 class UAttributeSet;
 
@@ -21,6 +22,8 @@ class F4_API UF4WeaponDataAsset : public UPrimaryDataAsset
 	GENERATED_BODY()
 
 public:
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	
 	// 1. 기본 정보
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Info")
 	FText DisplayName;
@@ -53,4 +56,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|GAS")
 	TMap<FGameplayTag, float> BaseStats; // 초기 스탯 (예: Damage.Base = 50)
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|GAS")
+	TSubclassOf<UGameplayEffect> InitStatsEffect;
 };
