@@ -31,10 +31,16 @@ public:
 	// 2. 비주얼 (총기는 MainMesh + AttachmentMesh로 구성 가능)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual")
 	TObjectPtr<UStaticMesh> MainMesh; // 총몸 혹은 칼
-
+	
+	// 총기일 경우에만 편집 가능하도록 설정
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",
 		meta = (EditCondition = "WeaponType == EWeaponType::Gun"))
-	TObjectPtr<UStaticMesh> AttachmentMesh; // 탄창, 스코프 등 추가 파츠
+	TObjectPtr<UStaticMesh> MagazineMesh;
+
+	// 총몸에 만들어둔 소켓 이름 (예: "Socket_Magazine")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",
+		meta = (EditCondition = "WeaponType == EWeaponType::Gun"))
+	FName MagazineSocketName;
 
 	// 3. GAS (능력 및 스탯)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|GAS")

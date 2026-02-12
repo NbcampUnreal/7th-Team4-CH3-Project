@@ -45,14 +45,37 @@ void AF4WeaponActor::InitializeWeapon(const UF4WeaponDataAsset* InWeaponData)
 	
 	if (WeaponData->WeaponType == EWeaponType::Gun)
 	{
-		if (WeaponData->AttachmentMesh)
+		// 탄창이라면 처리
+		if (WeaponData->MagazineMesh)
 		{
-			AttachmentMeshComponent->SetStaticMesh(WeaponData->AttachmentMesh);
+			// 탄창 메시 설정
+			AttachmentMeshComponent->SetStaticMesh(WeaponData->MagazineMesh);
 			AttachmentMeshComponent->SetVisibility(true);
+		}
+		
+		// 소켓에 스냅 시키기
+		if (!WeaponData->MagazineSocketName.IsNone())
+		{
+			AttachmentMeshComponent->AttachToComponent(
+				MainMeshComponent,
+				FAttachmentTransformRules::SnapToTargetIncludingScale,
+				WeaponData->MagazineSocketName
+			);
+		}
+		else
+		{
+			// 소캣 이름이 없을 경우 경고 로그띄우고 임시로 그냥 붙임
+			UE_LOGFMT(LogTemp, Warning, "Weapon: Magazine Socket Name is missing in DataAsset!");
+			
+			AttachmentMeshComponent->AttachToComponent(
+					MainMeshComponent, 
+					FAttachmentTransformRules::SnapToTargetIncludingScale
+					);
 		}
 	}
 	else
 	{
+		// 근접 무기
 		AttachmentMeshComponent->SetStaticMesh(nullptr);
 		AttachmentMeshComponent->SetVisibility(false);
 	}
