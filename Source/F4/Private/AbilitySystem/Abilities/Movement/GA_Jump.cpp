@@ -1,11 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "AbilitySystem/Movement/GA_Jump.h"
+#include "AbilitySystem/Abilities/Movement/GA_Jump.h"
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
 #include "DummyClass.h"
-
 
 UGA_Jump::UGA_Jump()
 {
