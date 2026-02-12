@@ -1,0 +1,41 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "F4SpawnVolume.generated.h"
+
+class AF4WeaponActor;
+class UF4WeaponDataAsset;
+class UBoxComponent;
+
+UCLASS()
+class F4_API AF4SpawnVolume : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	AF4SpawnVolume();
+
+protected:
+	virtual void BeginPlay() override;
+	
+public:
+	UFUNCTION(BlueprintCallable, Category = "Spawning")
+	void SpawnItems();
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UBoxComponent> SpawningBox;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TArray<TObjectPtr<UF4WeaponDataAsset>> SpawnableItems;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<AF4WeaponActor> ItemClassToSpawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning", meta = (ClampMin = "1"))
+	int32 SpawnCount = 1;
+	
+private:
+	bool GetRandomGroundPoint(FVector& OutLocation);
+};
