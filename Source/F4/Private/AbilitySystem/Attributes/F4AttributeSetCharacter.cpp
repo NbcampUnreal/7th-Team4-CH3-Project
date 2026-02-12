@@ -1,11 +1,11 @@
 
-#include "AbilitySystem/Attributes/F4AttributeSet.h"
+#include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayEffect.h"
 
-UF4AttributeSet::UF4AttributeSet()
+UF4AttributeSetCharacter::UF4AttributeSetCharacter()
 {
 	Health = 100.f;
 	MaxHealth = 100.f; 
@@ -19,12 +19,12 @@ UF4AttributeSet::UF4AttributeSet()
 	
 }
 
-void UF4AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UF4AttributeSetCharacter::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 }
 
-void UF4AttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+void UF4AttributeSetCharacter::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
 	
@@ -34,17 +34,17 @@ void UF4AttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, f
 	}
 }
 
-void UF4AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void UF4AttributeSetCharacter::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 }
 
-void UF4AttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UF4AttributeSetCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-void UF4AttributeSet::HadnleStaminaRegen()
+void UF4AttributeSetCharacter::HadnleStaminaRegen()
 {
 	
 	// 1. Get Info from Owner or Avtar 

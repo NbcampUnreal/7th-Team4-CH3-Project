@@ -1,6 +1,6 @@
 #include "Characters/Base/F4CharacterBase.h"
 #include "Components/CapsuleComponent.h"
-#include "AbilitySystem/Attributes/F4AttributeSet.h"
+#include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
 
@@ -29,7 +29,7 @@ AF4CharacterBase::AF4CharacterBase()
 	ASC->SetIsReplicated(true);
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed); 
 	
-	AttributeSet = CreateDefaultSubobject<UF4AttributeSet>(TEXT("AttributeSet"));
+	AttributeSet = CreateDefaultSubobject<UF4AttributeSetCharacter>(TEXT("AttributeSet"));
 }
 
 void AF4CharacterBase::PossessedBy(AController* NewController)
