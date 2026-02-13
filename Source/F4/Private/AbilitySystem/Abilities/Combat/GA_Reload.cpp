@@ -20,6 +20,7 @@ UGA_Reload::UGA_Reload()
 	// TODO: 이미 탄창이 MAX라면 실행안되게
 }
 
+// TEMP1
 void UGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
