@@ -28,16 +28,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components|Collision")
 	float CollisionRadius = 5.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components|Projectile")
-	float InitSpeed = 1000.0f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components|Projectile")
-	float MaxSpeed = 1000.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float InitSpeed = 8000.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Self")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float MaxSpeed = 8000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
 	float LifeTimeSeconds = 5.0f;
 
 	UFUNCTION()
