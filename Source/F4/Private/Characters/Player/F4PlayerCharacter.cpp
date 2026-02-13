@@ -17,8 +17,11 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom")); 
 	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
+	CameraBoom->SetRelativeRotation(FRotator(0.0f, -10.0f, 0.0f));
 	CameraBoom->TargetArmLength = 110.0f;
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->bDoCollisionTest = false;
 	
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -35,6 +38,17 @@ void AF4PlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
+	if (APlayerController* PC = Cast<APlayerController>(NewController))
+	{
+		if (PC->PlayerCameraManager)
+		{
+			PC->PlayerCameraManager->ViewPitchMin = -90.0f;
+			PC->PlayerCameraManager->ViewPitchMax = 30.0f;
+			
+			PC->PlayerCameraManager->ViewYawMin = -60.0f;
+			PC->PlayerCameraManager->ViewYawMax = 60.0f;
+		}
+	}
 }
 
 void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -68,15 +82,20 @@ void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 			EIC->BindAction(RollAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Roll);
 		}
 		
+		if (InteractAction)
+		{
+			EIC->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Interact);
+		}
+		
 		if (SprintAction)
 		{
 			EIC->BindAction(SprintAction, ETriggerEvent::Started, this, &AF4PlayerCharacter::ToggleSprint);
 		}
 		
-		if (CrouchAction)
-		{
-			// EIC->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Crouch);
-		}
+		// if (CrouchAction)
+		// {
+		// 	  EIC->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Crouch);
+		// }
 	
 		if (AttackAction)
 		{
