@@ -23,4 +23,11 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo, 
 		const FGameplayEventData* TriggerEventData
 	) override;
+	
+	UFUNCTION()
+	void OnCharacterLanded(EMovementMode NewMovementMode);
+	
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Jump")
+	float JumpForce = 400.f;
 };

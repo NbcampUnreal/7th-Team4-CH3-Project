@@ -27,9 +27,9 @@ public:
 protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact | Trace")
-	float InteractionDistance = 500.f; 
+	float InteractionDistance = 100.f; 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact | Trace")
-	float InteractionRadius = 50.f; 
+	float InteractionRadius = 180.f; 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact | Trace")
 	float DrawTime = 1.f;  
 	
