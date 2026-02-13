@@ -119,15 +119,23 @@ void UGA_Fire::SpawnProjectile()
 	SpawnParams.Instigator = AvatarCharacter;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AF4Projectile* SpawnedProjectile = GetWorld()->SpawnActor<AF4Projectile>(
-	   ProjectileClass,
-	   Start,
-	   SpawnRotation,
-	   SpawnParams
+	FTransform SpawnTransform(SpawnRotation, Start);
+
+	AF4Projectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<AF4Projectile>(
+		ProjectileClass,
+		SpawnTransform,
+		AvatarCharacter,
+		AvatarCharacter,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
 
-	if (SpawnedProjectile && SpecHandle.IsValid())
+	if (SpawnedProjectile)
 	{
-		SpawnedProjectile->DamageSpecHandle = SpecHandle;
+		if (SpecHandle.IsValid())
+		{
+			SpawnedProjectile->DamageSpecHandle = SpecHandle;
+		}
+
+		SpawnedProjectile->FinishSpawning(SpawnTransform);
 	}
 }
