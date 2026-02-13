@@ -9,6 +9,18 @@ class UGameplayEffect;
 class UGameplayAbility;
 class UAttributeSet;
 
+USTRUCT(BlueprintType)
+struct FWeaponAbilityConfig
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<UGameplayAbility> AbilityClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag InputTag; 
+};
+
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
@@ -52,8 +64,8 @@ public:
 
 	// 3. GAS (능력 및 스탯)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|GAS")
-	TSubclassOf<UGameplayAbility> AttackAbility; // 주 공격 능력 (발사/휘두르기)
-
+	TArray<FWeaponAbilityConfig> Abilities;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|GAS")
 	TMap<FGameplayTag, float> BaseStats; // 초기 스탯 (예: Damage.Base = 50)
 
