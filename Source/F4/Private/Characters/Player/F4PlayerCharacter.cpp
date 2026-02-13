@@ -70,8 +70,7 @@ void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 		
 		if (SprintAction)
 		{
-			EIC->BindAction(SprintAction, ETriggerEvent::Started, this, &AF4PlayerCharacter::StartSprint);
-			EIC->BindAction(SprintAction, ETriggerEvent::Completed, this, &AF4PlayerCharacter::StopSprint);
+			EIC->BindAction(SprintAction, ETriggerEvent::Started, this, &AF4PlayerCharacter::ToggleSprint);
 		}
 		
 		if (CrouchAction)
@@ -153,18 +152,28 @@ void AF4PlayerCharacter::Roll()
 // 	ASC->TryActivateAbilitiesByTag(Container);
 // }
 
-void AF4PlayerCharacter::StartSprint()
+void AF4PlayerCharacter::ToggleSprint()
 {
+	FGameplayTag StateTag = F4GameplayTags::Character_State_Sprinting;
+	
 	FGameplayTagContainer Container;
 	Container.AddTag(F4GameplayTags::Ability_Movement_Sprint);
 	
-	ASC->TryActivateAbilitiesByTag(Container);
-}
-
-void AF4PlayerCharacter::StopSprint()
-{
+	if (ASC->HasMatchingGameplayTag(StateTag))
+	{
+		// Stop Sprinting 
+		
+		ASC->CancelAbilities(&Container); 
+	}
+	else 
+	{
+		// Start Sprinting 
+		ASC->TryActivateAbilitiesByTag(Container);
+	}
 	
 }
+
+
 
 void AF4PlayerCharacter::Attack()
 {
