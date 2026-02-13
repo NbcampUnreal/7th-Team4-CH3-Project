@@ -4,7 +4,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "GameFramework/Character.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Items/Weapons/F4Projectile.h"
 #include "System/F4GameplayTags.h"
 
 UGA_Fire::UGA_Fire()
@@ -89,79 +89,45 @@ void UGA_Fire::OnMontageCancelled()
 
 void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 {
-	PerformFireTrace();
+	SpawnProjectile();
 }
 
-// TODO: trace 대신 무기 발사로직?
-void UGA_Fire::PerformFireTrace()
+void UGA_Fire::SpawnProjectile()
 {
-	// TODO: 캐릭터 클래스 sync?
 	ACharacter* AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
-	if (!AvatarCharacter || !AvatarCharacter->GetMesh())
+	if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !ProjectileClass)
 	{
 		return;
 	}
 
-	// TODO: 소켓이름 sync
 	FName RightHandSocketName = TEXT("hand_r");
 	FVector Start = AvatarCharacter->GetMesh()->GetSocketLocation(RightHandSocketName);
 	FVector Forward = AvatarCharacter->GetActorForwardVector();
+	FRotator SpawnRotation = Forward.Rotation();
 
-	FVector End = Start + Forward * TraceDistance;
+	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
+	EffectContext.AddSourceObject(AvatarCharacter);
 
-	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(AvatarCharacter);
-
-	FHitResult HitResult;
-
-	// TODO: Trace 수정 (TO 투사체 등)
-	bool bHit = UKismetSystemLibrary::LineTraceSingle(
-		GetWorld(),
-		Start,
-		End,
-		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1),
-		false,
-		ActorsToIgnore,
-		EDrawDebugTrace::ForDuration,
-		HitResult,
-		true,
-		FLinearColor::Red,
-		FLinearColor::Green,
-		5.0f
+	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(
+	   DamageEffectClass,
+	   1.0f,
+	   EffectContext
 	);
 
-	if (bHit)
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = AvatarCharacter;
+	SpawnParams.Instigator = AvatarCharacter;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AF4Projectile* SpawnedProjectile = GetWorld()->SpawnActor<AF4Projectile>(
+	   ProjectileClass,
+	   Start,
+	   SpawnRotation,
+	   SpawnParams
+	);
+
+	if (SpawnedProjectile && SpecHandle.IsValid())
 	{
-		AActor* HitActor = HitResult.GetActor();
-		if (!HitActor)
-		{
-			return;
-		}
-		UE_LOG(LogTemp, Warning, TEXT("Hit Actor"));
-
-		// TODO: 인터페이스 상속받은 적한테만 피격판정할꺼면 인터페이스 cast?
-		UAbilitySystemComponent* TargetASC = HitActor->FindComponentByClass<UAbilitySystemComponent>();
-		if (!TargetASC)
-		{
-			return;
-		}
-
-		FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-		EffectContext.AddHitResult(HitResult);
-		EffectContext.AddSourceObject(AvatarCharacter);
-
-		FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(
-			DamageEffectClass,
-			1.0f,
-			EffectContext
-		);
-
-		if (SpecHandle.IsValid())
-		{
-			GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(
-				*SpecHandle.Data.Get(),
-				TargetASC
-			);
-		}
+		SpawnedProjectile->DamageSpecHandle = SpecHandle;
 	}
 }
