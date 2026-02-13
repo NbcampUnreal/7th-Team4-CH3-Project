@@ -29,4 +29,13 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(State_Reloading, TEXT("State.Reloading"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Reload, TEXT("Ability.Combat.Reload"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_Reload, TEXT("Event.Montage.Reload"));
+	
+	// Enemy State
+	UE_DEFINE_GAMEPLAY_TAG(State_Attacking, TEXT("State.Attacking"));
+	UE_DEFINE_GAMEPLAY_TAG(State_Dead, TEXT("State.Dead"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Attack, TEXT("Ability.Attack"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Death, TEXT("Ability.Death"));
+	UE_DEFINE_GAMEPLAY_TAG(Cooldown_Attack, TEXT("Cooldown.Attack"));
+	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_DealDamage, TEXT("Event.Montage.DealDamage"));
+	UE_DEFINE_GAMEPLAY_TAG(Event_Character_Die, TEXT("Event.Character.Die"));
 }
