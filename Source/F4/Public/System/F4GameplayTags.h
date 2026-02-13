@@ -27,4 +27,8 @@ namespace F4GameplayTags
 	// Weapon Stats
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Stat_BaseDamage);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Stat_MaxAmmo);
+
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Reload);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Reload);
 }
