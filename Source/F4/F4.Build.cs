@@ -13,12 +13,10 @@ public class F4 : ModuleRules
 			"CoreUObject", "Engine",
 			"InputCore",
 			"EnhancedInput",
-			
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
 			"GameplayStateTreeModule",
-			
 			"AIModule",
 			"NavigationSystem"
 		});
