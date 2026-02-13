@@ -1,7 +1,7 @@
 #include "Items/F4SpawnVolume.h"
 
 #include "Components/BoxComponent.h"
-#include "Items/Weapons/F4WeaponActor.h"
+#include "Items/F4PickupActor.h"
 #include "Items/Weapons/F4WeaponDataAsset.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -45,14 +45,14 @@ void AF4SpawnVolume::SpawnItems()
 		FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
 		
 		// Deferred Spawn: 스폰->BeginPlay()전에 멈춤->데이터 먼저 주입->다시 스폰
-		AF4WeaponActor* NewItem = GetWorld()->SpawnActorDeferred<AF4WeaponActor>(
+		AF4PickupActor* NewItem = GetWorld()->SpawnActorDeferred<AF4PickupActor>(
 			ItemClassToSpawn,
 			FTransform(SpawnRotation, SpawnLocation)
 		);
 		
 		if (NewItem)
 		{
-			NewItem->InitializeWeapon(SelectedData);
+			NewItem->InitializePickup(SelectedData);
 			
 			// BeginPlay 호출시점
 			NewItem->FinishSpawning(FTransform(SpawnRotation, SpawnLocation));

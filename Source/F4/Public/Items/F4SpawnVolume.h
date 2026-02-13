@@ -4,7 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "F4SpawnVolume.generated.h"
 
-class AF4WeaponActor;
+class AF4PickupActor;
 class UF4WeaponDataAsset;
 class UBoxComponent;
 
@@ -31,7 +31,7 @@ public:
 	TArray<TObjectPtr<UF4WeaponDataAsset>> SpawnableItems;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
-	TSubclassOf<AF4WeaponActor> ItemClassToSpawn;
+	TSubclassOf<AF4PickupActor> ItemClassToSpawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning", meta = (ClampMin = "1"))
 	int32 SpawnCount = 1;
