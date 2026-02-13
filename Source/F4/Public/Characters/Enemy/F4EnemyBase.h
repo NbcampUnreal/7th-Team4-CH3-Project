@@ -22,7 +22,9 @@ protected:
 
 	// GAS 및 초기 데이터 세팅
 	void InitEnemyStats();
-	
+
+	// BehaviorTree에서 관리되는 변수들 > 추후 GAS 데이터로 대체
+	/*
 public:
 	UFUNCTION(BlueprintCallable, Category = "F4 | Combat")
 	bool IsInAttackRange(AActor* TargetActor);
@@ -32,7 +34,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "F4 | Combat")
 	bool IsInMinTraceRange(AActor* TargetActor);
-
+*/
+	
 protected:
 	// 적에게만 필요한 추가 어트리뷰트 (AttackRange, Cooldown 등)
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "F4 | GAS | Attributes")
@@ -44,4 +47,6 @@ protected:
 	// 사용할 AI 로직
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | AI")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
+	
+	void HandleDeath();
 };
