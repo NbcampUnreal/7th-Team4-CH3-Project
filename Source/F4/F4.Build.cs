@@ -13,13 +13,12 @@ public class F4 : ModuleRules
 			"CoreUObject", "Engine",
 			"InputCore",
 			"EnhancedInput",
-			
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
 			"GameplayStateTreeModule",
-			
-			"AIModule"
+			"AIModule",
+			"NavigationSystem"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput" });

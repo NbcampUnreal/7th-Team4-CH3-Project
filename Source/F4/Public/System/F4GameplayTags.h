@@ -34,6 +34,15 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Reload);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Reload);
+	
+	//Enemy State
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Attacking);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Dead);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Attack);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Death);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Cooldown_Attack);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_DealDamage);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Character_Die);
 
 	
 	// Event Tags 

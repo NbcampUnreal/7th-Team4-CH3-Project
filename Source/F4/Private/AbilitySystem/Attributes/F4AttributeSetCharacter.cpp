@@ -1,9 +1,10 @@
-
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
+#include "System/F4GameplayTags.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayEffect.h"
+#include "GameplayEffectExtension.h"
 
 UF4AttributeSetCharacter::UF4AttributeSetCharacter()
 {
@@ -37,6 +38,24 @@ void UF4AttributeSetCharacter::PostAttributeChange(const FGameplayAttribute& Att
 void UF4AttributeSetCharacter::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+	
+	// 최종 변환 정보를 바탕으로 사망처리
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		if (GetHealth() <= 0.0f)
+		{
+			FGameplayEventData Payload;
+			Payload.EventTag = F4GameplayTags::Event_Character_Die;
+			Payload.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
+			Payload.Target = Data.Target.GetAvatarActor();
+			
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+				Data.Target.GetAvatarActor(), 
+				F4GameplayTags::Event_Character_Die, 
+				Payload
+			);
+		}
+	}
 }
 
 void UF4AttributeSetCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
