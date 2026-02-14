@@ -17,8 +17,11 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 {
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom")); 
 	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
+	CameraBoom->SetRelativeRotation(FRotator(0.0f, -10.0f, 0.0f));
 	CameraBoom->TargetArmLength = 110.0f;
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoom->bDoCollisionTest = false;
 	
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -35,6 +38,17 @@ void AF4PlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
+	if (APlayerController* PC = Cast<APlayerController>(NewController))
+	{
+		if (PC->PlayerCameraManager)
+		{
+			PC->PlayerCameraManager->ViewPitchMin = -90.0f;
+			PC->PlayerCameraManager->ViewPitchMax = 30.0f;
+			
+			PC->PlayerCameraManager->ViewYawMin = -60.0f;
+			PC->PlayerCameraManager->ViewYawMax = 60.0f;
+		}
+	}
 }
 
 void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -68,16 +82,20 @@ void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 			EIC->BindAction(RollAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Roll);
 		}
 		
-		if (SprintAction)
+		if (InteractAction)
 		{
-			EIC->BindAction(SprintAction, ETriggerEvent::Started, this, &AF4PlayerCharacter::StartSprint);
-			EIC->BindAction(SprintAction, ETriggerEvent::Completed, this, &AF4PlayerCharacter::StopSprint);
+			EIC->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Interact);
 		}
 		
-		if (CrouchAction)
+		if (SprintAction)
 		{
-			// EIC->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Crouch);
+			EIC->BindAction(SprintAction, ETriggerEvent::Started, this, &AF4PlayerCharacter::ToggleSprint);
 		}
+		
+		// if (CrouchAction)
+		// {
+		// 	  EIC->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AF4PlayerCharacter::Crouch);
+		// }
 	
 		if (AttackAction)
 		{
@@ -153,18 +171,28 @@ void AF4PlayerCharacter::Roll()
 // 	ASC->TryActivateAbilitiesByTag(Container);
 // }
 
-void AF4PlayerCharacter::StartSprint()
+void AF4PlayerCharacter::ToggleSprint()
 {
+	FGameplayTag StateTag = F4GameplayTags::Character_State_Sprinting;
+	
 	FGameplayTagContainer Container;
 	Container.AddTag(F4GameplayTags::Ability_Movement_Sprint);
 	
-	ASC->TryActivateAbilitiesByTag(Container);
-}
-
-void AF4PlayerCharacter::StopSprint()
-{
+	if (ASC->HasMatchingGameplayTag(StateTag))
+	{
+		// Stop Sprinting 
+		
+		ASC->CancelAbilities(&Container); 
+	}
+	else 
+	{
+		// Start Sprinting 
+		ASC->TryActivateAbilitiesByTag(Container);
+	}
 	
 }
+
+
 
 void AF4PlayerCharacter::Attack()
 {

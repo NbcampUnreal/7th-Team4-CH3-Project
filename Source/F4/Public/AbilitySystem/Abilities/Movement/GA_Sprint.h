@@ -23,16 +23,19 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		const FGameplayEventData* TriggerEventData
 	) override;
-
-	virtual void InputReleased(
+	
+	virtual void EndAbility(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo
-	) override;
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		bool bReplicateEndAbility, 
+		bool bWasCancelled
+	) override; 
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
 	TSubclassOf<UGameplayEffect> SprintEffect;
 	
 	FActiveGameplayEffectHandle SprintEffectHandle;
+	FActiveGameplayEffectHandle CostEffectHandle;
 };

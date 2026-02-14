@@ -5,9 +5,9 @@
 
 UGA_Interact::UGA_Interact()
 {
-	FGameplayTagContainer DefaultTagContainer;
-	DefaultTagContainer.AddTag(F4GameplayTags::Ability_Interaction_Interact);
-	SetAssetTags(DefaultTagContainer);
+	AbilityTags.AddTag(F4GameplayTags::Ability_Interaction_Interact);
+	
+	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_Interacting); 
 }
 
 void UGA_Interact::ActivateAbility(
@@ -19,7 +19,11 @@ void UGA_Interact::ActivateAbility(
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 	
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo)) return;
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true); 
+		return;
+	}
 
 	APawn* AvatarPawn = Cast<APawn>(ActorInfo->AvatarActor.Get());
 	if (!AvatarPawn) return;
@@ -44,16 +48,26 @@ void UGA_Interact::ActivateAbility(
 	if (bDrawTrace)
 	{
 		// Debug 
-		DrawDebugCylinder(
+		DrawDebugSphere(
 			GetWorld(),
 			StartLocation,
-			EndLocation,
 			InteractionRadius,
 			InteractionDistance,
 			TraceColor,
 			false,
 			DrawTime
-			);
+		);
+		
+		DrawDebugSphere(
+		GetWorld(),
+		EndLocation,
+		InteractionRadius,
+		InteractionDistance,
+		TraceColor,
+		false,
+		DrawTime
+	);
+		
 	}
 	
 	if (bHit)

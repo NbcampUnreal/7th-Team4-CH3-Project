@@ -21,6 +21,11 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_Sprinting, TEXT("Character.State.Sprinting"));
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_Rolling, TEXT("Character.State.Rollings"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Crouching, TEXT("Character.State.Crouching"));
+	UE_DEFINE_GAMEPLAY_TAG(Character_State_Interacting, TEXT("Character.State.Interacting"));
+	
+	
+	UE_DEFINE_GAMEPLAY_TAG(Character_State_RegenStamina, TEXT("Character.State.RegenStamina"));
+	
 
 	// Weapon Stats
 	UE_DEFINE_GAMEPLAY_TAG(Weapon_Stat_BaseDamage, TEXT("Weapon.Stat.BaseDamage"));

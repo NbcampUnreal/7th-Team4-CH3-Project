@@ -51,6 +51,22 @@ void AF4CharacterBase::PossessedBy(AController* NewController)
 		InitialAbilitySpecHandles.Add(EachSpecHandle);
 	}
 	
+	// 3. Bind Delegate 
+	ASC->GetGameplayAttributeValueChangeDelegate(UF4AttributeSetCharacter::GetWalkSpeedAttribute()).
+	AddUObject(this, &AF4CharacterBase::OnSpeedAttributeChanged);
+	
+	UpdateMoveSpeed(); // 처음에 초기화 호출 
+}
+
+void AF4CharacterBase::UpdateMoveSpeed()
+{
+	if (AttributeSet == nullptr && ASC != nullptr)
+	{
+		AttributeSet = const_cast<UF4AttributeSetCharacter*>(ASC->GetSet<UF4AttributeSetCharacter>());
+	}
+	
+	float NewSpeed = AttributeSet->GetWalkSpeed();
+	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 }
 
 UAbilitySystemComponent* AF4CharacterBase::GetAbilitySystemComponent() const
@@ -63,8 +79,6 @@ void AF4CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// Init speed 
-	OnSpeedAttributeChanged(); 
 }
 
 
@@ -80,10 +94,7 @@ void AF4CharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 }
 
 
-void AF4CharacterBase::OnSpeedAttributeChanged()
+void AF4CharacterBase::OnSpeedAttributeChanged(const FOnAttributeChangeData& Data)
 {
-	if (AttributeSet == nullptr || GetCharacterMovement() == nullptr) return;
-	
-	float NewSpeed = AttributeSet->GetWalkSpeed();
-	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
+	UpdateMoveSpeed(); 
 }
