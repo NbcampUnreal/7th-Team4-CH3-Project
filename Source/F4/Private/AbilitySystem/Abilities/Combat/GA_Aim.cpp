@@ -41,11 +41,23 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		WaitInputReleaseTask->OnRelease.AddDynamic(this, &UGA_Aim::OnInputReleased);
 		WaitInputReleaseTask->ReadyForActivation();
 	}
+
+	// TODO: Ability 에서 할게 아닌 것 같음 (해당 값을 AttributeSet으로 빼서 GE로 처리하던가? 등등
+	if (ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
+	{
+		Character->bUseControllerRotationYaw = true;
+	}
 }
 
 void UGA_Aim::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	// TODO: Ability 에서 할게 아닌 것 같음 (해당 값을 AttributeSet으로 빼서 GE로 처리하던가? 등등
+	if (ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
+	{
+		Character->bUseControllerRotationYaw = false;
+	}
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
