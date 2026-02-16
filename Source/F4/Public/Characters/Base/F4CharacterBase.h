@@ -28,6 +28,8 @@ public:
 	
 	virtual void PossessedBy(AController* NewController) override;
 	
+	void UpdateMoveSpeed(); 
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	
 #pragma region Component
@@ -39,8 +41,7 @@ public:
 #pragma region Gameplay Abilities 
 protected:
 	
-	void OnSpeedAttributeChanged();
-	
+	void OnSpeedAttributeChanged(const FOnAttributeChangeData& Data);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	UAbilitySystemComponent* ASC; // 어빌리티 시스템 컴포넌트 
@@ -53,7 +54,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS | Abilities")
 	TArray<FGameplayAbilitySpecHandle> InitialAbilitySpecHandles;// 기본 어빌리티 SpecHandle 
-	
+
 #pragma endregion 
 	
 

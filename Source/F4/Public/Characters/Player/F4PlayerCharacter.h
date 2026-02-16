@@ -43,8 +43,7 @@ public:
 	
 //	void Crouch(); 
 	
-	void StartSprint();
-	void StopSprint();
+	void ToggleSprint();
 	
 	void Attack(); 
 	
