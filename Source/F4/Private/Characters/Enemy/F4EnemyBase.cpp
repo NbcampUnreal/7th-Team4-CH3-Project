@@ -46,8 +46,6 @@ void AF4EnemyBase::InitEnemyStats()
 	{
 		ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
-	
-	// OnSpeedAttributeChanged(); -> BaseCharacter에서 처리해줘요 호출 필요 x 
 }
 
 void AF4EnemyBase::HandleDeath()
@@ -72,3 +70,4 @@ void AF4EnemyBase::HandleDeath()
 		Destroy();
 	}
 }
+
