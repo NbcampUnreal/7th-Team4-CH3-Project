@@ -9,7 +9,7 @@ UGA_Aim::UGA_Aim()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	AbilityTags.AddTag(F4GameplayTags::Ability_Combat_Aim);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Aim));
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Aiming);
 }
 
@@ -18,6 +18,11 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
 	if (ACharacter* AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
 	{
 		// AvatarCharacter->SetAiming(true);
