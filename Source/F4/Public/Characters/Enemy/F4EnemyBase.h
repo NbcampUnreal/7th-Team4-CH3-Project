@@ -22,31 +22,27 @@ protected:
 
 	// GAS 및 초기 데이터 세팅
 	void InitEnemyStats();
-
-	// BehaviorTree에서 관리되는 변수들 > 추후 GAS 데이터로 대체
-	/*
-public:
-	UFUNCTION(BlueprintCallable, Category = "F4 | Combat")
-	bool IsInAttackRange(AActor* TargetActor);
-	
-	UFUNCTION(BlueprintCallable, Category = "F4 | Combat")
-	bool IsInTraceRange(AActor* TargetActor);
-	
-	UFUNCTION(BlueprintCallable, Category = "F4 | Combat")
-	bool IsInMinTraceRange(AActor* TargetActor);
-*/
 	
 protected:
-	// 적에게만 필요한 추가 어트리뷰트 (AttackRange, Cooldown 등)
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "F4 | GAS | Attributes")
+	// 적에게만 필요한 추가 어트리뷰트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS | Attributes")
 	UF4AttributeSetEnemy* EnemyAttributeSet;
+	
 	// 에디터에서 설정할 초기 스탯용 GE (예: HP, 공격력 설정)
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | GAS | Attributes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS | Attributes")
 	TSubclassOf<class UGameplayEffect> DefaultAttributeEffect;
 
 	// 사용할 AI 로직
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | AI")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	
+	
+	// 사망시 콜백함수
 	void HandleDeath();
+	
+	//void SetMoveSpeed();
+	
+public:
+	// FORCEINLINE은 성능을 위해 붙여주며, 외부에서 어트리뷰트 셋을 안전하게 읽게 해줌
+	FORCEINLINE class UF4AttributeSetEnemy* GetEnemyAttributeSet() const { return EnemyAttributeSet; }
 };
