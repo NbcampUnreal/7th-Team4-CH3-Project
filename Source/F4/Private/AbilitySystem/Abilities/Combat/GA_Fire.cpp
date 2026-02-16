@@ -16,6 +16,8 @@ UGA_Fire::UGA_Fire()
 	// TODO: 달리기 중이라면 끊기
 	// CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Movement_Sprint)
 
+	ActivationRequiredTags.AddTag(F4GameplayTags::State_Aiming);
+
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
 
