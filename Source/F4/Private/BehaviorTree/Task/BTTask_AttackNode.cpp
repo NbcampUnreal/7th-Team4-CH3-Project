@@ -4,6 +4,8 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "AIController.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_AttackNode::UBTTask_AttackNode()
 {
@@ -13,6 +15,7 @@ UBTTask_AttackNode::UBTTask_AttackNode()
 EBTNodeResult::Type UBTTask_AttackNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* Owner = OwnerComp.GetAIOwner();
+	
 	if (Owner == nullptr)
 	{
 		return EBTNodeResult::Aborted;
@@ -23,7 +26,22 @@ EBTNodeResult::Type UBTTask_AttackNode::ExecuteTask(UBehaviorTreeComponent& Owne
 	{
 		return EBTNodeResult::Failed;
 	}
-
+	
+	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
+	if (BB == nullptr)
+	{
+		return EBTNodeResult::Failed;
+	}
+	
+	if (Owner && BB)
+	{
+		AActor* TargetActor = Cast<AActor>(BB->GetValueAsObject(FName("TargetActor")));
+		if (TargetActor)
+		{
+			Owner->SetFocus(TargetActor); // 엔진이 목표 각도를 계산하도록 설정
+		}
+	}
+	
 	IAbilitySystemInterface* ASCHolder = Cast<IAbilitySystemInterface>(AICharacter);
 	if (ASCHolder)
 	{
@@ -61,11 +79,41 @@ void UBTTask_AttackNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		return;
 	}
 	
+	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
+	if (BB == nullptr)
+	{
+		FinishLatentTask(OwnerComp,EBTNodeResult::Failed);
+		return;
+	}
+	
 	UAnimInstance* AnimInstance = AICharacter->GetMesh()->GetAnimInstance();
 	if (AnimInstance == nullptr)
 	{
 		FinishLatentTask(OwnerComp,EBTNodeResult::Succeeded);
 		return;
+	}
+	
+	if (AICharacter && BB && Owner)
+	{
+		AActor* TargetActor = Cast<AActor>(BB->GetValueAsObject(FName("TargetActor")));
+		if (TargetActor)
+		{
+			// 1. 현재 회전값과 목표 회전값(적을 바라보는 각도) 계산
+			FRotator CurrentRot = AICharacter->GetActorRotation();
+			FRotator TargetRot = UKismetMathLibrary::FindLookAtRotation(AICharacter->GetActorLocation(), TargetActor->GetActorLocation());
+            
+			// 2. Yaw값만 회전 (기울어짐 방지)
+			TargetRot.Pitch = 0.f;
+			TargetRot.Roll = 0.f;
+
+			// 3. RInterpTo를 이용해 부드러운 회전값 계산
+			// InterpSpeed 값이 높을수록 빠르게 회전합니다 (보통 5.0 ~ 10.0 추천)
+			float InterpSpeed = 10.f; 
+			FRotator SoftRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaSeconds, InterpSpeed);
+
+			// 4. 계산된 부드러운 회전 적용
+			AICharacter->SetActorRotation(SoftRot);
+		}
 	}
 	
 	IAbilitySystemInterface* ASCHolder = Cast<IAbilitySystemInterface>(AICharacter);
