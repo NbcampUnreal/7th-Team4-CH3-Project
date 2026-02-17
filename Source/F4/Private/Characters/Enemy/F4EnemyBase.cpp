@@ -70,3 +70,4 @@ void AF4EnemyBase::HandleDeath()
 		Destroy();
 	}
 }
+
