@@ -98,20 +98,20 @@ void UBTTask_AttackNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		AActor* TargetActor = Cast<AActor>(BB->GetValueAsObject(FName("TargetActor")));
 		if (TargetActor)
 		{
-			// 1. 현재 회전값과 목표 회전값(적을 바라보는 각도) 계산
+			// 현재 회전값과 목표 회전값 계산
 			FRotator CurrentRot = AICharacter->GetActorRotation();
 			FRotator TargetRot = UKismetMathLibrary::FindLookAtRotation(AICharacter->GetActorLocation(), TargetActor->GetActorLocation());
             
-			// 2. Yaw값만 회전 (기울어짐 방지)
+			// Yaw값만 회전 (기울어짐 방지)
 			TargetRot.Pitch = 0.f;
 			TargetRot.Roll = 0.f;
 
-			// 3. RInterpTo를 이용해 부드러운 회전값 계산
-			// InterpSpeed 값이 높을수록 빠르게 회전합니다 (보통 5.0 ~ 10.0 추천)
+			// RInterpTo를 이용해 부드러운 회전값 계산
+			// InterpSpeed 값이 높을수록 빠르게 회전 (5.0 ~ 10.0)
 			float InterpSpeed = 10.f; 
 			FRotator SoftRot = FMath::RInterpTo(CurrentRot, TargetRot, DeltaSeconds, InterpSpeed);
 
-			// 4. 계산된 부드러운 회전 적용
+			// 계산된 부드러운 회전 적용
 			AICharacter->SetActorRotation(SoftRot);
 		}
 	}
