@@ -301,7 +301,7 @@ void AF4PlayerCharacter::EquipWeapon(const UF4WeaponDataAsset* NewWeaponData)
 		NewWeapon->AttachToComponent(
 			GetMesh(),
 			FAttachmentTransformRules::SnapToTargetIncludingScale,
-			TEXT("hand_r")
+			TEXT("WeaponSocket")
 		);
 
 		CurrentWeapon = NewWeapon;
