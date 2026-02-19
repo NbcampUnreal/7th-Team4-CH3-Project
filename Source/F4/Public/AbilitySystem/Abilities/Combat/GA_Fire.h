@@ -4,6 +4,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "GA_Fire.generated.h"
 
+class AF4Projectile;
+
 UCLASS()
 class F4_API UGA_Fire : public UGameplayAbility
 {
@@ -35,7 +37,7 @@ protected:
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fire")
-	float TraceDistance = 1000.0f;
+	TSubclassOf<AF4Projectile> ProjectileClass;
 
 	UFUNCTION()
 	void OnMontageCompleted();
@@ -46,5 +48,5 @@ protected:
 	UFUNCTION()
 	void OnFireGameplayEvent(FGameplayEventData EventData);
 
-	void PerformFireTrace();
+	void SpawnProjectile();
 };

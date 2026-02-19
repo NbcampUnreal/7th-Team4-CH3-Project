@@ -38,7 +38,7 @@ void UGA_Reload::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 		1.0f
 	);
 
-	if (!PlayMontageTask )
+	if (!PlayMontageTask)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
