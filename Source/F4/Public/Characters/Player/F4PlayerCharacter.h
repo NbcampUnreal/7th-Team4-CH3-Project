@@ -7,6 +7,7 @@
 #include "F4PlayerCharacter.generated.h"
 
 
+class AF4WeaponActor;
 struct FInputActionValue;
 class UCameraComponent; 
 class USpringArmComponent; 
@@ -48,6 +49,14 @@ public:
 	void Attack(); 
 	
 	void Interact();
+	
+	UFUNCTION(BlueprintCallable)
+	void EquipWeapon(const UF4WeaponDataAsset* NewWeaponData);
+	
+	void GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponData);
+	
+	UPROPERTY()
+	TObjectPtr<AF4WeaponActor> CurrentWeapon;
 	
 	virtual void DoInteract(AActor* Interactor) override;
 #pragma region component
