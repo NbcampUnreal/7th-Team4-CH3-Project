@@ -9,7 +9,7 @@ UGA_Reload::UGA_Reload()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	AbilityTags.AddTag(F4GameplayTags::Ability_Combat_Reload);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Reload));
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Reloading);
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);

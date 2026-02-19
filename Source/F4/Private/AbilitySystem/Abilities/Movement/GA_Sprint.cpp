@@ -1,13 +1,12 @@
 #include "AbilitySystem/Abilities/Movement/GA_Sprint.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
 #include "System/F4GameplayTags.h"
 #include "GameplayEffect.h"
 
 UGA_Sprint::UGA_Sprint()
 {
-	AbilityTags.AddTag(F4GameplayTags::Ability_Movement_Sprint);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Movement_Sprint));
 	
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_Sprinting);
 }
