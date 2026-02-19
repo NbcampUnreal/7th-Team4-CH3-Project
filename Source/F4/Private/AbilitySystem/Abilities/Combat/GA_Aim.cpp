@@ -11,6 +11,8 @@ UGA_Aim::UGA_Aim()
 
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Aim));
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Aiming);
+
+	ActivationBlockedTags.AddTag(F4GameplayTags::State_Reloading);
 }
 
 void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
