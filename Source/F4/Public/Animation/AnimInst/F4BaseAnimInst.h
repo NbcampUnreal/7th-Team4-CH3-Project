@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Animation/AnimInstance.h"
 #include "F4BaseAnimInst.generated.h"
 
@@ -20,7 +21,10 @@ public:
 	
 	bool ShouldMove(); 	
 	
-	float CalculateDirection(); 
+	float CalculateDirection();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|State")
+	bool bIsAiming = false;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref") 
@@ -45,5 +49,7 @@ protected:
 	bool bShouldMove; 
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Montage | Variable")
-	bool bIsPlayingMontage; 
+	bool bIsPlayingMontage;
+
+	FGameplayTag AimingTag;
 };

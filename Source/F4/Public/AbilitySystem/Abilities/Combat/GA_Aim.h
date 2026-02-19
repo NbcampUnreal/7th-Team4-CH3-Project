@@ -30,7 +30,4 @@ public:
 protected:
 	UFUNCTION()
 	void OnInputReleased(float TimeHeld);
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Aim")
-	TObjectPtr<UAnimMontage> AimMontage;
 };
