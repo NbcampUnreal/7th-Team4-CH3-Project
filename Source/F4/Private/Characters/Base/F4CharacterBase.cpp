@@ -47,7 +47,15 @@ void AF4CharacterBase::PossessedBy(AController* NewController)
 	{
 		if (EachAbility == nullptr) continue;
 		
-		FGameplayAbilitySpecHandle EachSpecHandle = ASC->GiveAbility(EachAbility);
+		FGameplayAbilitySpec EachSpec(EachAbility);
+
+		// TODO: 매직넘버 제거 방안 고려 (인풋바인딩)
+		if (EachAbility->GetName().Contains(TEXT("Aim")))
+		{
+			EachSpec.InputID = 30;
+		}
+
+		FGameplayAbilitySpecHandle EachSpecHandle = ASC->GiveAbility(EachSpec);
 		InitialAbilitySpecHandles.Add(EachSpecHandle);
 	}
 	
