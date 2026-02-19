@@ -9,7 +9,7 @@ UGA_Aim::UGA_Aim()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	AbilityTags.AddTag(F4GameplayTags::Ability_Combat_Aim);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Aim));
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Aiming);
 }
 
@@ -18,9 +18,10 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (ACharacter* AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
-		// AvatarCharacter->SetAiming(true);
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
 	}
 
 	if (AimMontage)
@@ -40,15 +41,23 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		WaitInputReleaseTask->OnRelease.AddDynamic(this, &UGA_Aim::OnInputReleased);
 		WaitInputReleaseTask->ReadyForActivation();
 	}
+
+	// TODO: Ability 에서 할게 아닌 것 같음 (해당 값을 AttributeSet으로 빼서 GE로 처리하던가? 등등
+	if (ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
+	{
+		Character->bUseControllerRotationYaw = true;
+	}
 }
 
 void UGA_Aim::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	if (ACharacter* AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
+	// TODO: Ability 에서 할게 아닌 것 같음 (해당 값을 AttributeSet으로 빼서 GE로 처리하던가? 등등
+	if (ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
 	{
-		// AvatarCharacter->SetAiming(false);
+		Character->bUseControllerRotationYaw = false;
 	}
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
