@@ -20,4 +20,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	float DetectRadius = 1000.0f;
+	
+	UFUNCTION(BlueprintCallable)
+	void ClearBlackboardValues(UBlackboardComponent* BB);
+	
 };
