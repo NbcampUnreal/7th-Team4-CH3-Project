@@ -23,8 +23,7 @@ public:
 	
 	float CalculateDirection();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|State")
-	bool bIsAiming = false;
+
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref") 
@@ -50,6 +49,12 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Montage | Variable")
 	bool bIsPlayingMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|State")
+	bool bIsAiming = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character|State")
+	bool bIsEquipped = false;
 
 	FGameplayTag AimingTag;
 };

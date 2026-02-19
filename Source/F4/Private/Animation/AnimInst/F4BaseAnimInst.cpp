@@ -5,6 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "Characters/Player/F4PlayerCharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "System/F4GameplayTags.h"
@@ -47,6 +48,11 @@ void UF4BaseAnimInst::NativeUpdateAnimation(float DeltaSeconds)
 	}
 
 	bIsAiming = ASC->HasMatchingGameplayTag(AimingTag);
+
+	if (AF4PlayerCharacter* F4Character = Cast<AF4PlayerCharacter>(OwnerCharacter))
+	{
+		bIsEquipped = F4Character->CurrentWeapon != nullptr;
+	}
 }
 
 bool UF4BaseAnimInst::ShouldMove()
