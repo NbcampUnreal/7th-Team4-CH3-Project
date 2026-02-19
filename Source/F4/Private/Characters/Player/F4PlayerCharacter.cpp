@@ -9,6 +9,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Items/Weapons/F4WeaponActor.h"
+#include "Items/Weapons/F4WeaponDataAsset.h"
 #include "System/F4GameplayTags.h"
 
 
@@ -206,6 +208,64 @@ void AF4PlayerCharacter::Interact()
 	Container.AddTag(F4GameplayTags::Ability_Interaction_Interact);
 	
 	ASC->TryActivateAbilitiesByTag(Container);
+}
+
+void AF4PlayerCharacter::EquipWeapon(const UF4WeaponDataAsset* NewWeaponData)
+{
+	if (!NewWeaponData) return;
+	
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->Destroy();
+	}
+	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = this;
+	
+	AF4WeaponActor* NewWeapon = GetWorld()->SpawnActor<AF4WeaponActor>(
+		AF4WeaponActor::StaticClass(), 
+		GetActorTransform(), 
+		SpawnParams
+	);
+	
+	// 무기 초기화 및 소켓 부착
+	if (NewWeapon)
+	{
+		NewWeapon->InitializeWeapon(NewWeaponData);
+		
+		NewWeapon->AttachToComponent(
+			GetMesh(), 
+			FAttachmentTransformRules::SnapToTargetIncludingScale, 
+			TEXT("hand_r")
+		);
+
+		CurrentWeapon = NewWeapon;
+		
+		GrantWeaponAbilities(NewWeaponData);
+	}
+}
+
+void AF4PlayerCharacter::GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponData)
+{
+	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
+
+	
+	if (!WeaponData || !AbilitySystemComponent) return;
+	
+	for (const FWeaponAbilityConfig& AbilityConfig : WeaponData->Abilities)
+	{
+		if (AbilityConfig.AbilityClass)
+		{
+			// Spec 생성
+			FGameplayAbilitySpec Spec(AbilityConfig.AbilityClass, 1);
+            
+			// 입력 태그를 Spec에 동적 태그로 추가
+			Spec.GetDynamicSpecSourceTags().AddTag(AbilityConfig.InputTag);
+			
+			AbilitySystemComponent->GiveAbility(Spec);
+		}
+	}
 }
 
 void AF4PlayerCharacter::DoInteract(AActor* Interactor)

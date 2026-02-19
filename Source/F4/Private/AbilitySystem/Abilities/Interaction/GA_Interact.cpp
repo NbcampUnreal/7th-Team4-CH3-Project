@@ -35,7 +35,7 @@ void UGA_Interact::ActivateAbility(
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(AvatarPawn);
 	
-	bool bHit = GetWorld()->SweepMultiByObjectType(
+	bool bHit = GetWorld()->SweepMultiByChannel(
 		HitResults, 
 		StartLocation,
 		EndLocation,

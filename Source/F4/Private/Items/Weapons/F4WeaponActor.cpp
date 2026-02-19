@@ -102,3 +102,8 @@ FTransform AF4WeaponActor::GetMuzzleTransform() const
 	UE_LOGFMT(LogTemp, Warning, "Weapon: Muzzle Socket is invalid! Using Actor Transform instead.");
 	return GetActorTransform();
 }
+
+const UF4WeaponDataAsset* AF4WeaponActor::GetWeaponData() const
+{
+	return WeaponData;
+}

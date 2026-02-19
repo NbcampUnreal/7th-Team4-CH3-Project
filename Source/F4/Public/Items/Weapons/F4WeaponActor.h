@@ -43,4 +43,7 @@ public:
 	// 총구의 위치 반환 함수
 	UFUNCTION(BlueprintPure, Category = "Weapon|Gun")
 	FTransform GetMuzzleTransform() const;
+	
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	const UF4WeaponDataAsset* GetWeaponData() const;
 };
