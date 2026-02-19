@@ -40,12 +40,24 @@ void AF4PlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTi
 		return;
 	}
 
-	float TargetFOV = ASC->HasMatchingGameplayTag(F4GameplayTags::State_Aiming) ? AimingFOV : BaseFOV;
+	bool bIsAiming = ASC->HasMatchingGameplayTag(F4GameplayTags::State_Aiming);
+
+	float TargetFOV = bIsAiming ? AimingFOV : BaseFOV;
 	if (CurrentFOV <= 0.0f)
 	{
 		CurrentFOV = BaseFOV;
 	}
 	CurrentFOV = FMath::FInterpTo(CurrentFOV, TargetFOV, DeltaTime, InterpSpeed);
-
 	OutVT.POV.FOV = CurrentFOV;
+
+	FVector TargetOffset = bIsAiming ? AimingOffset : BaseOffset;
+	CurrentOffset = FMath::VInterpTo(CurrentOffset, TargetOffset, DeltaTime, InterpSpeed);
+
+	FVector TargetLocation = TargetActor->GetActorLocation();
+	FRotator TargetRotation = OutVT.POV.Rotation;
+
+	FQuat FrameQuat = FQuat(TargetRotation);
+
+	FVector WorldOffset = FrameQuat.RotateVector(CurrentOffset);
+	OutVT.POV.Location = TargetLocation + WorldOffset;
 }

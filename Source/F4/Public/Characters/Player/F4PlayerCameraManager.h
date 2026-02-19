@@ -22,8 +22,15 @@ protected:
 	float AimingFOV = 60.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Aiming")
-	float InterpSpeed = 15.0f;
+	float InterpSpeed = 10.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
+	FVector BaseOffset = FVector(-250.0f, 0, 50.0f);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
+	FVector AimingOffset = FVector(-250.0f, 55.0f, 50.0f);
 
 private:
 	float CurrentFOV;
+	FVector CurrentOffset;
 };
