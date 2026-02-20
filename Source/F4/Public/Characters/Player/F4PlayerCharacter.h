@@ -8,10 +8,12 @@
 
 
 class UF4ItemDataAsset;
+class UInputMappingContext;
 class AF4WeaponActor;
 struct FInputActionValue;
 class UCameraComponent;
 class USpringArmComponent;
+class UF4InputConfig;
 
 
 class UInputAction;
@@ -24,6 +26,8 @@ class F4_API AF4PlayerCharacter : public AF4CharacterBase, public IInteractable
 public:
 	AF4PlayerCharacter();
 
+	virtual void Tick(float DeltaTime) override;
+
 	virtual void PostInitializeComponents() override;
 
 	virtual void PossessedBy(AController* NewController) override;
@@ -32,15 +36,24 @@ public:
 
 	virtual FText GetInteractionText() const override;
 
-public:
+protected:
 	// input Functions
+	void Input_Move(const FInputActionValue& Value);
+
+	void Input_Look(const FInputActionValue& Value);
+
+	void Input_Zoom(const FInputActionValue& Value);
+
+	void Input_AbilityPressed(const FGameplayTag InputTag);
+	void Input_AbilityReleased(const FGameplayTag InputTag);
+
+
+public:
 	void Move(const FInputActionValue& Value);
 
 	void Look(const FInputActionValue& Value);
 
 	void Zoom(const FInputActionValue& Value);
-
-	void Jump();
 
 	void Roll();
 
@@ -61,7 +74,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessItemPickup(const UF4ItemDataAsset* PickupItemData);
-	
+
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(const UF4WeaponDataAsset* NewWeaponData);
 
@@ -81,44 +94,15 @@ private:
 	UCameraComponent* FollowCamera;
 #pragma endregion
 
-#pragma region InputActions
+#pragma region Input Data
 
 protected:
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> JumpAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UF4InputConfig> InputConfig;
 
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputMappingContext* DefaultIMC;
 
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> LookAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> ZoomAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> AttackAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> InteractAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> RollAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> CrouchAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> SprintAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> FireAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> AimAction;
-
-	UPROPERTY(EditAnywhere, Category="Input")
-	TObjectPtr<UInputAction> ReloadAction;
 #pragma endregion
 
 #pragma region Camera
@@ -138,6 +122,7 @@ protected:
 #pragma region Tags
 	UPROPERTY(EditAnywhere, Category="Tag")
 	FGameplayTag Jumps;
+
 
 #pragma endregion
 };
