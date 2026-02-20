@@ -19,6 +19,7 @@ class F4_API UF4ItemDataAsset : public UPrimaryDataAsset
 public:
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 
+	// 기본 정보
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Info")
 	FText DisplayName;
 	
