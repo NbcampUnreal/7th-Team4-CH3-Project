@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Items/ConsumableItems/F4ConsumableDataAsset.h"
 #include "Items/Weapons/F4WeaponActor.h"
 #include "Items/Weapons/F4WeaponDataAsset.h"
 #include "System/F4GameplayTags.h"
@@ -272,6 +273,27 @@ void AF4PlayerCharacter::OnReload()
 	Container.AddTag(F4GameplayTags::Ability_Combat_Reload);
 
 	ASC->TryActivateAbilitiesByTag(Container);
+}
+
+void AF4PlayerCharacter::ProcessItemPickup(const UF4ItemDataAsset* PickupItemData)
+{
+	if (!PickupItemData) return;
+	
+	switch (PickupItemData->ItemType)
+	{
+		case EF4ItemType::Weapon:
+		{
+			const UF4WeaponDataAsset* WeaponData = Cast<UF4WeaponDataAsset>(PickupItemData);
+			EquipWeapon(WeaponData);
+			break;
+		}
+		case EF4ItemType::Consumable:
+		{
+			const UF4ConsumableDataAsset* ConsumableData = Cast<UF4ConsumableDataAsset>(PickupItemData);
+			// TODO: ConsumeItem(ConsumableData);
+			break;
+		}
+	}
 }
 
 void AF4PlayerCharacter::EquipWeapon(const UF4WeaponDataAsset* NewWeaponData)
