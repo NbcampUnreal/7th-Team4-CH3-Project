@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "AbilitySystemComponent.h"
+#include "AbilitySystem/F4AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "F4CharacterBase.generated.h"
 
@@ -40,14 +40,13 @@ public:
 	
 #pragma region Gameplay Abilities 
 protected:
-	
 	void OnSpeedAttributeChanged(const FOnAttributeChangeData& Data);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
-	UAbilitySystemComponent* ASC; // 어빌리티 시스템 컴포넌트 
+	TObjectPtr<UF4AbilitySystemComponent> ASC; // 어빌리티 시스템 컴포넌트 
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS | Attributes")
-	UF4AttributeSetCharacter* AttributeSet; // 어트리뷰트 셋 
+	TObjectPtr<UF4AttributeSetCharacter> AttributeSet; // 어트리뷰트 셋 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS | Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> InitialAbilities; // 기본 어빌리티 

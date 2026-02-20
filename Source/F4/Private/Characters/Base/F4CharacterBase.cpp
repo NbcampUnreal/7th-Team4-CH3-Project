@@ -25,7 +25,7 @@ AF4CharacterBase::AF4CharacterBase()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.f;
 	
-	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
+	ASC = CreateDefaultSubobject<UF4AbilitySystemComponent>(TEXT("ASC"));
 	ASC->SetIsReplicated(true);
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed); 
 	
@@ -40,25 +40,9 @@ void AF4CharacterBase::PossessedBy(AController* NewController)
 	if (ASC)
 	{
 		ASC->InitAbilityActorInfo(this, this);
+		ASC->GiveDefaultAbility();
 	}
-	
-	// 2. Give Abilities
-	for (const TSubclassOf<UGameplayAbility>& EachAbility : InitialAbilities)
-	{
-		if (EachAbility == nullptr) continue;
-		
-		FGameplayAbilitySpec EachSpec(EachAbility);
 
-		// TODO: 매직넘버 제거 방안 고려 (인풋바인딩)
-		if (EachAbility->GetName().Contains(TEXT("Aim")))
-		{
-			EachSpec.InputID = 30;
-		}
-
-		FGameplayAbilitySpecHandle EachSpecHandle = ASC->GiveAbility(EachSpec);
-		InitialAbilitySpecHandles.Add(EachSpecHandle);
-	}
-	
 	// 3. Bind Delegate 
 	ASC->GetGameplayAttributeValueChangeDelegate(UF4AttributeSetCharacter::GetWalkSpeedAttribute()).
 	AddUObject(this, &AF4CharacterBase::OnSpeedAttributeChanged);
