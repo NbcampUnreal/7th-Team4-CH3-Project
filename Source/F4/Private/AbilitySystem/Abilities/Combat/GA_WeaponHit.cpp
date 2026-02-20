@@ -9,7 +9,7 @@ UGA_WeaponHit::UGA_WeaponHit()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	FAbilityTriggerData TriggerData;
-	TriggerData.TriggerTag = F4GameplayTags::Event_Projectile_Hit;
+	TriggerData.TriggerTag = F4GameplayTags::Event_Hit_Damage;
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(TriggerData);
 }

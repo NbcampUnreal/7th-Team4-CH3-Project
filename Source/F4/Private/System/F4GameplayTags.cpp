@@ -36,7 +36,7 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_Reload, TEXT("Event.Montage.Reload"));
 
 	// Event Tag
-	UE_DEFINE_GAMEPLAY_TAG(Event_Projectile_Hit, TEXT("Event.Projectile.Hit"));
+	UE_DEFINE_GAMEPLAY_TAG(Event_Hit_Damage, TEXT("Event.Hit.Damage"));
 
 	// Enemy State
 	UE_DEFINE_GAMEPLAY_TAG(State_Attacking, TEXT("State.Attacking"));

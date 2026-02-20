@@ -47,6 +47,6 @@ namespace F4GameplayTags
 	
 	// Event Tags 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Fire);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Projectile_Hit);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Hit_Damage);
 
 }

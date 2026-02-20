@@ -74,7 +74,7 @@ void AF4Projectile::OnHit(
 		FHitResult* MutableHit = const_cast<FHitResult*>(&Hit);
 		Payload.TargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(*MutableHit));
 
-		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetInstigator(), F4GameplayTags::Event_Projectile_Hit, Payload);
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetInstigator(), F4GameplayTags::Event_Hit_Damage, Payload);
 	}
 
 	// TODO: particle or sound (Gameplay Cue)
