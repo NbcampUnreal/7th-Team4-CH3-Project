@@ -16,9 +16,6 @@ class F4_API AF4Projectile : public AActor
 public:	
 	AF4Projectile();
 
-	UPROPERTY(BlueprintReadWrite, Category = "Combat")
-	FGameplayEffectSpecHandle DamageSpecHandle;
-
 protected:
 	virtual void BeginPlay() override;
 

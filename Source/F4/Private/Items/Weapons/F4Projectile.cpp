@@ -1,9 +1,11 @@
 #include "Items/Weapons/F4Projectile.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "System/F4GameplayTags.h"
 
 AF4Projectile::AF4Projectile()
 {
@@ -63,21 +65,16 @@ void AF4Projectile::OnHit(
 		return;
 	}
 
-	UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor);
-	if (!TargetASC)
+	if (GetInstigator())
 	{
-		return;
-	}
+		FGameplayEventData Payload;
+		Payload.Instigator = GetInstigator();
+		Payload.Target = OtherActor;
 
-	if (DamageSpecHandle.IsValid() && GetInstigator())
-	{
-		if (UAbilitySystemComponent* InstigatorASC = GetInstigator()->FindComponentByClass<UAbilitySystemComponent>())
-		{
-			FGameplayEffectContextHandle Context = DamageSpecHandle.Data->GetContext();
-			Context.AddHitResult(Hit);
+		FHitResult* MutableHit = const_cast<FHitResult*>(&Hit);
+		Payload.TargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(*MutableHit));
 
-			InstigatorASC->ApplyGameplayEffectSpecToTarget(*DamageSpecHandle.Data.Get(), TargetASC);
-		}
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetInstigator(), F4GameplayTags::Event_Hit_Damage, Payload);
 	}
 
 	// TODO: particle or sound (Gameplay Cue)

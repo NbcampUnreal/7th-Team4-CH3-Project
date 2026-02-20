@@ -34,9 +34,6 @@ protected:
 	TObjectPtr<UAnimMontage> FireMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fire")
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fire")
 	TSubclassOf<AF4Projectile> ProjectileClass;
 
 	UFUNCTION()
