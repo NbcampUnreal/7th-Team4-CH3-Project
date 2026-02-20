@@ -7,12 +7,13 @@
 void UF4AbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;
-	
-	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+
+	for (FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 	{
-		if (AbilitySpec.Ability && AbilitySpec.Ability->AbilityTags.HasTagExact(InputTag))
+		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag) ||
+			(AbilitySpec.Ability && AbilitySpec.Ability->GetAssetTags().HasTagExact(InputTag)))
 		{
-			InputPressedSpecHandles.AddUnique(AbilitySpec.Handle); 
+			InputPressedSpecHandles.AddUnique(AbilitySpec.Handle);
 			InputHeldSpecHandles.AddUnique(AbilitySpec.Handle);
 		}
 	}
@@ -21,10 +22,11 @@ void UF4AbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Input
 void UF4AbilitySystemComponent::AbiliityInputReleased(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;
-	
-	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+
+	for (FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 	{
-		if (AbilitySpec.Ability && AbilitySpec.Ability->AbilityTags.HasTagExact(InputTag))
+		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag) ||
+		   (AbilitySpec.Ability && AbilitySpec.Ability->GetAssetTags().HasTagExact(InputTag)))
 		{
 			InputReleasedSpecHandles.AddUnique(AbilitySpec.Handle);
 			InputHeldSpecHandles.Remove(AbilitySpec.Handle);
@@ -38,16 +40,16 @@ void UF4AbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 
 	for (const FGameplayAbilitySpecHandle& SpecHandle : InputPressedSpecHandles)
 	{
-		if (FGameplayAbilitySpec* Spec  = FindAbilitySpecFromHandle(SpecHandle))
+		if (FGameplayAbilitySpec* Spec = FindAbilitySpecFromHandle(SpecHandle))
 		{
 			if (Spec->Ability)
 			{
 				Spec->InputPressed = true;
-				AbilitiesToActivate.AddUnique(SpecHandle); 
+				AbilitiesToActivate.AddUnique(SpecHandle);
 			}
 		}
 	}
-	
+
 	for (const FGameplayAbilitySpecHandle& SpecHandle : AbilitiesToActivate)
 	{
 		TryActivateAbility(SpecHandle);
@@ -60,7 +62,7 @@ void UF4AbilitySystemComponent::ProcessAbilityInput(float DeltaTime, bool bGameP
 			if (Spec->Ability)
 			{
 				Spec->InputPressed = false;
-				AbilitySpecInputReleased(*Spec); 
+				AbilitySpecInputReleased(*Spec);
 			}
 		}
 	}
@@ -80,12 +82,12 @@ void UF4AbilitySystemComponent::GiveDefaultAbility()
 {
 	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 	if (!DefaultAbilitySet) return;
-	
+
 	for (const auto& AbilityClass : DefaultAbilitySet->GrantedAbilities)
 	{
 		if (AbilityClass)
 		{
-			GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, -1)); 
+			GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, -1));
 		}
 	}
 }

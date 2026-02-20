@@ -252,11 +252,6 @@ void AF4PlayerCharacter::Input_AbilityPressed(const FGameplayTag InputTag)
 	if (UF4AbilitySystemComponent* F4ASC = Cast<UF4AbilitySystemComponent>(GetAbilitySystemComponent()))
 	{
 		F4ASC->AbilityInputTagPressed(InputTag);
-		// if (InputTag == F4GameplayTags::Ability_Combat_Aim)
-		// {
-		// 	F4ASC->AbilityLocalInputPressed(30);
-		// }
-
 	}
 }
 
@@ -265,10 +260,6 @@ void AF4PlayerCharacter::Input_AbilityReleased(const FGameplayTag InputTag)
 	if (UF4AbilitySystemComponent* F4ASC = Cast<UF4AbilitySystemComponent>(GetAbilitySystemComponent()))
 	{
 		F4ASC->AbiliityInputReleased(InputTag);
-		// if (InputTag == F4GameplayTags::Ability_Combat_Aim)
-		// {
-		// 	F4ASC->AbilityLocalInputReleased(30);
-		// }
 	}
 }
 

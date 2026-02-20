@@ -1,6 +1,5 @@
 #include "AbilitySystem/Abilities/Combat/GA_Aim.h"
 
-#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "GameFramework/Character.h"
 #include "System/F4GameplayTags.h"
 
@@ -25,13 +24,6 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 		return;
 	}
 
-	UAbilityTask_WaitInputRelease* WaitInputReleaseTask = UAbilityTask_WaitInputRelease::WaitInputRelease(this);
-	if (WaitInputReleaseTask)
-	{
-		WaitInputReleaseTask->OnRelease.AddDynamic(this, &UGA_Aim::OnInputReleased);
-		WaitInputReleaseTask->ReadyForActivation();
-	}
-
 	// TODO: Ability 에서 할게 아닌 것 같음 (해당 값을 AttributeSet으로 빼서 GE로 처리하던가? 등등
 	if (ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo()))
 	{
@@ -54,5 +46,16 @@ void UGA_Aim::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGamepla
 void UGA_Aim::OnInputReleased(float TimeHeld)
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void UGA_Aim::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo)
+{
+	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
+
+	if (IsActive())
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+	}
 }
 
