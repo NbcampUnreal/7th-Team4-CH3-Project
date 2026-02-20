@@ -6,8 +6,8 @@
 
 UGA_Jump::UGA_Jump()
 {
-	AbilityTags.AddTag(F4GameplayTags::Ability_Movement_Jump); 
-	
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Movement_Jump));
+
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_InAir);
 }
 

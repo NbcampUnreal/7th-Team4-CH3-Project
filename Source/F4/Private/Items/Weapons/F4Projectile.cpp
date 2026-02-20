@@ -58,7 +58,7 @@ void AF4Projectile::OnHit(
 	FVector NormalImpulse,
 	const FHitResult& Hit)
 {
-	if (!OtherActor || OtherActor != GetInstigator())
+	if (!OtherActor || OtherActor == GetInstigator() || OtherActor == this)
 	{
 		return;
 	}

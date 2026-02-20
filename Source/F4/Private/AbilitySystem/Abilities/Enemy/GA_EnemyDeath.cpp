@@ -3,8 +3,8 @@
 
 UGA_EnemyDeath::UGA_EnemyDeath()
 {
-	AbilityTags.AddTag(F4GameplayTags::Ability_Death);
-	
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Death));
+
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Dead);
 	
 	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Attack);

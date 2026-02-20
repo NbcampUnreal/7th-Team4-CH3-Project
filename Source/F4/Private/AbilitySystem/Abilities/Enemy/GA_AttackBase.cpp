@@ -7,7 +7,7 @@
 UGA_AttackBase::UGA_AttackBase()
 {
 	// 1. 이 어빌리티의 이름표
-	AbilityTags.AddTag(F4GameplayTags::Ability_Attack);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Attack));
 
 	// 2. 실행 중일 때 캐릭터에게 부여될 태그 (다른 곳에서 상태 확인용)
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Attacking);

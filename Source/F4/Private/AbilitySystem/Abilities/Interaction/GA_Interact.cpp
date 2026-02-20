@@ -5,7 +5,7 @@
 
 UGA_Interact::UGA_Interact()
 {
-	AbilityTags.AddTag(F4GameplayTags::Ability_Interaction_Interact);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Interaction_Interact));
 	
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_Interacting); 
 }

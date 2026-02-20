@@ -11,7 +11,7 @@ UGA_Fire::UGA_Fire()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
-	AbilityTags.AddTag(F4GameplayTags::Ability_Combat_Fire);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Fire));
 
 	// TODO: 달리기 중이라면 끊기
 	// CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Movement_Sprint)

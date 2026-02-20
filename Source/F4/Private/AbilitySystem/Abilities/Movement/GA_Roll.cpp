@@ -4,7 +4,7 @@
 
 UGA_Roll::UGA_Roll()
 {
-	AbilityTags.AddTag(F4GameplayTags::Ability_Movement_Roll);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Movement_Roll));
 
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_Rolling);
 }

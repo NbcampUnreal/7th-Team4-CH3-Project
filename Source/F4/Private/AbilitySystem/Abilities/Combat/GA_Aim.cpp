@@ -1,6 +1,5 @@
 #include "AbilitySystem/Abilities/Combat/GA_Aim.h"
 
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "GameFramework/Character.h"
 #include "System/F4GameplayTags.h"
@@ -24,17 +23,6 @@ void UGA_Aim::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGa
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
-	}
-
-	if (AimMontage)
-	{
-		UAbilityTask_PlayMontageAndWait* MontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
-			this,
-			NAME_None,
-			AimMontage
-		);
-
-		MontageTask->ReadyForActivation();
 	}
 
 	UAbilityTask_WaitInputRelease* WaitInputReleaseTask = UAbilityTask_WaitInputRelease::WaitInputRelease(this);
