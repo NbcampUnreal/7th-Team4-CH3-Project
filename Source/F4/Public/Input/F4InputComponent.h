@@ -1,12 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "EnhancedInputComponent.h"
 #include "Input/F4InputConfig.h"
 #include "F4InputComponent.generated.h"
-
 
 class UEnhancedInputLocalPlayerSubsystem;
 class UInputAction;
