@@ -1,8 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Input/F4InputConfig.h"
-
 
 UF4InputConfig::UF4InputConfig(const FObjectInitializer& ObjectInitializer)
 {

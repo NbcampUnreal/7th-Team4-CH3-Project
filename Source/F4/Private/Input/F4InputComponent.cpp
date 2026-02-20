@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Input/F4InputComponent.h"
 
 UF4InputComponent::UF4InputComponent(const FObjectInitializer& Initializer)
