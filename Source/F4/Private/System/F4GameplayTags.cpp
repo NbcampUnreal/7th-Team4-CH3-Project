@@ -43,4 +43,11 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Cooldown_Attack, TEXT("Cooldown.Attack"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_DealDamage, TEXT("Event.Montage.DealDamage"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Character_Die, TEXT("Event.Character.Die"));
+	
+	
+	
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Move, "InputTag.Move");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look, "InputTag.Look");
+	UE_DEFINE_GAMEPLAY_TAG(InputTag_Zoom, "InputTag.Zoom");
+	
 }
