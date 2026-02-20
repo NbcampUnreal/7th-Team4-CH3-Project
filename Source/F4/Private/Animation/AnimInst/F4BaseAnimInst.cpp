@@ -2,6 +2,7 @@
 
 
 #include "Animation/AnimInst/F4BaseAnimInst.h"
+#include "KismetAnimationLibrary.h"
 
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
@@ -64,25 +65,7 @@ float UF4BaseAnimInst::CalculateDirection()
 {
 	if (Velocity.IsNearlyZero()) return 0.f; 
 	
-	FMatrix RotMatrix = FRotationMatrix(OwnerCharacter->GetActorRotation());
-	FVector ForwardVector = RotMatrix.GetScaledAxis(EAxis::X);
-	FVector RightVector = RotMatrix.GetScaledAxis(EAxis::Y);
-	FVector NormalizedVel = Velocity.GetSafeNormal2D();
-		
-	float ForwardCosAngle = FVector::DotProduct(ForwardVector, NormalizedVel);
+	FRotator Rotation = OwnerCharacter->GetController()->GetControlRotation();
 	
-	float ForwardDeltaDegree = FMath::RadiansToDegrees(FMath::Acos(ForwardCosAngle));
-		
-	float RightCosAngle = FVector::DotProduct(RightVector, NormalizedVel);
-	if (RightCosAngle < 0)
-	{
-		ForwardDeltaDegree *= -1;
-	}
-		
-	if (MovementComp->bOrientRotationToMovement == true)
-	{
-		ForwardDeltaDegree = FMath::Clamp(ForwardDeltaDegree, -45.f, 45.f);
-	}
-		
-	return ForwardDeltaDegree;
+	return UKismetAnimationLibrary::CalculateDirection(Velocity,Rotation); 
 }
