@@ -20,7 +20,7 @@ public:
 	void UpdateAiming(); 
 	
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aim")
 	bool bAiming = false;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aim")
