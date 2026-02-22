@@ -25,8 +25,8 @@ struct FWeaponAbilityConfig
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	Melee UMETA(DisplayName = "Melee"),
-	Gun UMETA(DisplayName = "Gun")
+	Melee	UMETA(DisplayName = "Melee"),
+	Gun		UMETA(DisplayName = "Gun")
 };
 
 UCLASS()
@@ -39,14 +39,13 @@ public:
 	
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	
+	// 총기일 경우에만 편집 가능하도록 설정
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Visual",
+		meta = (EditCondition = "WeaponType == EWeaponType::Gun"))
+	TObjectPtr<UStaticMesh> MagazineMesh;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Info")
 	EWeaponType WeaponType;
-	
-	// 총기일 경우에만 편집 가능하도록 설정
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",
-		meta = (EditCondition = "WeaponType == EWeaponType::Gun"))
-	TObjectPtr<UStaticMesh> MagazineMesh;
 
 	// 총몸에 만들어둔 소켓 이름 (예: "Socket_Magazine")
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",
