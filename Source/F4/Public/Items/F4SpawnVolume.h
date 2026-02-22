@@ -4,8 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "F4SpawnVolume.generated.h"
 
+class UF4ItemDataAsset;
 class AF4PickupActor;
-class UF4WeaponDataAsset;
 class UBoxComponent;
 
 UCLASS()
@@ -28,7 +28,7 @@ public:
 	TObjectPtr<UBoxComponent> SpawningBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
-	TArray<TObjectPtr<UF4WeaponDataAsset>> SpawnableItems;
+	TArray<TObjectPtr<UF4ItemDataAsset>> SpawnableItems;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
 	TSubclassOf<AF4PickupActor> ItemClassToSpawn;
