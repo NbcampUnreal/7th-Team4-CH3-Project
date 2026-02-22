@@ -38,6 +38,7 @@ namespace F4GameplayTags
 	// Enemy State
 	UE_DEFINE_GAMEPLAY_TAG(State_Attacking, TEXT("State.Attacking"));
 	UE_DEFINE_GAMEPLAY_TAG(State_Dead, TEXT("State.Dead"));
+	UE_DEFINE_GAMEPLAY_TAG(State_Chasing, TEXT("State.Chasing"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Attack, TEXT("Ability.Attack"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Death, TEXT("Ability.Death"));
 	UE_DEFINE_GAMEPLAY_TAG(Cooldown_Attack, TEXT("Cooldown.Attack"));

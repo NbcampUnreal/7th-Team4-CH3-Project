@@ -1,12 +1,10 @@
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/Attributes/F4AttributeSetEnemy.h"
 #include "AIController.h"
 #include "System/F4GameplayTags.h"
 
 AF4EnemyBase::AF4EnemyBase()
 {
-	EnemyAttributeSet = CreateDefaultSubobject<UF4AttributeSetEnemy>(TEXT("EnemyAttributeSet"));
 }
 
 void AF4EnemyBase::BeginPlay()
@@ -18,11 +16,6 @@ void AF4EnemyBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
-	if (ASC)
-	{
-		InitEnemyStats();
-	}
-	
 	AAIController* AIC = Cast<AAIController>(NewController);
 	if (AIC && BehaviorTree)
 	{
@@ -30,40 +23,24 @@ void AF4EnemyBase::PossessedBy(AController* NewController)
 	}
 }
 
-void AF4EnemyBase::InitEnemyStats()
-{
-	if (!ASC || !DefaultAttributeEffect)
-	{
-		return;
-	}
 
-	// 초기 스탯 적용 (Health, MaxHealth 등)
-	FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-	EffectContext.AddSourceObject(this);
-
-	FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(DefaultAttributeEffect, 1.f, EffectContext);
-	if (SpecHandle.IsValid())
-	{
-		ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-	}
-}
-
+// todo: 사망 몽타주 실행하고 아이템을 드랍하도록 변경예정 >> 어빌리티 실행해서 어빌리티에서 모두 처리할꺼임
 void AF4EnemyBase::HandleDeath()
 {
-	// 1. 이미 죽었는지 태그로 확인 (중복 호출 방지)
+	// 이미 죽었는지 태그로 확인
 	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(F4GameplayTags::State_Dead))
 	{
 		return;
 	}
 
-	// 2. GA_Death를 실행할 태그 컨테이너 생성
+	// GA_Death를 실행할 태그 컨테이너 생성
 	FGameplayTagContainer DeathTagContainer;
 	DeathTagContainer.AddTag(F4GameplayTags::Ability_Death);
 
-	// 3. 태그로 어빌리티 실행
+	// 태그로 어빌리티 실행
 	bool bSuccess = GetAbilitySystemComponent()->TryActivateAbilitiesByTag(DeathTagContainer);
 
-	// 4. 만약 GA_Death 실행에 실패했다면 즉시 Destroy
+	// GA_Death 실행에 실패했다면 즉시 Destroy
 	if (!bSuccess)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("GA_Death 활성화 실패! 즉시 Destroy 합니다."));
