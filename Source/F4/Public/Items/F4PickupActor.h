@@ -5,7 +5,7 @@
 #include "Interface/Interactable.h"
 #include "F4PickupActor.generated.h"
 
-class UF4WeaponDataAsset; // TODO: 나중에는 UItemDataAsset으로 변경
+class UF4ItemDataAsset;
 class USphereComponent;
 
 UCLASS()
@@ -20,7 +20,7 @@ public:
 	
 	virtual FText GetInteractionText() const override;
 	
-	void InitializePickup(const UF4WeaponDataAsset* InItemData);
+	void InitializePickup(const UF4ItemDataAsset* InItemData);
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
@@ -33,5 +33,5 @@ protected:
 	TObjectPtr<UStaticMeshComponent> SubMeshComp;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ItemData")
-	TObjectPtr<const UF4WeaponDataAsset> ItemData;
+	TObjectPtr<const UF4ItemDataAsset> ItemData;
 };

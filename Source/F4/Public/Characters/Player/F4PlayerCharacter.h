@@ -7,6 +7,7 @@
 #include "F4PlayerCharacter.generated.h"
 
 
+class UF4ItemDataAsset;
 class AF4WeaponActor;
 struct FInputActionValue;
 class UCameraComponent;
@@ -58,6 +59,9 @@ public:
 
 	void OnReload();
 
+	UFUNCTION(BlueprintCallable)
+	void ProcessItemPickup(const UF4ItemDataAsset* PickupItemData);
+	
 	UFUNCTION(BlueprintCallable)
 	void EquipWeapon(const UF4WeaponDataAsset* NewWeaponData);
 

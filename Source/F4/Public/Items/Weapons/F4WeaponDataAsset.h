@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
+#include "Items/F4ItemDataAsset.h"
 #include "F4WeaponDataAsset.generated.h"
 
 class UGameplayEffect;
@@ -29,23 +30,18 @@ enum class EWeaponType : uint8
 };
 
 UCLASS()
-class F4_API UF4WeaponDataAsset : public UPrimaryDataAsset
+class F4_API UF4WeaponDataAsset : public UF4ItemDataAsset
 {
 	GENERATED_BODY()
 
 public:
+	UF4WeaponDataAsset();
+	
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	
-	// 1. 기본 정보
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Info")
-	FText DisplayName;
-
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Info")
 	EWeaponType WeaponType;
-
-	// 2. 비주얼 (총기는 MainMesh + AttachmentMesh로 구성 가능)
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual")
-	TObjectPtr<UStaticMesh> MainMesh; // 총몸 혹은 칼
 	
 	// 총기일 경우에만 편집 가능하도록 설정
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",

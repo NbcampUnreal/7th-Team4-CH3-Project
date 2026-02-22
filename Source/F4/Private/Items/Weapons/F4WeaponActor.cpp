@@ -38,9 +38,9 @@ void AF4WeaponActor::InitializeWeapon(const UF4WeaponDataAsset* InWeaponData)
 	
 	WeaponData = InWeaponData;
 	
-	if (WeaponData->MainMesh)
+	if (WeaponData->PickupMesh)
 	{
-		MainMeshComponent->SetStaticMesh(WeaponData->MainMesh);
+		MainMeshComponent->SetStaticMesh(WeaponData->PickupMesh);
 	}
 	
 	if (WeaponData->WeaponType == EWeaponType::Gun)

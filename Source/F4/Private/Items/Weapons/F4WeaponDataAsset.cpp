@@ -1,7 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Items/Weapons/F4WeaponDataAsset.h"
+
+UF4WeaponDataAsset::UF4WeaponDataAsset()
+{
+	ItemType = EF4ItemType::Weapon;
+}
 
 FPrimaryAssetId UF4WeaponDataAsset::GetPrimaryAssetId() const
 {

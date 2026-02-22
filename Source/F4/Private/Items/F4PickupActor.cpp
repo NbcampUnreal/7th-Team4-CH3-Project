@@ -27,8 +27,8 @@ void AF4PickupActor::DoInteract(AActor* Interactor)
 	AF4PlayerCharacter* Character = Cast<AF4PlayerCharacter>(Interactor);
 	if (Character && ItemData)
 	{
-		// TODO: 
-		Character->EquipWeapon(ItemData);
+		// TODO: GA_ProcessItemPickup으로 모듈화
+		Character->ProcessItemPickup(ItemData);
 		
 		Destroy();
 	}
@@ -39,29 +39,29 @@ FText AF4PickupActor::GetInteractionText() const
 	return FText::FromString(TEXT("Player"));
 }
 
-void AF4PickupActor::InitializePickup(const UF4WeaponDataAsset* InItemData)
+void AF4PickupActor::InitializePickup(const UF4ItemDataAsset* InItemData)
 {
 	if (!InItemData) return;
 	ItemData = InItemData;
 	
-	if (ItemData->MainMesh)
+	if (ItemData->PickupMesh)
 	{
-		ItemMeshComp->SetStaticMesh(ItemData->MainMesh);
+		ItemMeshComp->SetStaticMesh(ItemData->PickupMesh);
 	}
 	
-	if (ItemData->WeaponType == EWeaponType::Gun)
+	if (const UF4WeaponDataAsset* WeaponData = Cast<UF4WeaponDataAsset>(ItemData))
 	{
-		if (ItemData->MagazineMesh)
+		if (WeaponData->WeaponType == EWeaponType::Gun && WeaponData->MagazineMesh)
 		{
-			SubMeshComp->SetStaticMesh(ItemData->MagazineMesh);
+			SubMeshComp->SetStaticMesh(WeaponData->MagazineMesh);
 			SubMeshComp->SetVisibility(true);
 			
-			if (!ItemData->MagazineSocketName.IsNone())
+			if (!WeaponData->MagazineSocketName.IsNone())
 			{
 				SubMeshComp->AttachToComponent(
 					ItemMeshComp,
 					FAttachmentTransformRules::SnapToTargetIncludingScale,
-					ItemData->MagazineSocketName
+					WeaponData->MagazineSocketName
 				);
 			}
 		}
@@ -69,6 +69,6 @@ void AF4PickupActor::InitializePickup(const UF4WeaponDataAsset* InItemData)
 	else
 	{
 		SubMeshComp->SetStaticMesh(nullptr);
-		SubMeshComp->SetVisibility(false);
+		// SubMeshComp->SetVisibility(false);
 	}
 }
