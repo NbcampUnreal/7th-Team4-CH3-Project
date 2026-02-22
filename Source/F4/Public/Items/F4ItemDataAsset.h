@@ -8,7 +8,8 @@ UENUM(BlueprintType)
 enum class EF4ItemType : uint8
 {
 	Weapon		UMETA(DisplayName = "Weapon"),
-	Consumable	UMETA(DisplayName = "Consumable")
+	Consumable	UMETA(DisplayName = "Consumable"),
+	Ammo		UMETA(DisplayName = "Ammo")
 };
 
 UCLASS(Abstract)
@@ -27,5 +28,8 @@ public:
 	EF4ItemType ItemType;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Visual")
-	TObjectPtr<UStaticMesh> PickupMesh;;
+	TObjectPtr<UStaticMesh> PickupMesh;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item|Visual")
+	FVector PickupScale = FVector(1.0f, 1.0f, 1.0f);
 };
