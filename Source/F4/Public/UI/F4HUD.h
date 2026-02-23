@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-
 #include "F4HUD.generated.h"
 
 struct FOnAttributeChangeData;
