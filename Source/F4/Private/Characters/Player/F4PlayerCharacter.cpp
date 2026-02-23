@@ -11,7 +11,8 @@
 
 #include "Items/Weapons/F4WeaponActor.h"
 #include "Items/Weapons/F4WeaponDataAsset.h"
-
+#include "Blueprint/UserWidget.h"
+#include "UI/F4HUD.h"
 
 
 
@@ -32,6 +33,13 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 	Inventory = CreateDefaultSubobject<UF4InventoryComponent>(TEXT("Inventory"));
 
 	Equipment = CreateDefaultSubobject<UF4EquipmentComponent>(TEXT("Equipment"));
+}
+
+void AF4PlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	CreateHUD(); 
 }
 
 void AF4PlayerCharacter::Tick(float DeltaTime)
@@ -275,4 +283,15 @@ void AF4PlayerCharacter::GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponDa
 
 void AF4PlayerCharacter::DoInteract(AActor* Interactor)
 {
+}
+
+void AF4PlayerCharacter::CreateHUD()
+{
+	if (!HUDClass) return; 
+	
+	HUDWidget = CreateWidget<UF4HUD>(GetWorld(), HUDClass);
+	if (HUDWidget)
+	{
+		HUDWidget->AddToViewport(); 
+	}
 }

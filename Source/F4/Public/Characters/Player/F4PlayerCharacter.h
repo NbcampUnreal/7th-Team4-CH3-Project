@@ -16,7 +16,7 @@ struct FInputActionValue;
 class UCameraComponent;
 class USpringArmComponent;
 class UF4InputConfig;
-
+class UF4HUD;
 
 class UInputAction;
 
@@ -27,6 +27,8 @@ class F4_API AF4PlayerCharacter : public AF4CharacterBase, public IInteractable
 
 public:
 	AF4PlayerCharacter();
+	
+	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -86,6 +88,10 @@ public:
 	TObjectPtr<AF4WeaponActor> CurrentWeapon;
 
 	virtual void DoInteract(AActor* Interactor) override;
+	
+public:
+	void CreateHUD(); 
+	
 #pragma region component
 
 private:
@@ -128,10 +134,10 @@ protected:
 
 #pragma endregion
 
-#pragma region Tags
-	UPROPERTY(EditAnywhere, Category="Tag")
-	FGameplayTag Jumps;
-
-
-#pragma endregion
+public:
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="UI | HUD")
+	TSubclassOf<UUserWidget> HUDClass;
+	
+	UPROPERTY()
+	TObjectPtr<UF4HUD> HUDWidget;
 };
