@@ -26,10 +26,7 @@ void UGaugeWidget::UpdateGauge(float InRatio)
 		
 		ToggleGauge(Ratio < 1.f);
 	}
-	else
-	{
-		UE_LOG(LogTemp,Warning,TEXT( "No InstanceDynamic.")); 
-	}
+	
 }
 
 void UGaugeWidget::ToggleGauge(bool bDraw)
