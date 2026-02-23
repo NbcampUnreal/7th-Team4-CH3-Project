@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "Characters/Player/F4PlayerCharacter.h"
 #include "Items/Weapons/F4WeaponDataAsset.h"
+#include "System/F4GameplayTags.h"
 
 AF4PickupActor::AF4PickupActor()
 {
@@ -24,14 +25,18 @@ AF4PickupActor::AF4PickupActor()
 
 void AF4PickupActor::DoInteract(AActor* Interactor)
 {
-	AF4PlayerCharacter* Character = Cast<AF4PlayerCharacter>(Interactor);
-	if (Character && ItemData)
+	UAbilitySystemComponent* ASC = Interactor->FindComponentByClass<UAbilitySystemComponent>();
+	if (ASC && Interactor)
 	{
-		// TODO: GA_ProcessItemPickup으로 모듈화
-		Character->ProcessItemPickup(ItemData);
+		FGameplayEventData Payload;
+		Payload.Instigator = this;
+		Payload.Target = Interactor;
+		Payload.OptionalObject = ItemData;
 		
-		Destroy();
+		ASC->HandleGameplayEvent(F4GameplayTags::Event_Interaction_Pickup, &Payload);
 	}
+	
+	Destroy();
 }
 
 FText AF4PickupActor::GetInteractionText() const
