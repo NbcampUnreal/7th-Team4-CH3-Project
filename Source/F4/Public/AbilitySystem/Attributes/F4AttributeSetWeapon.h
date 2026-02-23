@@ -34,6 +34,8 @@ public:
 	FGameplayAttributeData CurrentAmmo;
 	ATTRIBUTE_ACCESSORS(UF4AttributeSetWeapon, CurrentAmmo)
 	
+	// TODO: 인벤토리 내에 있는 여분 탄약 추가
+	
 	// Attribute가 변경되기 전에 호출되는 함수(Clamping)
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	

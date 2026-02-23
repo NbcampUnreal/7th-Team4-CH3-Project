@@ -5,7 +5,7 @@
 
 AF4PickupActor::AF4PickupActor()
 {
-	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Collision Sphere"));
+	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
 	SetRootComponent(CollisionSphere);
 	
 	CollisionSphere->SetCollisionProfileName(TEXT("Custom"));
@@ -47,6 +47,7 @@ void AF4PickupActor::InitializePickup(const UF4ItemDataAsset* InItemData)
 	if (ItemData->PickupMesh)
 	{
 		ItemMeshComp->SetStaticMesh(ItemData->PickupMesh);
+		ItemMeshComp->SetRelativeScale3D(ItemData->PickupScale);
 	}
 	
 	if (const UF4WeaponDataAsset* WeaponData = Cast<UF4WeaponDataAsset>(ItemData))
