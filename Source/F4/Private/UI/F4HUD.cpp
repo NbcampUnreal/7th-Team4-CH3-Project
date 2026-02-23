@@ -32,18 +32,19 @@ void UF4HUD::UpdateCrosshair(float InDeltaTime)
 {
 	if (!Owner || !OwnerASC) return; 
 	
-	bool bIsAiming = OwnerASC->HasMatchingGameplayTag(F4GameplayTags::State_Aiming);
+	const bool bIsAiming = OwnerASC->HasMatchingGameplayTag(F4GameplayTags::State_Aiming);
 	Crosshair->ToggleDot(bIsAiming); 
 	
-	float BaseSpread = bIsAiming ? 15.f : 60.f;
-	float Speed = Owner->GetVelocity().Size2D();
-	float SpeedSpread = FMath::Pow(FMath::Clamp(Speed / 600.f, 0.f, 1.f), 1.5f) * 25.f; 
+	const float BaseSpread = bIsAiming ? AimingSpread : NormalSpread;
+	const float Speed = Owner->GetVelocity().Size2D();
+	const float SpeedSpread = FMath::Pow(FMath::Clamp(Speed / 600.f, 0.f, 1.f), 1.5f) * 25.f; 
 	
 	RecoilSpread = FMath::FInterpTo(RecoilSpread, 0.f, InDeltaTime, 15.f);
 	
-	float TargetSpread = BaseSpread + SpeedSpread + RecoilSpread;
-	float InterpSpeed = bIsAiming ? 20.f : 10.f;
-	
+	const float TargetSpread = BaseSpread + SpeedSpread + RecoilSpread;
+
+	const float InterpSpeed = bIsAiming ? AimingInterpSpeed : NormalInterpSpeed;
+
 	CurrentSpread = FMath::FInterpTo(CurrentSpread, TargetSpread, InDeltaTime, InterpSpeed);
 	Crosshair->UpdateCrosshair(CurrentSpread);
 }
@@ -51,7 +52,7 @@ void UF4HUD::UpdateCrosshair(float InDeltaTime)
 void UF4HUD::AddRecoilImpulse(float ImpulseAmount)
 {
 	RecoilSpread += ImpulseAmount;
-	RecoilSpread = FMath::Min(RecoilSpread, 50.f);
+	RecoilSpread = FMath::Min(RecoilSpread, 500.f);
 }
 
 #pragma endregion 
@@ -78,6 +79,7 @@ void UF4HUD::OnHealthChanged(const FOnAttributeChangeData& Data)
 	
 	const float CurrentHealth = OwnerASC->GetNumericAttribute(UF4AttributeSetCharacter::GetHealthAttribute());
 	const float MaxHealth = OwnerASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxHealthAttribute());
+	
 	UpdateHealthBar(CurrentHealth, MaxHealth);
 }
 

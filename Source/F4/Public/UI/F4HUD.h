@@ -40,6 +40,19 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UStatBarWidget> HealthBar;
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI | Crosshair")
+	float AimingSpread = 15.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI | Crosshair")
+	float NormalSpread = 60.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI | Crosshair")
+	float AimingInterpSpeed = 20.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI | Crosshair")
+	float NormalInterpSpeed = 20.f;
+	
 private:
 	UPROPERTY()
 	TObjectPtr<APawn> Owner;
