@@ -4,6 +4,8 @@
 #include "CoreMinimal.h"
 #include "Characters/Base/F4CharacterBase.h"
 #include "Interface/Interactable.h"
+#include "Inventory/F4EquipmentComponent.h"
+#include "Inventory/F4InventoryComponent.h"
 #include "F4PlayerCharacter.generated.h"
 
 
@@ -92,6 +94,13 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Camera", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
+	UF4InventoryComponent* Inventory;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment", meta = (AllowPrivateAccess = "true"))
+	UF4EquipmentComponent* Equipment;
+
 #pragma endregion
 
 #pragma region Input Data
