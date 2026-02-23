@@ -40,7 +40,11 @@ public:
 public:
 	// input Functions
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual FText GetInteractionText() const override;
+
 protected:
+	// input Functions
 	void Input_Move(const FInputActionValue& Value);
 
 	void Input_Look(const FInputActionValue& Value);
