@@ -57,9 +57,6 @@ private:
 	UPROPERTY()
 	UAbilitySystemComponent* OwnerASC;
 	
-	UPROPERTY()
-	UAttributeSet* AttributeSet;
-	
 	bool bAiming = false; 
 	
 	float CurrentSpread = 15.f;
