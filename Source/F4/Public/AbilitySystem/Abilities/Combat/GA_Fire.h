@@ -36,6 +36,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fire")
 	TSubclassOf<AF4Projectile> ProjectileClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire")
+	float RecoilSpread = 20.f;
+	
 	UFUNCTION()
 	void OnMontageCompleted();
 
@@ -46,4 +49,7 @@ protected:
 	void OnFireGameplayEvent(FGameplayEventData EventData);
 
 	void SpawnProjectile();
+	
+	void CrosshairRecoil();
+	
 };
