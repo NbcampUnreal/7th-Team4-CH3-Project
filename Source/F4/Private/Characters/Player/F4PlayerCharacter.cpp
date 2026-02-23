@@ -28,6 +28,10 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	Inventory = CreateDefaultSubobject<UF4InventoryComponent>(TEXT("Inventory"));
+
+	Equipment = CreateDefaultSubobject<UF4EquipmentComponent>(TEXT("Equipment"));
 }
 
 void AF4PlayerCharacter::Tick(float DeltaTime)
