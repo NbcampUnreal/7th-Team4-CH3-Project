@@ -15,6 +15,7 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Roll, TEXT("Ability.Movement.Roll"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Crouch, TEXT("Ability.Movement.Crouch"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Interaction_Interact, TEXT("Ability.Interaction.Interact"));
+	UE_DEFINE_GAMEPLAY_TAG((Ability_Interaction_Pickup), TEXT("Ability.Interaction.Pickup"));
 
 	// Character State
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_InAir, TEXT("Character.State.InAir"));
@@ -37,6 +38,8 @@ namespace F4GameplayTags
 
 	// Event Tag
 	UE_DEFINE_GAMEPLAY_TAG(Event_Hit_Damage, TEXT("Event.Hit.Damage"));
+	UE_DEFINE_GAMEPLAY_TAG(Event_Interaction_Pickup, TEXT("Event.Interaction.Pickup"));
+	UE_DEFINE_GAMEPLAY_TAG(Event_Combat_Equip, TEXT("Event.Combat.Equip"));
 
 	// Enemy State
 	UE_DEFINE_GAMEPLAY_TAG(State_Attacking, TEXT("State.Attacking"));
