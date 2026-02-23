@@ -13,6 +13,7 @@ void UGaugeWidget::NativeConstruct()
 	{
 		InstanceDynamic = UMaterialInstanceDynamic::Create(GaugeMaterial, this);
 		GaugeImage->SetBrushFromMaterial(InstanceDynamic);
+		ToggleGauge(false); 
 	}
 }
 
@@ -23,7 +24,11 @@ void UGaugeWidget::UpdateGauge(float InRatio)
 		Ratio = FMath::Clamp(InRatio, 0.f, 1.f);
 		InstanceDynamic->SetScalarParameterValue("Ratio", Ratio);
 		
-		ToggleGauge(Ratio >= 1.f);
+		ToggleGauge(Ratio < 1.f);
+	}
+	else
+	{
+		UE_LOG(LogTemp,Warning,TEXT( "No InstanceDynamic.")); 
 	}
 }
 

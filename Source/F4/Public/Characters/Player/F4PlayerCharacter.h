@@ -9,16 +9,19 @@
 #include "F4PlayerCharacter.generated.h"
 
 
+struct FInputActionValue;
+
 class UF4ItemDataAsset;
 class UInputMappingContext;
 class AF4WeaponActor;
-struct FInputActionValue;
 class UCameraComponent;
 class USpringArmComponent;
-class UF4InputConfig;
+class UWidgetComponent; 
 class UF4HUD;
-
+class UGaugeWidget;
 class UInputAction;
+class UF4InputConfig;
+
 
 UCLASS()
 class F4_API AF4PlayerCharacter : public AF4CharacterBase, public IInteractable
@@ -53,29 +56,6 @@ protected:
 
 
 public:
-	void Move(const FInputActionValue& Value);
-
-	void Look(const FInputActionValue& Value);
-
-	void Zoom(const FInputActionValue& Value);
-
-	void Roll();
-
-	//	void Crouch();
-
-	void ToggleSprint();
-
-	void Attack();
-
-	void Interact();
-
-	void OnFire();
-
-	void OnAimStarted();
-	void OnAimReleased();
-
-	void OnReload();
-
 	UFUNCTION(BlueprintCallable)
 	void ProcessItemPickup(const UF4ItemDataAsset* PickupItemData);
 
@@ -89,8 +69,12 @@ public:
 
 	virtual void DoInteract(AActor* Interactor) override;
 	
-public:
+protected:
 	void CreateHUD(); 
+	
+	void InitializeStaminaGauge();
+	
+	void OnStaminaChanged(const FOnAttributeChangeData& Data);
 	
 #pragma region component
 
@@ -140,4 +124,10 @@ public:
 	
 	UPROPERTY()
 	TObjectPtr<UF4HUD> HUDWidget;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="UI | HUD")
+	TObjectPtr<UWidgetComponent> StaminaGaugeComponent; 
+	
+	UPROPERTY()
+	TObjectPtr<UGaugeWidget> StaminaGaugeWidget;
 };
