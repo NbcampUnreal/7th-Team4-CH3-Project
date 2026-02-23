@@ -53,7 +53,6 @@ void UF4EquipmentComponent::UnequipItemFromSlot(EWeaponSlot TargetSlot)
 {
 	if (TargetSlot == EWeaponSlot::None || !WeaponLoadout.Contains(TargetSlot)) return;
 
-	// 만약 버리려는 무기를 현재 손에 들고 있다면, 먼저 맨손 상태로 만들어 어빌리티를 깔끔하게 회수합니다.
 	if (ActiveSlot == TargetSlot)
 	{
 		SetActiveWeapon(EWeaponSlot::None);
@@ -61,7 +60,6 @@ void UF4EquipmentComponent::UnequipItemFromSlot(EWeaponSlot TargetSlot)
 
 	UF4ItemInstance* ItemToRemove = WeaponLoadout[TargetSlot];
 
-	// 액터 파괴
 	if (SpawnedWeapons.Contains(ItemToRemove))
 	{
 		AF4WeaponActor* WeaponActorToDestroy = SpawnedWeapons[ItemToRemove];
