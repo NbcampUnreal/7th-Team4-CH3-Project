@@ -4,8 +4,9 @@
 #include "UI/F4HUD.h"
 #include "UI/StatBarWidget.h"
 #include "UI/CrosshairWidget.h"
-#include "AbilitySystemInterface.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "System/F4GameplayTags.h"
 
 void UF4HUD::NativeConstruct()
@@ -13,13 +14,9 @@ void UF4HUD::NativeConstruct()
 	Super::NativeConstruct();
 	
 	Owner = GetOwningPlayerPawn();
-	if (Owner)
-	{
-		if (IAbilitySystemInterface* ASCInterface = Cast<IAbilitySystemInterface>(Owner))
-		{
-			OwnerASC = ASCInterface->GetAbilitySystemComponent();
-		}
-	}
+	OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner);
+
+	InitializeHealthBar(); 
 }
 
 void UF4HUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -29,11 +26,12 @@ void UF4HUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	UpdateCrosshair(InDeltaTime);
 }
 
+#pragma region Crosshair
+
 void UF4HUD::UpdateCrosshair(float InDeltaTime)
 {
 	if (!Owner || !OwnerASC) return; 
-    
-	// 1. 조준 상태 확인 및 점(Dot) 표시 여부 결정
+	
 	bool bIsAiming = OwnerASC->HasMatchingGameplayTag(F4GameplayTags::State_Aiming);
 	Crosshair->ToggleDot(bIsAiming); 
 	
@@ -43,11 +41,9 @@ void UF4HUD::UpdateCrosshair(float InDeltaTime)
 	
 	RecoilSpread = FMath::FInterpTo(RecoilSpread, 0.f, InDeltaTime, 15.f);
 	
-	// 4. 목표값 및 보간 속도 설정
 	float TargetSpread = BaseSpread + SpeedSpread + RecoilSpread;
 	float InterpSpeed = bIsAiming ? 20.f : 10.f;
-    
-	// 5. 실시간 보간 및 위젯 업데이트
+	
 	CurrentSpread = FMath::FInterpTo(CurrentSpread, TargetSpread, InDeltaTime, InterpSpeed);
 	Crosshair->UpdateCrosshair(CurrentSpread);
 }
@@ -57,3 +53,37 @@ void UF4HUD::AddRecoilImpulse(float ImpulseAmount)
 	RecoilSpread += ImpulseAmount;
 	RecoilSpread = FMath::Min(RecoilSpread, 50.f);
 }
+
+#pragma endregion 
+
+
+#pragma region HealthBar 
+
+void UF4HUD::InitializeHealthBar()
+{
+	if (OwnerASC)
+	{
+		OwnerASC->GetGameplayAttributeValueChangeDelegate(UF4AttributeSetCharacter::GetHealthAttribute())
+		   .AddUObject(this, &ThisClass::OnHealthChanged);
+		
+		float CurrentHealth = OwnerASC->GetNumericAttribute(UF4AttributeSetCharacter::GetHealthAttribute());
+		float MaxHealth = OwnerASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxHealthAttribute());
+		UpdateHealthBar(CurrentHealth, MaxHealth);
+	}
+}
+
+void UF4HUD::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+	if (!OwnerASC) return; 
+	
+	const float CurrentHealth = OwnerASC->GetNumericAttribute(UF4AttributeSetCharacter::GetHealthAttribute());
+	const float MaxHealth = OwnerASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxHealthAttribute());
+	UpdateHealthBar(CurrentHealth, MaxHealth);
+}
+
+void UF4HUD::UpdateHealthBar(const float Current,const float Max) const
+{
+	HealthBar->UpdateStatBar(Current, Max);
+}
+
+#pragma endregion 
