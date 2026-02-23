@@ -20,28 +20,20 @@ class F4_API AF4CharacterBase : public ACharacter, public IAbilitySystemInterfac
 public:
 	AF4CharacterBase();
 	
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
 	virtual void PossessedBy(AController* NewController) override;
 	
-	void UpdateMoveSpeed(); 
-	
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	
-#pragma region Component
-	
-	
-#pragma endregion
-
-	
-#pragma region Gameplay Abilities 
 protected:
-	void OnSpeedAttributeChanged(const FOnAttributeChangeData& Data);
+	void InitAbilitySystem(); 
 	
+	void InitializeAttributes(); 
+	
+	void OnSpeedChanged(const FOnAttributeChangeData& Data);
+
+public:
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+protected:
+	// Ability System
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	TObjectPtr<UF4AbilitySystemComponent> ASC; // 어빌리티 시스템 컴포넌트 
 	
@@ -49,12 +41,6 @@ protected:
 	TObjectPtr<UF4AttributeSetCharacter> AttributeSet; // 어트리뷰트 셋 
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS | Abilities")
-	TArray<TSubclassOf<UGameplayAbility>> InitialAbilities; // 기본 어빌리티 
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS | Abilities")
 	TArray<FGameplayAbilitySpecHandle> InitialAbilitySpecHandles;// 기본 어빌리티 SpecHandle 
-
-#pragma endregion 
 	
-
 };

@@ -36,57 +36,38 @@ void AF4CharacterBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	
-	// 1. Init AbilitySystemComponent 
-	if (ASC)
-	{
-		ASC->InitAbilityActorInfo(this, this);
-		ASC->GiveDefaultAbility();
-	}
-
-	// 3. Bind Delegate 
-	ASC->GetGameplayAttributeValueChangeDelegate(UF4AttributeSetCharacter::GetWalkSpeedAttribute()).
-	AddUObject(this, &AF4CharacterBase::OnSpeedAttributeChanged);
-	
-	UpdateMoveSpeed(); // 처음에 초기화 호출 
+	InitAbilitySystem(); 
 }
 
-void AF4CharacterBase::UpdateMoveSpeed()
+void AF4CharacterBase::InitAbilitySystem()
 {
-	if (AttributeSet == nullptr && ASC != nullptr)
-	{
-		AttributeSet = const_cast<UF4AttributeSetCharacter*>(ASC->GetSet<UF4AttributeSetCharacter>());
-	}
+	if (!ASC) return; 
 	
-	float NewSpeed = AttributeSet->GetWalkSpeed();
+	ASC->InitAbilityActorInfo(this, this);
+	
+	ASC->GiveDefaultAbility();
+	
+	InitializeAttributes(); 
+}
+
+void AF4CharacterBase::InitializeAttributes()
+{
+	if (!ASC || !AttributeSet) return;
+	
+	const float CurrentSpeed = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetWalkSpeedAttribute());
+	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+	
+	ASC->GetGameplayAttributeValueChangeDelegate(UF4AttributeSetCharacter::GetWalkSpeedAttribute()).
+		AddUObject(this, &ThisClass::OnSpeedChanged);
+}
+
+void AF4CharacterBase::OnSpeedChanged(const FOnAttributeChangeData& Data)
+{
+	float NewSpeed = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetWalkSpeedAttribute()); 
 	GetCharacterMovement()->MaxWalkSpeed = NewSpeed;
 }
 
 UAbilitySystemComponent* AF4CharacterBase::GetAbilitySystemComponent() const
 {
 	return ASC; 
-}
-
-
-void AF4CharacterBase::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-
-void AF4CharacterBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void AF4CharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
-
-void AF4CharacterBase::OnSpeedAttributeChanged(const FOnAttributeChangeData& Data)
-{
-	UpdateMoveSpeed(); 
 }
