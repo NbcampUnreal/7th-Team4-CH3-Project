@@ -57,15 +57,15 @@ void UGA_Fire::ActivateAbility(
 
 	PlayMontageTask->ReadyForActivation();
 
-	UAbilityTask_WaitGameplayEvent* WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
+	UAbilityTask_WaitGameplayEvent* WaitFireEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(
 		this,
 		F4GameplayTags::Event_Montage_Fire
 	);
 
-	if (WaitEventTask)
+	if (WaitFireEventTask)
 	{
-		WaitEventTask->EventReceived.AddDynamic(this, &UGA_Fire::OnFireGameplayEvent);
-		WaitEventTask->ReadyForActivation();
+		WaitFireEventTask->EventReceived.AddDynamic(this, &UGA_Fire::OnFireGameplayEvent);
+		WaitFireEventTask->ReadyForActivation();
 	}
 }
 
@@ -107,19 +107,6 @@ void UGA_Fire::SpawnProjectile()
 	FVector Forward = AvatarCharacter->GetActorForwardVector();
 	FRotator SpawnRotation = Forward.Rotation();
 
-	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponentFromActorInfo()->MakeEffectContext();
-	EffectContext.AddSourceObject(AvatarCharacter);
-
-	FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponentFromActorInfo()->MakeOutgoingSpec(
-	   DamageEffectClass,
-	   1.0f,
-	   EffectContext
-	);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = AvatarCharacter;
-	SpawnParams.Instigator = AvatarCharacter;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	FTransform SpawnTransform(SpawnRotation, Start);
 
@@ -133,11 +120,6 @@ void UGA_Fire::SpawnProjectile()
 
 	if (SpawnedProjectile)
 	{
-		if (SpecHandle.IsValid())
-		{
-			SpawnedProjectile->DamageSpecHandle = SpecHandle;
-		}
-
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
 	}
 }

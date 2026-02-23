@@ -46,6 +46,7 @@ namespace F4GameplayTags
 	
 	// Event Tags 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Fire);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Hit_Damage);
 
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
