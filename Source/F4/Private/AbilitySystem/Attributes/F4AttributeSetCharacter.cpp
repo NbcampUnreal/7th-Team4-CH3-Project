@@ -31,7 +31,7 @@ void UF4AttributeSetCharacter::PostAttributeChange(const FGameplayAttribute& Att
 	
 	if (Attribute == GetStaminaAttribute()) 
 	{
-		HadnleStaminaRegen(); 
+		HandleStaminaRegen(); 
 	}
 }
 
@@ -63,9 +63,22 @@ void UF4AttributeSetCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-void UF4AttributeSetCharacter::HadnleStaminaRegen()
+void UF4AttributeSetCharacter::InitializeStamina(UAbilitySystemComponent* ASC)
 {
-	
+	if (ASC)
+	{
+		ASC->RegisterGameplayTagEvent(F4GameplayTags::Character_State_NoRegenStamina).
+		AddUObject(this, &ThisClass::OnNoRegenTagChanged);
+	}
+}
+
+void UF4AttributeSetCharacter::OnNoRegenTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	if (NewCount == 0) HandleStaminaRegen(); 
+}
+
+void UF4AttributeSetCharacter::HandleStaminaRegen()
+{
 	// 1. Get Info from Owner or Avtar 
 	AActor* Owner = GetOwningActor();
 	if (Owner == nullptr) return;
@@ -73,16 +86,19 @@ void UF4AttributeSetCharacter::HadnleStaminaRegen()
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner); 
 	if (ASC == nullptr) return;
 	
-	if (ASC->HasMatchingGameplayTag(StaminaRegenTag)) return;
+	// 2. Check Conditions 
+	FGameplayTagContainer Container;
+	Container.AddTag(F4GameplayTags::Character_State_NoRegenStamina); // 재생 불가 
+	Container.AddTag(F4GameplayTags::Character_State_RegenStamina); // 재생 중
+	if (ASC->HasAnyMatchingGameplayTags(Container)) return; 
 	
-	
-	// 2. Check Stamina Value 
+	// 3. Check Stamina Value 
 	float CurrentStaminaValue = GetStamina(); 
 	float MaxStaminaValue = GetMaxStamina(); 
 	
 	if (CurrentStaminaValue < MaxStaminaValue)
 	{
-		// 3. Apply Effect 
+		// 4. Apply Effect 
 		if (StaminaRegenGEClass == nullptr) return;
 		
 		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
@@ -101,7 +117,7 @@ void UF4AttributeSetCharacter::HadnleStaminaRegen()
 	}
 	else if (CurrentStaminaValue >= MaxStaminaValue)
 	{
-		// 4. Remove Effect 
+		// 5. Remove Effect 
 		ASC->RemoveActiveGameplayEffectBySourceEffect(StaminaRegenGEClass, ASC);
 	}
 }

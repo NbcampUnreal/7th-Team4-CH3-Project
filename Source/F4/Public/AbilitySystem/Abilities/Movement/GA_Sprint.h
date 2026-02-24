@@ -32,10 +32,27 @@ public:
 		bool bWasCancelled
 	) override; 
 
+	virtual void InputReleased(
+		const FGameplayAbilitySpecHandle Handle, 
+		const FGameplayAbilityActorInfo* ActorInfo, 
+		const FGameplayAbilityActivationInfo ActivationInfo
+	) override;
+	
+	
+	UFUNCTION()
+	void OnInputReleased(float TimeHeld);
+	
+	UFUNCTION()
+	void OnStaminaChanged();
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
 	TSubclassOf<UGameplayEffect> SprintEffect;
 	
 	FActiveGameplayEffectHandle SprintEffectHandle;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
+	TSubclassOf<UGameplayEffect> CostEffect;
+	
 	FActiveGameplayEffectHandle CostEffectHandle;
 };

@@ -16,7 +16,7 @@ class F4_API UF4AbilitySystemComponent : public UAbilitySystemComponent
 public:
 	
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
-	void AbiliityInputReleased(const FGameplayTag& InputTag);
+	void AbilityInputReleased(const FGameplayTag& InputTag);
 	
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused); 
 	
