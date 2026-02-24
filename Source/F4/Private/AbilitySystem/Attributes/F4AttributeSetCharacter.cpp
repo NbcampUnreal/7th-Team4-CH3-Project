@@ -23,6 +23,8 @@ UF4AttributeSetCharacter::UF4AttributeSetCharacter()
 void UF4AttributeSetCharacter::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+	
+	ClampAttribute(Attribute, NewValue);
 }
 
 void UF4AttributeSetCharacter::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
@@ -33,6 +35,7 @@ void UF4AttributeSetCharacter::PostAttributeChange(const FGameplayAttribute& Att
 	{
 		HandleStaminaRegen(); 
 	}
+	
 }
 
 void UF4AttributeSetCharacter::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -62,6 +65,20 @@ void UF4AttributeSetCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
+
+void UF4AttributeSetCharacter::ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	if (Attribute == GetStaminaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxStamina());
+	}
+	else if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	}
+}
+
+
 
 void UF4AttributeSetCharacter::InitializeStamina(UAbilitySystemComponent* ASC)
 {
