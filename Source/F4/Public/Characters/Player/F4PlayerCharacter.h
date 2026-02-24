@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 #pragma once
 
 #include "CoreMinimal.h"
@@ -124,4 +123,3 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera | Zoom")
 	float ZoomStep = 10.f;
 };
-

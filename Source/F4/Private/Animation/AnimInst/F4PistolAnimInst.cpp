@@ -1,8 +1,5 @@
 #include "Animation/AnimInst/F4PistolAnimInst.h"
 #include "GameFramework/Character.h"
-#include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
-#include "System/F4GameplayTags.h"
 
 void UF4PistolAnimInst::NativeUpdateAnimation(const float DeltaSeconds)
 {
