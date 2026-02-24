@@ -28,9 +28,17 @@ protected:
 	FVector BaseOffset = FVector(-250.0f, 0, 50.0f);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
-	FVector AimingOffset = FVector(-250.0f, 55.0f, 50.0f);
+	FRotator BaseRotationOffset = FRotator(0.0f, 0.0f, 0.0f);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
+	FVector AimingOffset = FVector(-250.0f, 120.0f, 50.0f);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
+	FRotator AimingRotationOffset = FRotator(0.0f, -11.5f, 0.0f);
+
 
 private:
 	float CurrentFOV;
 	FVector CurrentOffset;
+	FRotator CurrentRotationOffset;
 };

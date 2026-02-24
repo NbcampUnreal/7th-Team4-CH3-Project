@@ -8,10 +8,6 @@ AF4PlayerCameraManager::AF4PlayerCameraManager()
 	ViewPitchMin = -90.0f;
 	ViewPitchMax = 30.0f;
 
-	// TODO: Aim 용도인가?
-	// ViewYawMin = -60.0f;
-	// ViewYawMax = 60.0f;
-
 	BaseFOV = 90.0f;
 	AimingFOV = 60.0f;
 	InterpSpeed = 15.0f;
@@ -53,11 +49,15 @@ void AF4PlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTi
 	FVector TargetOffset = bIsAiming ? AimingOffset : BaseOffset;
 	CurrentOffset = FMath::VInterpTo(CurrentOffset, TargetOffset, DeltaTime, InterpSpeed);
 
+	FRotator TargetRotationOffset = bIsAiming ? AimingRotationOffset : BaseRotationOffset;
+	CurrentRotationOffset = FMath::RInterpTo(CurrentRotationOffset, TargetRotationOffset, DeltaTime, InterpSpeed);
+
 	FVector TargetLocation = TargetActor->GetActorLocation();
 	FRotator TargetRotation = OutVT.POV.Rotation;
 
 	FQuat FrameQuat = FQuat(TargetRotation);
-
 	FVector WorldOffset = FrameQuat.RotateVector(CurrentOffset);
+
 	OutVT.POV.Location = TargetLocation + WorldOffset;
+	OutVT.POV.Rotation = TargetRotation + CurrentRotationOffset;
 }
