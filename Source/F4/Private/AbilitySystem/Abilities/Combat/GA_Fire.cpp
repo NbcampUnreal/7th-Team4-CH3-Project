@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "Characters/Player/F4PlayerCharacter.h"
 #include "Items/Weapons/F4Projectile.h"
+#include "Items/Weapons/F4WeaponActor.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "System/F4GameplayTags.h"
 #include "UI/F4HUD.h"
 
@@ -102,19 +104,34 @@ void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 
 void UGA_Fire::SpawnProjectile()
 {
-	ACharacter* AvatarCharacter = Cast<ACharacter>(GetAvatarActorFromActorInfo());
-	if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !ProjectileClass)
+	AF4PlayerCharacter* AvatarCharacter = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !AvatarCharacter->CurrentWeapon || !ProjectileClass)
 	{
 		return;
 	}
 
-	FName RightHandSocketName = TEXT("hand_r");
-	FVector Start = AvatarCharacter->GetMesh()->GetSocketLocation(RightHandSocketName);
-	FVector Forward = AvatarCharacter->GetActorForwardVector();
-	FRotator SpawnRotation = Forward.Rotation();
+	FTransform MuzzleTransform = AvatarCharacter->CurrentWeapon->GetMuzzleTransform();
+	FVector MuzzleLocation = MuzzleTransform.GetLocation();
 
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	AvatarCharacter->GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
 
-	FTransform SpawnTransform(SpawnRotation, Start);
+	FVector TraceEnd = CameraLocation + (CameraRotation.Vector() * 50000.f);
+	FHitResult HitResult;
+	FCollisionQueryParams TraceParams;
+	TraceParams.AddIgnoredActor(AvatarCharacter);
+
+	GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_GameTraceChannel1, TraceParams);
+	if (HitResult.bBlockingHit && HitResult.GetActor())
+	{
+		// TODO: debug 용도
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("타겟 액터: %s"), *HitResult.GetActor()->GetName()));
+	}
+	FVector TargetLocation = HitResult.bBlockingHit ? HitResult.ImpactPoint : TraceEnd;
+
+	FRotator AimRotation = UKismetMathLibrary::FindLookAtRotation(MuzzleLocation, TargetLocation);
+	FTransform SpawnTransform(AimRotation, MuzzleLocation);
 
 	AF4Projectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<AF4Projectile>(
 		ProjectileClass,
@@ -123,6 +140,11 @@ void UGA_Fire::SpawnProjectile()
 		AvatarCharacter,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
+
+	// TODO: debug 용도
+	DrawDebugLine(GetWorld(), CameraLocation, TargetLocation, FColor::Red, false, 3.0f, 0, 0.2f);
+	DrawDebugLine(GetWorld(), MuzzleLocation, TargetLocation, FColor::Green, false, 3.0f, 0, 1.5f);
+	DrawDebugSphere(GetWorld(), TargetLocation, 15.0f, 12, FColor::Yellow, false, 3.0f);
 
 	if (SpawnedProjectile)
 	{
