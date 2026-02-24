@@ -18,6 +18,21 @@ UGA_Sprint::UGA_Sprint()
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_NoRegenStamina);
 }
 
+bool UGA_Sprint::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags,
+	FGameplayTagContainer* OptionalRelevantTags) const
+{
+	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags)) return false; 
+	
+	AActor* Avator = GetAvatarActorFromActorInfo();
+	if (!Avator) return false;
+	
+	const float CurrentSpeed = Avator->GetVelocity().Size2D();
+	if (CurrentSpeed <= 30.f) return false;
+	
+	return true;
+}
+
 void UGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
                                  const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -56,13 +71,25 @@ void UGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 		WaitAttributeChangeTask->ReadyForActivation();
 	}
 	
-	
 	// Check Released 
 	UAbilityTask_WaitInputRelease* WaitInputReleaseTask = UAbilityTask_WaitInputRelease::WaitInputRelease(this);
 	if (WaitInputReleaseTask)
 	{
 		WaitInputReleaseTask->OnRelease.AddDynamic(this, &ThisClass::OnInputReleased);
 		WaitInputReleaseTask->ReadyForActivation(); 
+	}
+	
+	UAbilityTask_WaitVelocityChange* WaitVelocityChangeTask = 
+		UAbilityTask_WaitVelocityChange::CreateWaitVelocityChange(
+			this, 
+			FVector(1.f, 1.f,0.f), 
+			1.f
+		); 
+	
+	if (WaitVelocityChangeTask)
+	{
+		WaitVelocityChangeTask->OnVelocityChage.AddDynamic(this,&ThisClass::OnVelocityChanged);
+		WaitInputReleaseTask->ReadyForActivation();
 	}
 }
 
@@ -107,4 +134,19 @@ void UGA_Sprint::OnStaminaChanged()
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 	}
+}
+
+void UGA_Sprint::OnVelocityChanged()
+{
+	AActor* Avator = GetAvatarActorFromActorInfo();
+	 if (Avator)
+	 {
+		const float currentSpeed = Avator->GetVelocity().Size2D();
+	 	
+	 	if (currentSpeed <= 30.0f)
+	 	{
+	 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	 	}
+	 }
+	
 }
