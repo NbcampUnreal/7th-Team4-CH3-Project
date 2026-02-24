@@ -6,6 +6,7 @@
 #include "Input/F4InputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
+#include "Animation/AnimInst/F4BaseAnimInst.h"
 #include "System/F4GameplayTags.h"
 #include "Items/Weapons/F4WeaponActor.h"
 #include "Items/Weapons/F4WeaponDataAsset.h"
@@ -48,6 +49,14 @@ void AF4PlayerCharacter::BeginPlay()
 	if (!StaminaGaugeWidget && StaminaGaugeComponent)
 	{
 		StaminaGaugeWidget = Cast<UGaugeWidget>(StaminaGaugeComponent->GetUserWidgetObject());
+	}
+
+	if (Equipment)
+	{
+		if (UF4BaseAnimInst* BaseAnimInst = Cast<UF4BaseAnimInst>(GetMesh()->GetAnimInstance()))
+		{
+			BaseAnimInst->BindToEquipmentComponent(Equipment);
+		}
 	}
 }
 
@@ -342,4 +351,4 @@ void AF4PlayerCharacter::OnStaminaChanged(const FOnAttributeChangeData& Data)
 	StaminaGaugeWidget->UpdateGauge(CurrentStamina / MaxStaamina); 
 }
 
-#pragma endregion 
+#pragma endregion
