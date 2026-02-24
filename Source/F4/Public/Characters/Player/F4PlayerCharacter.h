@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Animation/F4AnimControlComponent.h"
 #include "Characters/Base/F4CharacterBase.h"
 #include "Interface/Interactable.h"
 #include "Inventory/F4EquipmentComponent.h"
@@ -79,11 +80,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Camera", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Inventory", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Inventory", meta = (AllowPrivateAccess = "true"))
 	UF4InventoryComponent* Inventory;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Equipment", meta = (AllowPrivateAccess = "true"))
 	UF4EquipmentComponent* Equipment;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Animation", meta = (AllowPrivateAccess = "true"))
+	UF4AnimControlComponent* AnimationControl;
 
 protected:
 	// Input Data

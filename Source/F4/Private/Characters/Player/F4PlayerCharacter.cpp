@@ -36,8 +36,8 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 	StaminaGaugeComponent->SetDrawSize(FVector2D(124.f, 124.f));
 	
 	Inventory = CreateDefaultSubobject<UF4InventoryComponent>(TEXT("Inventory"));
-
 	Equipment = CreateDefaultSubobject<UF4EquipmentComponent>(TEXT("Equipment"));
+	AnimationControl = CreateDefaultSubobject<UF4AnimControlComponent>(TEXT("AnimationControl"));
 }
 
 void AF4PlayerCharacter::BeginPlay()
@@ -49,14 +49,6 @@ void AF4PlayerCharacter::BeginPlay()
 	if (!StaminaGaugeWidget && StaminaGaugeComponent)
 	{
 		StaminaGaugeWidget = Cast<UGaugeWidget>(StaminaGaugeComponent->GetUserWidgetObject());
-	}
-
-	if (Equipment)
-	{
-		if (UF4BaseAnimInst* BaseAnimInst = Cast<UF4BaseAnimInst>(GetMesh()->GetAnimInstance()))
-		{
-			BaseAnimInst->BindToEquipmentComponent(Equipment);
-		}
 	}
 }
 

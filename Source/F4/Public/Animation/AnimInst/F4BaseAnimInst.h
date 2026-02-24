@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Animation/AnimInstance.h"
-#include "Inventory/F4EquipmentComponent.h"
 #include "F4BaseAnimInst.generated.h"
 
 class UCharacterMovementComponent;
@@ -22,8 +21,6 @@ public:
 	bool ShouldMove(); 	
 	
 	float CalculateDirection();
-
-	void BindToEquipmentComponent(UF4EquipmentComponent* EquipComp);
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref") 
 	ACharacter* OwnerCharacter; 
@@ -56,10 +53,4 @@ protected:
 	bool bIsEquipped = false;
 
 	FGameplayTag AimingTag;
-
-	UFUNCTION()
-	void HandleLayerChange(UF4ItemInstance* NewItem);
-
-	UPROPERTY(EditDefaultsOnly, Category = "Animation")
-	TSubclassOf<UAnimInstance> DefaultUnarmedLayer;
 };

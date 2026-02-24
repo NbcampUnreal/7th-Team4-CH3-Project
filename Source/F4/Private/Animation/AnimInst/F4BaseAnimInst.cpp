@@ -6,9 +6,6 @@
 #include "Characters/Player/F4PlayerCharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Inventory/F4ItemDefinition.h"
-#include "Inventory/F4ItemFragment_Equipment.h"
-#include "Inventory/F4ItemInstance.h"
 #include "System/F4GameplayTags.h"
 
 void UF4BaseAnimInst::NativeInitializeAnimation()
@@ -67,30 +64,4 @@ float UF4BaseAnimInst::CalculateDirection()
 	FRotator Rotation = OwnerCharacter->GetController()->GetControlRotation();
 	
 	return UKismetAnimationLibrary::CalculateDirection(Velocity,Rotation); 
-}
-
-void UF4BaseAnimInst::HandleLayerChange(UF4ItemInstance* NewItem)
-{
-	TSubclassOf<UAnimInstance> TargetLayer = DefaultUnarmedLayer;
-
-	if (NewItem && NewItem->ItemDefinition)
-	{
-		const UF4ItemFragment_Equipment* EquipmentFrag = NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>();
-		if (EquipmentFrag && EquipmentFrag->AnimLayerClass)
-		{
-			TargetLayer = EquipmentFrag->AnimLayerClass;
-		}
-	}
-
-	LinkAnimClassLayers(TargetLayer);
-}
-
-void UF4BaseAnimInst::BindToEquipmentComponent(UF4EquipmentComponent* EquipComp)
-{
-	if (EquipComp)
-	{
-		EquipComp->OnActiveWeaponChanged.AddUniqueDynamic(this, &UF4BaseAnimInst::HandleLayerChange);
-
-		HandleLayerChange(nullptr);
-	}
 }
