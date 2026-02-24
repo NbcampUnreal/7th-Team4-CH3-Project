@@ -1,8 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/CrosshairWidget.h"
-
 #include "Components/Image.h"
 
 void UCrosshairWidget::UpdateCrosshair(const float Value)

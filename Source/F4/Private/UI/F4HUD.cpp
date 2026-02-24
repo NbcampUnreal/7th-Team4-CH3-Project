@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "UI/F4HUD.h"
 #include "UI/StatBarWidget.h"
 #include "UI/CrosshairWidget.h"

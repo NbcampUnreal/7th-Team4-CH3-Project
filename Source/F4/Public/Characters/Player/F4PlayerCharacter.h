@@ -124,3 +124,4 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera | Zoom")
 	float ZoomStep = 10.f;
 };
+
