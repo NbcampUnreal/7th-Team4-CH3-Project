@@ -16,13 +16,7 @@ public:
 	virtual void NativeUpdateAnimation(const float DeltaSeconds) override;
 	
 	void UpdateAimOffset();
-	
-	void UpdateAiming(); 
-	
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aim")
-	bool bAiming = false;
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Aim")
 	float AimPitch = 0.f; 
 	
