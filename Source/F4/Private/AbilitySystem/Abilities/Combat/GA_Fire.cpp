@@ -4,8 +4,12 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "GameFramework/Character.h"
+#include "Characters/Player/F4PlayerCharacter.h"
 #include "Items/Weapons/F4Projectile.h"
 #include "System/F4GameplayTags.h"
+#include "UI/F4HUD.h"
+
+
 
 UGA_Fire::UGA_Fire()
 {
@@ -92,6 +96,8 @@ void UGA_Fire::OnMontageCancelled()
 void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 {
 	SpawnProjectile();
+	
+	CrosshairRecoil(); 
 }
 
 void UGA_Fire::SpawnProjectile()
@@ -121,5 +127,17 @@ void UGA_Fire::SpawnProjectile()
 	if (SpawnedProjectile)
 	{
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
+	}
+}
+
+void UGA_Fire::CrosshairRecoil()
+{
+	// 크로스헤어 벌어지게 하는 함수 
+	if (AF4PlayerCharacter* PlayerChar = Cast<AF4PlayerCharacter>(GetOwningActorFromActorInfo()))
+	{
+		if (PlayerChar->HUDWidget) 
+		{
+			PlayerChar->HUDWidget->AddRecoilImpulse(20.f);
+		}
 	}
 }

@@ -8,17 +8,18 @@
 #include "Inventory/F4InventoryComponent.h"
 #include "F4PlayerCharacter.generated.h"
 
+struct FInputActionValue;
 
 class UF4ItemDataAsset;
 class UInputMappingContext;
 class AF4WeaponActor;
-struct FInputActionValue;
 class UCameraComponent;
 class USpringArmComponent;
-class UF4InputConfig;
-
-
+class UWidgetComponent; 
+class UF4HUD;
+class UGaugeWidget;
 class UInputAction;
+class UF4InputConfig;
 
 UCLASS()
 class F4_API AF4PlayerCharacter : public AF4CharacterBase, public IInteractable
@@ -27,6 +28,8 @@ class F4_API AF4PlayerCharacter : public AF4CharacterBase, public IInteractable
 
 public:
 	AF4PlayerCharacter();
+	
+	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -34,12 +37,10 @@ public:
 
 	virtual void PossessedBy(AController* NewController) override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual FText GetInteractionText() const override;
-
-protected:
+public:
 	// input Functions
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+protected:
 	void Input_Move(const FInputActionValue& Value);
 
 	void Input_Look(const FInputActionValue& Value);
@@ -49,31 +50,12 @@ protected:
 	void Input_AbilityPressed(const FGameplayTag InputTag);
 	void Input_AbilityReleased(const FGameplayTag InputTag);
 
-
 public:
-	void Move(const FInputActionValue& Value);
-
-	void Look(const FInputActionValue& Value);
-
-	void Zoom(const FInputActionValue& Value);
-
-	void Roll();
-
-	//	void Crouch();
-
-	void ToggleSprint();
-
-	void Attack();
-
-	void Interact();
-
-	void OnFire();
-
-	void OnAimStarted();
-	void OnAimReleased();
-
-	void OnReload();
-
+	// Interaction Functions 
+	virtual void DoInteract(AActor* Interactor) override;
+	
+	virtual FText GetInteractionText() const override;
+	
 	UFUNCTION(BlueprintCallable)
 	void ProcessItemPickup(const UF4ItemDataAsset* PickupItemData);
 
@@ -82,13 +64,16 @@ public:
 
 	void GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponData);
 
-	UPROPERTY()
-	TObjectPtr<AF4WeaponActor> CurrentWeapon;
-
-	virtual void DoInteract(AActor* Interactor) override;
-#pragma region component
+protected:
+	// UI Functions 
+	void CreateHUD(); 
+	
+	void InitializeStaminaGauge();
+	
+	void OnStaminaChanged(const FOnAttributeChangeData& Data);
 
 private:
+	// Components 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
 
@@ -101,22 +86,35 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Equipment", meta = (AllowPrivateAccess = "true"))
 	UF4EquipmentComponent* Equipment;
 
-#pragma endregion
-
-#pragma region Input Data
-
 protected:
+	// Input Data
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UF4InputConfig> InputConfig;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* DefaultIMC;
-
-#pragma endregion
-
-#pragma region Camera
+	
+public:
+	// UI 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="UI | HUD")
+	TSubclassOf<UUserWidget> HUDClass; // HUD Class
+	
+	UPROPERTY()
+	TObjectPtr<UF4HUD> HUDWidget; // HUD
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="UI | HUD")
+	TObjectPtr<UWidgetComponent> StaminaGaugeComponent;  
+	
+	UPROPERTY()
+	TObjectPtr<UGaugeWidget> StaminaGaugeWidget;
+	
+public:
+	// Equipments 
+	UPROPERTY()
+	TObjectPtr<AF4WeaponActor> CurrentWeapon;
 
 protected:
+	// Zoom Variables 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera | Zoom")
 	float MaxTargetArmLength = 600.f;
 
@@ -125,13 +123,5 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera | Zoom")
 	float ZoomStep = 10.f;
-
-#pragma endregion
-
-#pragma region Tags
-	UPROPERTY(EditAnywhere, Category="Tag")
-	FGameplayTag Jumps;
-
-
-#pragma endregion
 };
+

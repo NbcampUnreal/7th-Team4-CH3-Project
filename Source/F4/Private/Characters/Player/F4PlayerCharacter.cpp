@@ -2,17 +2,17 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Items/ConsumableItems/F4ConsumableDataAsset.h"
-
 #include "EnhancedInputSubsystems.h"
 #include "Input/F4InputComponent.h"
-
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "System/F4GameplayTags.h"
-
 #include "Items/Weapons/F4WeaponActor.h"
 #include "Items/Weapons/F4WeaponDataAsset.h"
-
-
+#include "Blueprint/UserWidget.h"
+#include "Components/WidgetComponent.h"
+#include "UI/F4HUD.h"
+#include "UI/GaugeWidget.h"
 
 
 AF4PlayerCharacter::AF4PlayerCharacter()
@@ -29,9 +29,26 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	StaminaGaugeComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("StaminaGauge"));
+	StaminaGaugeComponent->SetupAttachment(RootComponent);
+	StaminaGaugeComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	StaminaGaugeComponent->SetDrawSize(FVector2D(124.f, 124.f));
+	
 	Inventory = CreateDefaultSubobject<UF4InventoryComponent>(TEXT("Inventory"));
 
 	Equipment = CreateDefaultSubobject<UF4EquipmentComponent>(TEXT("Equipment"));
+}
+
+void AF4PlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	CreateHUD(); 
+	
+	if (!StaminaGaugeWidget && StaminaGaugeComponent)
+	{
+		StaminaGaugeWidget = Cast<UGaugeWidget>(StaminaGaugeComponent->GetUserWidgetObject());
+	}
 }
 
 void AF4PlayerCharacter::Tick(float DeltaTime)
@@ -63,7 +80,11 @@ void AF4PlayerCharacter::PossessedBy(AController* NewController)
 			PC->PlayerCameraManager->ViewPitchMax = 30.0f;
 		}
 	}
+	
+	InitializeStaminaGauge(); 
 }
+
+#pragma region Input 
 
 void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
@@ -128,11 +149,6 @@ void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	}
 }
 
-FText AF4PlayerCharacter::GetInteractionText() const
-{
-	return FText::FromString(TEXT("Player"));
-}
-
 void AF4PlayerCharacter::Input_Move(const FInputActionValue& Value)
 {
 	APlayerController* PC = CastChecked<APlayerController>(GetController());
@@ -192,6 +208,19 @@ void AF4PlayerCharacter::Input_AbilityReleased(const FGameplayTag InputTag)
 	{
 		F4ASC->AbiliityInputReleased(InputTag);
 	}
+}
+
+#pragma endregion 
+
+#pragma region Interaction 
+
+void AF4PlayerCharacter::DoInteract(AActor* Interactor)
+{
+}
+
+FText AF4PlayerCharacter::GetInteractionText() const
+{
+	return FText::FromString(TEXT("Player"));
 }
 
 void AF4PlayerCharacter::ProcessItemPickup(const UF4ItemDataAsset* PickupItemData)
@@ -254,8 +283,7 @@ void AF4PlayerCharacter::EquipWeapon(const UF4WeaponDataAsset* NewWeaponData)
 void AF4PlayerCharacter::GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponData)
 {
 	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
-
-
+	
 	if (!WeaponData || !AbilitySystemComponent) return;
 
 	for (const FWeaponAbilityConfig& AbilityConfig : WeaponData->Abilities)
@@ -273,6 +301,45 @@ void AF4PlayerCharacter::GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponDa
 	}
 }
 
-void AF4PlayerCharacter::DoInteract(AActor* Interactor)
+#pragma endregion
+
+#pragma region UI Functions 
+
+void AF4PlayerCharacter::CreateHUD()
 {
+	if (!HUDClass) return; 
+	
+	HUDWidget = CreateWidget<UF4HUD>(GetWorld(), HUDClass);
+	if (HUDWidget)
+	{
+		HUDWidget->AddToViewport(); 
+	}
 }
+
+void AF4PlayerCharacter::InitializeStaminaGauge()
+{
+	if (!ASC) return;
+	
+	ASC->GetGameplayAttributeValueChangeDelegate(UF4AttributeSetCharacter::GetStaminaAttribute())
+		.AddUObject(this, &AF4PlayerCharacter::OnStaminaChanged);
+	
+	const float CurrentStamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetStaminaAttribute());
+	const float MaxStaamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxStaminaAttribute());
+	
+	if (StaminaGaugeWidget)
+	{
+		StaminaGaugeWidget->UpdateGauge(CurrentStamina / MaxStaamina); 
+	}
+}
+
+void AF4PlayerCharacter::OnStaminaChanged(const FOnAttributeChangeData& Data)
+{
+	if (!StaminaGaugeWidget) return; 
+	
+	const float CurrentStamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetStaminaAttribute());
+	const float MaxStaamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxStaminaAttribute());
+	
+	StaminaGaugeWidget->UpdateGauge(CurrentStamina / MaxStaamina); 
+}
+
+#pragma endregion 
