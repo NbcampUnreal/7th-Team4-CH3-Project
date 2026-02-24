@@ -48,7 +48,7 @@ void UGA_Fire::ActivateAbility(
 		this,
 		NAME_None,
 		FireMontage,
-		2.0f
+		MontageRate
 	);
 
 	if (!PlayMontageTask)
@@ -99,7 +99,8 @@ void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 {
 	SpawnProjectile();
 	
-	CrosshairRecoil(); 
+	CrosshairRecoil();
+	ApplyAimRecoil();
 }
 
 void UGA_Fire::SpawnProjectile()
@@ -161,5 +162,27 @@ void UGA_Fire::CrosshairRecoil()
 		{
 			PlayerChar->HUDWidget->AddRecoilImpulse(20.f);
 		}
+
+		if (APlayerController* PlayerController = Cast<APlayerController>(PlayerChar->GetController()))
+		{
+			if (FireCameraShakeClass)
+			{
+				PlayerController->ClientStartCameraShake(FireCameraShakeClass);
+			}
+		}
 	}
+}
+
+void UGA_Fire::ApplyAimRecoil()
+{
+	APawn* OwningPawn = Cast<APawn>(GetAvatarActorFromActorInfo());
+	if (!OwningPawn) return;
+
+	APlayerController* PlayerController = Cast<APlayerController>(OwningPawn->GetController());
+	if (!PlayerController) return;
+
+	PlayerController->AddPitchInput(VerticalRecoilAmount);
+
+	float RandomYaw = FMath::FRandRange(-HorizontalRecoilRange, HorizontalRecoilRange);
+	PlayerController->AddYawInput(RandomYaw);
 }

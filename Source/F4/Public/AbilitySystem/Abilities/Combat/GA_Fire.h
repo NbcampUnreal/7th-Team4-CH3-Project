@@ -5,6 +5,7 @@
 #include "GA_Fire.generated.h"
 
 class AF4Projectile;
+class UCameraShakeBase;
 
 UCLASS()
 class F4_API UGA_Fire : public UGameplayAbility
@@ -38,7 +39,19 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire")
 	float RecoilSpread = 20.f;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire|Montage")
+	float MontageRate = 2.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Fire | Effects")
+	TSubclassOf<UCameraShakeBase> FireCameraShakeClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire|Recoil")
+	float VerticalRecoilAmount = -0.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire|Recoil")
+	float HorizontalRecoilRange = 0.2f;
+
 	UFUNCTION()
 	void OnMontageCompleted();
 
@@ -51,5 +64,6 @@ protected:
 	void SpawnProjectile();
 	
 	void CrosshairRecoil();
-	
+
+	void ApplyAimRecoil();
 };

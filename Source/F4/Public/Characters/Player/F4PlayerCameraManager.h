@@ -25,16 +25,16 @@ protected:
 	float InterpSpeed = 10.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
-	FVector BaseOffset = FVector(-250.0f, 0, 50.0f);
+	FVector BaseOffset = FVector(-250.0f, 0, 20.0f);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
 	FRotator BaseRotationOffset = FRotator(0.0f, 0.0f, 0.0f);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
-	FVector AimingOffset = FVector(-250.0f, 120.0f, 50.0f);
+	FVector AimingOffset = FVector(-250.0f, 130.0f, 20.0f);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
-	FRotator AimingRotationOffset = FRotator(0.0f, -11.5f, 0.0f);
+	FRotator AimingRotationOffset = FRotator(0.0f, -13.0f, 0.0f);
 
 
 private:
