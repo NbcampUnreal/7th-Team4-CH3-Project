@@ -89,7 +89,7 @@ void UGA_Sprint::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const 
 	if (WaitVelocityChangeTask)
 	{
 		WaitVelocityChangeTask->OnVelocityChage.AddDynamic(this,&ThisClass::OnVelocityChanged);
-		WaitInputReleaseTask->ReadyForActivation();
+		WaitVelocityChangeTask->ReadyForActivation();
 	}
 }
 
