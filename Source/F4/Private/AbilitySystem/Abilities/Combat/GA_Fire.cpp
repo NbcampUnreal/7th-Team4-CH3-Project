@@ -48,7 +48,7 @@ void UGA_Fire::ActivateAbility(
 		this,
 		NAME_None,
 		FireMontage,
-		1.0f
+		2.0f
 	);
 
 	if (!PlayMontageTask)
