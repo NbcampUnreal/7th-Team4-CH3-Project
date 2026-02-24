@@ -8,6 +8,8 @@
 #include "Abilities/Tasks/AbilityTask_WaitVelocityChange.h"
 #include "Abilities/Tasks/AbilityTask_WaitAttributeChange.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UGA_Sprint::UGA_Sprint()
 {
@@ -24,10 +26,17 @@ bool UGA_Sprint::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 {
 	if (!Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags)) return false; 
 	
-	AActor* Avator = GetAvatarActorFromActorInfo();
-	if (!Avator) return false;
+	ACharacter* Character = Cast<ACharacter>(GetAvatarActorFromActorInfo());
+	if (!Character) return false;
 	
-	const float CurrentSpeed = Avator->GetVelocity().Size2D();
+	UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement(); 
+	if (!MovementComponent) return false; 
+	
+	if (MovementComponent->IsFalling()) return false; 
+	
+	const FVector Velocity = MovementComponent->Velocity; 
+	
+	const float CurrentSpeed = Velocity.Size2D();
 	if (CurrentSpeed <= 30.f) return false;
 	
 	return true;
