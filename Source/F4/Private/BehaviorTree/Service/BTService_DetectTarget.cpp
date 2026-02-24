@@ -5,7 +5,6 @@
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DataTable.h"
-#include "System/F4GameplayTags.h"
 
 UBTService_DetectTarget::UBTService_DetectTarget()
 {
@@ -15,7 +14,9 @@ UBTService_DetectTarget::UBTService_DetectTarget()
 
 	TargetActorKey.AddObjectFilter(
 		this, 
-		GET_MEMBER_NAME_CHECKED(UBTService_DetectTarget, TargetActorKey), AActor::StaticClass()
+		GET_MEMBER_NAME_CHECKED(UBTService_DetectTarget, 
+			TargetActorKey), 
+			AActor::StaticClass()
 		);
 }
 
@@ -84,9 +85,9 @@ void UBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	}
 }
 
-void UBTService_DetectTarget::ClearBlackboardValues(UBlackboardComponent* BB)
+void UBTService_DetectTarget::ClearBlackboardValues(UBlackboardComponent* BlackBoard)
 {
-	BB->ClearValue(TargetActorKey.SelectedKeyName);
-	BB->SetValueAsBool(TEXT("bIsInTraceRange"), false);
-	BB->SetValueAsBool(TEXT("bIsInAttackRange"), false);
+	BlackBoard->ClearValue(TargetActorKey.SelectedKeyName);
+	BlackBoard->SetValueAsBool(TEXT("bIsInTraceRange"), false);
+	BlackBoard->SetValueAsBool(TEXT("bIsInAttackRange"), false);
 }
