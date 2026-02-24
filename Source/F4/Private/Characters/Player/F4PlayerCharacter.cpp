@@ -82,6 +82,8 @@ void AF4PlayerCharacter::PossessedBy(AController* NewController)
 		}
 	}
 	
+	
+	
 	InitializeStaminaGauge(); 
 }
 
@@ -207,7 +209,7 @@ void AF4PlayerCharacter::Input_AbilityReleased(const FGameplayTag InputTag)
 {
 	if (UF4AbilitySystemComponent* F4ASC = Cast<UF4AbilitySystemComponent>(GetAbilitySystemComponent()))
 	{
-		F4ASC->AbiliityInputReleased(InputTag);
+		F4ASC->AbilityInputReleased(InputTag);
 	}
 }
 
@@ -321,15 +323,17 @@ void AF4PlayerCharacter::InitializeStaminaGauge()
 {
 	if (!ASC) return;
 	
+	AttributeSet->InitializeStamina(ASC);
+	
 	ASC->GetGameplayAttributeValueChangeDelegate(UF4AttributeSetCharacter::GetStaminaAttribute())
 		.AddUObject(this, &AF4PlayerCharacter::OnStaminaChanged);
 	
 	const float CurrentStamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetStaminaAttribute());
-	const float MaxStaamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxStaminaAttribute());
+	const float MaxStamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxStaminaAttribute());
 	
 	if (StaminaGaugeWidget)
 	{
-		StaminaGaugeWidget->UpdateGauge(CurrentStamina / MaxStaamina); 
+		StaminaGaugeWidget->UpdateGauge(CurrentStamina / MaxStamina); 
 	}
 }
 
@@ -338,9 +342,9 @@ void AF4PlayerCharacter::OnStaminaChanged(const FOnAttributeChangeData& Data)
 	if (!StaminaGaugeWidget) return; 
 	
 	const float CurrentStamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetStaminaAttribute());
-	const float MaxStaamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxStaminaAttribute());
+	const float MaxStamina = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxStaminaAttribute());
 	
-	StaminaGaugeWidget->UpdateGauge(CurrentStamina / MaxStaamina); 
+	StaminaGaugeWidget->UpdateGauge(CurrentStamina / MaxStamina); 
 }
 
 #pragma endregion

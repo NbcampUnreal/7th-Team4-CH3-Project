@@ -19,7 +19,7 @@ void UF4AbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Input
 	}
 }
 
-void UF4AbilitySystemComponent::AbiliityInputReleased(const FGameplayTag& InputTag)
+void UF4AbilitySystemComponent::AbilityInputReleased(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;
 

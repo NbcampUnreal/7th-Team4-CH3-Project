@@ -22,6 +22,14 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	
+	void InitializeStamina(UAbilitySystemComponent* ASC); 
+	
+	UFUNCTION()
+	void OnNoRegenTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	
+	UFUNCTION()
+	void HandleStaminaRegen();
+	
 #pragma region Health 
 public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Health")
@@ -36,9 +44,6 @@ public:
 	
 #pragma region Stamina  
 public:
-	
-	void HadnleStaminaRegen();
-	
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute | Stamina")
 	FGameplayAttributeData Stamina;
 	ATTRIBUTE_ACCESSORS_BASIC(UF4AttributeSetCharacter, Stamina);
