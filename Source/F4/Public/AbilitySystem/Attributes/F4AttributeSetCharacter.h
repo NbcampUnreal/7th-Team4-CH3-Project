@@ -22,6 +22,8 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	
+	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue);
+	
 	void InitializeStamina(UAbilitySystemComponent* ASC); 
 	
 	UFUNCTION()
