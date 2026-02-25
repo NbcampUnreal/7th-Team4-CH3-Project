@@ -33,7 +33,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	
-	// 사망시 콜백함수
-	void HandleDeath();
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Status")
+	bool bIsDead = false;
+
+public:
+	void SetIsDead(bool NewIsDead) { bIsDead = NewIsDead; }
 };

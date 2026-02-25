@@ -57,7 +57,7 @@ void UGA_AttackBase::ActivateAbility(
 			this,
 			FGameplayTag::RequestGameplayTag(FName("Event.Montage.DealDamage"))
 		);
-
+	
 	if (WaitEventTask)
 	{
 		WaitEventTask->EventReceived.AddDynamic(this, &UGA_AttackBase::OnDamageGameplayEvent);
@@ -151,4 +151,3 @@ void UGA_AttackBase::PerformMeleeTrace()
         }
     }
 }
-

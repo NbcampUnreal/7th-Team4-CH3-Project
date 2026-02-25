@@ -79,8 +79,8 @@ void UBTTask_AttackNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		return;
 	}
 	
-	UBlackboardComponent* BB = OwnerComp.GetBlackboardComponent();
-	if (BB == nullptr)
+	UBlackboardComponent* BlackBoard = OwnerComp.GetBlackboardComponent();
+	if (BlackBoard == nullptr)
 	{
 		FinishLatentTask(OwnerComp,EBTNodeResult::Failed);
 		return;
@@ -93,14 +93,17 @@ void UBTTask_AttackNode::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 		return;
 	}
 	
-	if (AICharacter && BB && Owner)
+	if (AICharacter && BlackBoard && Owner)
 	{
-		AActor* TargetActor = Cast<AActor>(BB->GetValueAsObject(FName("TargetActor")));
+		AActor* TargetActor = Cast<AActor>(BlackBoard->GetValueAsObject(FName("TargetActor")));
 		if (TargetActor)
 		{
 			// 현재 회전값과 목표 회전값 계산
 			FRotator CurrentRot = AICharacter->GetActorRotation();
-			FRotator TargetRot = UKismetMathLibrary::FindLookAtRotation(AICharacter->GetActorLocation(), TargetActor->GetActorLocation());
+			FRotator TargetRot = UKismetMathLibrary::FindLookAtRotation(
+				AICharacter->GetActorLocation(),
+				TargetActor->GetActorLocation()
+				);
             
 			// Yaw값만 회전 (기울어짐 방지)
 			TargetRot.Pitch = 0.f;
