@@ -50,6 +50,7 @@ void AF4PlayerCharacter::BeginPlay()
 	{
 		StaminaGaugeWidget = Cast<UGaugeWidget>(StaminaGaugeComponent->GetUserWidgetObject());
 	}
+	
 }
 
 void AF4PlayerCharacter::Tick(float DeltaTime)
@@ -81,8 +82,6 @@ void AF4PlayerCharacter::PossessedBy(AController* NewController)
 			PC->PlayerCameraManager->ViewPitchMax = 30.0f;
 		}
 	}
-	
-	
 	
 	InitializeStaminaGauge(); 
 }
