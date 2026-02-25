@@ -14,6 +14,7 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Interaction_Pickup);
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Aim);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Equip);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Fire);
 	
 	// Character State Tags 
