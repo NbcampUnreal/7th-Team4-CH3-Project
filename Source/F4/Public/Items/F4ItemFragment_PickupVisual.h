@@ -20,5 +20,5 @@ public:
 	TObjectPtr<UStaticMesh> SubPickupMesh;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pickup|SubVisual")
-	FName SubMeshSocketName = TEXT("Socket_Muzzle");
+	FName SubMeshSocketName = TEXT("Socket_Magazine");
 };
