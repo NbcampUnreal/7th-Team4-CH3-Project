@@ -84,3 +84,20 @@ FReply UF4InventoryWidget::NativeOnMouseMove(const FGeometry& InGeometry, const 
 	}
 	return FReply::Unhandled();
 }
+
+void UF4InventoryWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (APawn* OwningPawn = GetOwningPlayerPawn())
+	{
+		InventoryComponent = OwningPawn->FindComponentByClass<UF4InventoryComponent>();
+	}
+
+	if (InventoryComponent)
+	{
+		InventoryComponent->OnInventoryUpdated.AddDynamic(this, &UF4InventoryWidget::RefreshInventory);
+	}
+
+	RefreshInventory();
+}
