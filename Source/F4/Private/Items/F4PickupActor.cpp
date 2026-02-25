@@ -60,18 +60,24 @@ void AF4PickupActor::BeginPlay()
 
 void AF4PickupActor::DoInteract(AActor* Interactor)
 {
-	UAbilitySystemComponent* ASC = Interactor->FindComponentByClass<UAbilitySystemComponent>();
-	if (ASC && Interactor)
+	if (!Interactor || !ItemDefinition)
 	{
-		FGameplayEventData Payload;
-		Payload.Instigator = this;
-		Payload.Target = Interactor;
-		Payload.OptionalObject = ItemData;
-		
-		ASC->HandleGameplayEvent(F4GameplayTags::Event_Interaction_Pickup, &Payload);
+		return;
 	}
 	
-	Destroy();
+	if (AF4PlayerCharacter* PlayerCharacter = Cast<AF4PlayerCharacter>(Interactor))
+	{
+		UF4InventoryComponent* InventoryComp = PlayerCharacter->FindComponentByClass<UF4InventoryComponent>();
+		
+		if (InventoryComp)
+		{
+			UF4ItemInstance* PickedItemInstance = NewObject<UF4ItemInstance>(InventoryComp);
+			
+			InventoryComp->AddItem(PickedItemInstance);
+			
+			Destroy();
+		}
+	}
 }
 
 FText AF4PickupActor::GetInteractionText() const
