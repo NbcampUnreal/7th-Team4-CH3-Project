@@ -18,6 +18,20 @@ AF4WeaponActor::AF4WeaponActor()
 	AttachmentMeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
+void AF4WeaponActor::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	
+	if (AttachmentMeshComponent && MainMeshComponent)
+	{
+		AttachmentMeshComponent->AttachToComponent(
+			MainMeshComponent,
+			FAttachmentTransformRules::SnapToTargetIncludingScale,
+			TEXT("Socket_Magazine")
+		);
+	}
+}
+
 FTransform AF4WeaponActor::GetMuzzleTransform() const
 {
 	if (MainMeshComponent && MainMeshComponent->DoesSocketExist(TEXT("Socket_Muzzle")))

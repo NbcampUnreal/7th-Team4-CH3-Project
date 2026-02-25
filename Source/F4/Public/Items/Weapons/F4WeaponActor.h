@@ -16,6 +16,9 @@ public:
 	AF4WeaponActor();
 	
 protected:
+	virtual void OnConstruction(const FTransform& Transform) override;
+	
+protected:
 	// 루트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USceneComponent> RootScene;
