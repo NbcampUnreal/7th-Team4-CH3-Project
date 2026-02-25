@@ -46,15 +46,10 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo
 	) override;
 	
-	
-	UFUNCTION()
-	void OnInputReleased(float TimeHeld);
+public:
 	
 	UFUNCTION()
 	void OnStaminaChanged();
-	
-	UFUNCTION()
-	void OnVelocityChanged();
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
