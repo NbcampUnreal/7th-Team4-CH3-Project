@@ -20,9 +20,9 @@ AF4WeaponActor::AF4WeaponActor()
 
 FTransform AF4WeaponActor::GetMuzzleTransform() const
 {
-	if (MainMeshComponent && MainMeshComponent->DoesSocketExist(TEXT("Muzzle")))
+	if (MainMeshComponent && MainMeshComponent->DoesSocketExist(TEXT("Socket_Muzzle")))
 	{
-		return MainMeshComponent->GetSocketTransform(TEXT("Muzzle"));
+		return MainMeshComponent->GetSocketTransform(TEXT("Socket_Muzzle"));
 	}
 	
 	return GetActorTransform();
