@@ -65,3 +65,23 @@ void UF4InventoryComponent::RemoveItem(UF4ItemInstance* ItemToRemove)
 		OnInventoryUpdated.Broadcast();
 	}
 }
+
+void UF4InventoryComponent::ConsumeItem(UF4ItemInstance* ItemToConsume, int32 Amount)
+{
+	if (!ItemToConsume || !InventoryList.Contains(ItemToConsume))
+	{
+		return;
+	}
+
+	ItemToConsume->Quantity -= Amount;
+
+	if (ItemToConsume->Quantity <= 0)
+	{
+		InventoryList.Remove(ItemToConsume);
+		OnItemRemoved.Broadcast(ItemToConsume);
+
+		ItemToConsume->MarkAsGarbage();
+	}
+
+	OnInventoryUpdated.Broadcast();
+}
