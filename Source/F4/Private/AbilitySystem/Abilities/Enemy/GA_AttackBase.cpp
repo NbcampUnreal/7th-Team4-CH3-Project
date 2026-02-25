@@ -151,4 +151,3 @@ void UGA_AttackBase::PerformMeleeTrace()
         }
     }
 }
-
