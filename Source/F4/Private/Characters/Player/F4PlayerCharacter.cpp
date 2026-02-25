@@ -225,83 +225,83 @@ FText AF4PlayerCharacter::GetInteractionText() const
 	return FText::FromString(TEXT("Player"));
 }
 
-void AF4PlayerCharacter::ProcessItemPickup(const UF4ItemDataAsset* PickupItemData)
-{
-	if (!PickupItemData) return;
+// void AF4PlayerCharacter::ProcessItemPickup(const UF4ItemDataAsset* PickupItemData)
+// {
+// 	if (!PickupItemData) return;
+//
+// 	switch (PickupItemData->ItemType)
+// 	{
+// 	case EF4ItemType::Weapon:
+// 		{
+// 			const UF4WeaponDataAsset* WeaponData = Cast<UF4WeaponDataAsset>(PickupItemData);
+// 			EquipWeapon(WeaponData);
+// 			break;
+// 		}
+// 	case EF4ItemType::Consumable:
+// 		{
+// 			const UF4ConsumableDataAsset* ConsumableData = Cast<UF4ConsumableDataAsset>(PickupItemData);
+// 			// TODO: ConsumeItem(ConsumableData);
+// 			break;
+// 		}
+// 	}
+// }
 
-	switch (PickupItemData->ItemType)
-	{
-	case EF4ItemType::Weapon:
-		{
-			const UF4WeaponDataAsset* WeaponData = Cast<UF4WeaponDataAsset>(PickupItemData);
-			EquipWeapon(WeaponData);
-			break;
-		}
-	case EF4ItemType::Consumable:
-		{
-			const UF4ConsumableDataAsset* ConsumableData = Cast<UF4ConsumableDataAsset>(PickupItemData);
-			// TODO: ConsumeItem(ConsumableData);
-			break;
-		}
-	}
-}
+// void AF4PlayerCharacter::EquipWeapon(const UF4WeaponDataAsset* NewWeaponData)
+// {
+// 	if (!NewWeaponData) return;
+//
+// 	if (CurrentWeapon)
+// 	{
+// 		CurrentWeapon->Destroy();
+// 	}
+//
+// 	FActorSpawnParameters SpawnParams;
+// 	SpawnParams.Owner = this;
+// 	SpawnParams.Instigator = this;
+//
+// 	AF4WeaponActor* NewWeapon = GetWorld()->SpawnActor<AF4WeaponActor>(
+// 		AF4WeaponActor::StaticClass(),
+// 		GetActorTransform(),
+// 		SpawnParams
+// 	);
+//
+// 	// 무기 초기화 및 소켓 부착
+// 	if (NewWeapon)
+// 	{
+// 		NewWeapon->InitializeWeapon(NewWeaponData);
+//
+// 		NewWeapon->AttachToComponent(
+// 			GetMesh(),
+// 			FAttachmentTransformRules::SnapToTargetIncludingScale,
+// 			TEXT("WeaponSocket")
+// 		);
+//
+// 		CurrentWeapon = NewWeapon;
+//
+// 		GrantWeaponAbilities(NewWeaponData);
+// 	}
+// }
 
-void AF4PlayerCharacter::EquipWeapon(const UF4WeaponDataAsset* NewWeaponData)
-{
-	if (!NewWeaponData) return;
-
-	if (CurrentWeapon)
-	{
-		CurrentWeapon->Destroy();
-	}
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = this;
-
-	AF4WeaponActor* NewWeapon = GetWorld()->SpawnActor<AF4WeaponActor>(
-		AF4WeaponActor::StaticClass(),
-		GetActorTransform(),
-		SpawnParams
-	);
-
-	// 무기 초기화 및 소켓 부착
-	if (NewWeapon)
-	{
-		NewWeapon->InitializeWeapon(NewWeaponData);
-
-		NewWeapon->AttachToComponent(
-			GetMesh(),
-			FAttachmentTransformRules::SnapToTargetIncludingScale,
-			TEXT("WeaponSocket")
-		);
-
-		CurrentWeapon = NewWeapon;
-
-		GrantWeaponAbilities(NewWeaponData);
-	}
-}
-
-void AF4PlayerCharacter::GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponData)
-{
-	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
-	
-	if (!WeaponData || !AbilitySystemComponent) return;
-
-	for (const FWeaponAbilityConfig& AbilityConfig : WeaponData->Abilities)
-	{
-		if (AbilityConfig.AbilityClass)
-		{
-			// Spec 생성
-			FGameplayAbilitySpec Spec(AbilityConfig.AbilityClass, 1);
-
-			// 입력 태그를 Spec에 동적 태그로 추가
-			Spec.GetDynamicSpecSourceTags().AddTag(AbilityConfig.InputTag);
-
-			AbilitySystemComponent->GiveAbility(Spec);
-		}
-	}
-}
+// void AF4PlayerCharacter::GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponData)
+// {
+// 	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
+// 	
+// 	if (!WeaponData || !AbilitySystemComponent) return;
+//
+// 	for (const FWeaponAbilityConfig& AbilityConfig : WeaponData->Abilities)
+// 	{
+// 		if (AbilityConfig.AbilityClass)
+// 		{
+// 			// Spec 생성
+// 			FGameplayAbilitySpec Spec(AbilityConfig.AbilityClass, 1);
+//
+// 			// 입력 태그를 Spec에 동적 태그로 추가
+// 			Spec.GetDynamicSpecSourceTags().AddTag(AbilityConfig.InputTag);
+//
+// 			AbilitySystemComponent->GiveAbility(Spec);
+// 		}
+// 	}
+// }
 
 #pragma endregion
 

@@ -57,14 +57,14 @@ public:
 	virtual void DoInteract(AActor* Interactor) override;
 
 	virtual FText GetInteractionText() const override;
+	
+	// UFUNCTION(BlueprintCallable)
+	// void ProcessItemPickup(const UF4ItemDataAsset* PickupItemData);
 
-	UFUNCTION(BlueprintCallable)
-	void ProcessItemPickup(const UF4ItemDataAsset* PickupItemData);
+	// UFUNCTION(BlueprintCallable)
+	// void EquipWeapon(const UF4WeaponDataAsset* NewWeaponData);
 
-	UFUNCTION(BlueprintCallable)
-	void EquipWeapon(const UF4WeaponDataAsset* NewWeaponData);
-
-	void GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponData);
+	// void GrantWeaponAbilities(const UF4WeaponDataAsset* WeaponData);
 
 protected:
 	// UI Functions 
