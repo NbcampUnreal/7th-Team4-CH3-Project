@@ -50,6 +50,9 @@ void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			{
 				this->EnableRagdoll(Enemy);
 				HandleDropItem();
+				
+				// 사망 3초후 destroy
+				Enemy->SetLifeSpan(3.0f);
 			}
 		}, RagdollDelay, false);
 

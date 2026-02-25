@@ -4,6 +4,7 @@
 
 AF4EnemyBase::AF4EnemyBase()
 {
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AF4EnemyBase::BeginPlay()
