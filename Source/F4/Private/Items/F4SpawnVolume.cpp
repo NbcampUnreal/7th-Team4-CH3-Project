@@ -2,7 +2,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Items/F4PickupActor.h"
-#include "Items/Weapons/F4WeaponDataAsset.h"
+#include "Inventory/F4ItemDefinition.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AF4SpawnVolume::AF4SpawnVolume()
@@ -40,7 +40,8 @@ void AF4SpawnVolume::SpawnItems()
 		}
 		
 		int32 RandomIndex = FMath::RandRange(0, SpawnableItems.Num() - 1);
-		UF4ItemDataAsset* SelectedData = SpawnableItems[RandomIndex];
+		
+		TSubclassOf<UF4ItemDefinition> SelectedData = SpawnableItems[RandomIndex];
 		
 		FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
 		
