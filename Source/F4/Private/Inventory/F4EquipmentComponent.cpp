@@ -117,18 +117,11 @@ void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
 			if (ASC)
 			{
 				FEquipmentHandles NewHandles;
-				for (const FWeaponAbilitySet AbilitySet : NewFragment->GrantedAbilities)
+				for (TSubclassOf<UGameplayAbility> AbilityClass : NewFragment->GrantedAbilities)
 				{
-					if (AbilitySet.AbilityClass)
+					if (AbilityClass)
 					{
-						FGameplayAbilitySpec Spec(AbilitySet.AbilityClass, 1, INDEX_NONE, NewItem);
-						
-						// 인풋 태그와 같이 넘겨줘야 함
-						if (AbilitySet.InputTag.IsValid())
-						{
-							Spec.GetDynamicSpecSourceTags().AddTag(AbilitySet.InputTag);
-						}
-						
+						FGameplayAbilitySpec Spec(AbilityClass, 1, INDEX_NONE, NewItem);
 						NewHandles.AbilitySpecHandles.Add(ASC->GiveAbility(Spec));
 					}
 				}
