@@ -18,6 +18,8 @@ public:
 protected:
 	virtual void NativeConstruct() override;
 
+	virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
+
 	UFUNCTION()
 	void OnEquipClicked();
 

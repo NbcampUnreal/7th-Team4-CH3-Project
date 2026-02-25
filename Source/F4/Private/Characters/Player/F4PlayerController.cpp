@@ -54,7 +54,6 @@ void AF4PlayerController::ToggleInventory()
 		InputMode.SetWidgetToFocus(InventoryWidgetInstance->TakeWidget());
 		InputMode.SetHideCursorDuringCapture(false);
 		SetInputMode(InputMode);
-
 	}
 	else
 	{

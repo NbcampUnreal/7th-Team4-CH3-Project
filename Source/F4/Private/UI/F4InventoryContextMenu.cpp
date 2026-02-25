@@ -34,6 +34,8 @@ void UF4InventoryContextMenu::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	SetIsFocusable(true);
+
 	if (EquipButton)
 	{
 		EquipButton->OnClicked.AddDynamic(this, &UF4InventoryContextMenu::OnEquipClicked);
@@ -43,6 +45,13 @@ void UF4InventoryContextMenu::NativeConstruct()
 	{
 		DropButton->OnClicked.AddDynamic(this, &UF4InventoryContextMenu::OnDropClicked);
 	}
+}
+
+void UF4InventoryContextMenu::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
+{
+	Super::NativeOnFocusLost(InFocusEvent);
+
+	RemoveFromParent();
 }
 
 void UF4InventoryContextMenu::OnEquipClicked()

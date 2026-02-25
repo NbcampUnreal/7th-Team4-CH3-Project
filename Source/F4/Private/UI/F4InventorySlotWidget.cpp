@@ -1,6 +1,7 @@
 #include "UI/F4InventorySlotWidget.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Inventory/F4ItemInstance.h"
@@ -30,9 +31,15 @@ FReply UF4InventorySlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeomet
                 ContextMenu->InitMenu(SlotItemInstance);
                 ContextMenu->AddToViewport(100);
 
-                FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(GetWorld());
-                ContextMenu->SetPositionInViewport(MousePosition);
-
+                if (APlayerController* PC = GetOwningPlayer())
+                {
+                    float MouseX, MouseY;
+                    if (PC->GetMousePosition(MouseX, MouseY))
+                    {
+                        ContextMenu->SetPositionInViewport(FVector2D(MouseX, MouseY));
+                        ContextMenu->SetFocus();
+                    }
+                }
                 return FReply::Handled();
             }
         }
