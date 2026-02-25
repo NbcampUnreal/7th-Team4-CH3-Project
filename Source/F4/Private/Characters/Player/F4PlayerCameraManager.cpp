@@ -8,10 +8,6 @@ AF4PlayerCameraManager::AF4PlayerCameraManager()
 	ViewPitchMin = -90.0f;
 	ViewPitchMax = 30.0f;
 
-	// TODO: Aim 용도인가?
-	// ViewYawMin = -60.0f;
-	// ViewYawMax = 60.0f;
-
 	BaseFOV = 90.0f;
 	AimingFOV = 60.0f;
 	InterpSpeed = 15.0f;
@@ -20,6 +16,7 @@ AF4PlayerCameraManager::AF4PlayerCameraManager()
 
 void AF4PlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
+	FVector ActorLocation = OutVT.Target ? OutVT.Target->GetActorLocation() : FVector::ZeroVector;
 	Super::UpdateViewTarget(OutVT, DeltaTime);
 
 	AActor* TargetActor = OutVT.Target;
@@ -43,21 +40,20 @@ void AF4PlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTi
 	bool bIsAiming = ASC->HasMatchingGameplayTag(F4GameplayTags::State_Aiming);
 
 	float TargetFOV = bIsAiming ? AimingFOV : BaseFOV;
-	if (CurrentFOV <= 0.0f)
-	{
-		CurrentFOV = BaseFOV;
-	}
 	CurrentFOV = FMath::FInterpTo(CurrentFOV, TargetFOV, DeltaTime, InterpSpeed);
-	OutVT.POV.FOV = CurrentFOV;
+	OutVT.POV.FOV = (CurrentFOV <= 0.0f) ? BaseFOV : CurrentFOV;
 
 	FVector TargetOffset = bIsAiming ? AimingOffset : BaseOffset;
 	CurrentOffset = FMath::VInterpTo(CurrentOffset, TargetOffset, DeltaTime, InterpSpeed);
 
-	FVector TargetLocation = TargetActor->GetActorLocation();
-	FRotator TargetRotation = OutVT.POV.Rotation;
+	FRotator TargetRotationOffset = bIsAiming ? AimingRotationOffset : BaseRotationOffset;
+	CurrentRotationOffset = FMath::RInterpTo(CurrentRotationOffset, TargetRotationOffset, DeltaTime, InterpSpeed);
 
-	FQuat FrameQuat = FQuat(TargetRotation);
+	FVector ShakeDelta = OutVT.POV.Location - ActorLocation;
 
+	FQuat FrameQuat = FQuat(OutVT.POV.Rotation);
 	FVector WorldOffset = FrameQuat.RotateVector(CurrentOffset);
-	OutVT.POV.Location = TargetLocation + WorldOffset;
+
+	OutVT.POV.Location = TargetActor->GetActorLocation() + WorldOffset + ShakeDelta;
+	OutVT.POV.Rotation += CurrentRotationOffset;
 }
