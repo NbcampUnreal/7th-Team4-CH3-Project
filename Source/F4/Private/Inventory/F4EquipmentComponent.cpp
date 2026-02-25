@@ -5,6 +5,7 @@
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Equipment.h"
 #include "Inventory/F4ItemInstance.h"
+#include "Items/Weapons/F4WeaponActor.h"
 
 UF4EquipmentComponent::UF4EquipmentComponent()
 {
@@ -116,11 +117,18 @@ void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
 			if (ASC)
 			{
 				FEquipmentHandles NewHandles;
-				for (TSubclassOf<UGameplayAbility> AbilityClass : NewFragment->GrantedAbilities)
+				for (const FWeaponAbilitySet AbilitySet : NewFragment->GrantedAbilities)
 				{
-					if (AbilityClass)
+					if (AbilitySet.AbilityClass)
 					{
-						FGameplayAbilitySpec Spec(AbilityClass, 1, INDEX_NONE, NewItem);
+						FGameplayAbilitySpec Spec(AbilitySet.AbilityClass, 1, INDEX_NONE, NewItem);
+						
+						// 인풋 태그와 같이 넘겨줘야 함
+						if (AbilitySet.InputTag.IsValid())
+						{
+							Spec.GetDynamicSpecSourceTags().AddTag(AbilitySet.InputTag);
+						}
+						
 						NewHandles.AbilitySpecHandles.Add(ASC->GiveAbility(Spec));
 					}
 				}

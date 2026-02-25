@@ -11,8 +11,10 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Movement_Crouch);
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Interaction_Interact);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Interaction_Pickup);
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Aim);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Equip);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Fire);
 	
 	// Character State Tags 
@@ -48,6 +50,8 @@ namespace F4GameplayTags
 	// Event Tags 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Fire);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Hit_Damage);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Interaction_Pickup);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Combat_Equip);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look);

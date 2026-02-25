@@ -1,36 +1,83 @@
 #include "Items/F4PickupActor.h"
 #include "Components/SphereComponent.h"
 #include "Characters/Player/F4PlayerCharacter.h"
-#include "Items/Weapons/F4WeaponDataAsset.h"
+#include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemInstance.h"
+#include "Items/F4ItemFragment_PickupVisual.h"
 
 AF4PickupActor::AF4PickupActor()
 {
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
 	SetRootComponent(CollisionSphere);
-	
+
 	CollisionSphere->SetCollisionProfileName(TEXT("Custom"));
 	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-	
+
 	ItemMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	ItemMeshComp->SetupAttachment(RootComponent);
 	ItemMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
-	
+
 	SubMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SubMeshComp"));
 	SubMeshComp->SetupAttachment(RootComponent);
 	SubMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
 }
 
+void AF4PickupActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (ItemDefinition)
+	{
+		const UF4ItemDefinition* DefCDO = GetDefault<UF4ItemDefinition>(ItemDefinition);
+
+		const UF4ItemFragment_PickupVisual* VisualFrag = DefCDO->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
+
+		if (VisualFrag)
+		{
+			if (VisualFrag->PickupMesh)
+			{
+				ItemMeshComp->SetStaticMesh(VisualFrag->PickupMesh);
+				ItemMeshComp->SetRelativeScale3D(VisualFrag->PickupScale);
+			}
+
+			if (VisualFrag->SubPickupMesh)
+			{
+				SubMeshComp->SetStaticMesh(VisualFrag->SubPickupMesh);
+				SubMeshComp->AttachToComponent(
+					ItemMeshComp,
+					FAttachmentTransformRules::SnapToTargetIncludingScale,
+					VisualFrag->SubMeshSocketName
+				);
+			}
+			else
+			{
+				SubMeshComp->SetStaticMesh(nullptr);
+			}
+		}
+	}
+}
+
 void AF4PickupActor::DoInteract(AActor* Interactor)
 {
-	AF4PlayerCharacter* Character = Cast<AF4PlayerCharacter>(Interactor);
-	if (Character && ItemData)
+	if (!Interactor || !ItemDefinition)
 	{
-		// TODO: GA_ProcessItemPickup으로 모듈화
-		Character->ProcessItemPickup(ItemData);
+		return;
+	}
+	
+	if (AF4PlayerCharacter* PlayerCharacter = Cast<AF4PlayerCharacter>(Interactor))
+	{
+		UF4InventoryComponent* InventoryComp = PlayerCharacter->FindComponentByClass<UF4InventoryComponent>();
 		
-		Destroy();
+		if (InventoryComp)
+		{
+			UF4ItemInstance* PickedItemInstance = NewObject<UF4ItemInstance>(InventoryComp);
+			
+			InventoryComp->AddItem(PickedItemInstance);
+			
+			Destroy();
+		}
 	}
 }
 
@@ -39,37 +86,26 @@ FText AF4PickupActor::GetInteractionText() const
 	return FText::FromString(TEXT("Player"));
 }
 
-void AF4PickupActor::InitializePickup(const UF4ItemDataAsset* InItemData)
+void AF4PickupActor::InitializePickup(TSubclassOf<class UF4ItemDefinition> InItemDefinition)
 {
-	if (!InItemData) return;
-	ItemData = InItemData;
+	if (!InItemDefinition) return;
+	ItemDefinition = InItemDefinition;
+
+	const UF4ItemDefinition* DefCDO = GetDefault<UF4ItemDefinition>(ItemDefinition);
+	const UF4ItemFragment_PickupVisual* VisualFrag = DefCDO->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
 	
-	if (ItemData->PickupMesh)
+	if (VisualFrag)
 	{
-		ItemMeshComp->SetStaticMesh(ItemData->PickupMesh);
-		ItemMeshComp->SetRelativeScale3D(ItemData->PickupScale);
-	}
-	
-	if (const UF4WeaponDataAsset* WeaponData = Cast<UF4WeaponDataAsset>(ItemData))
-	{
-		if (WeaponData->WeaponType == EWeaponType::Gun && WeaponData->MagazineMesh)
+		ItemMeshComp->SetStaticMesh(VisualFrag->PickupMesh);
+		ItemMeshComp->SetRelativeScale3D(VisualFrag->PickupScale);
+		
+		if (VisualFrag->SubPickupMesh)
 		{
-			SubMeshComp->SetStaticMesh(WeaponData->MagazineMesh);
-			SubMeshComp->SetVisibility(true);
-			
-			if (!WeaponData->MagazineSocketName.IsNone())
-			{
-				SubMeshComp->AttachToComponent(
-					ItemMeshComp,
-					FAttachmentTransformRules::SnapToTargetIncludingScale,
-					WeaponData->MagazineSocketName
-				);
-			}
+			SubMeshComp->SetStaticMesh(VisualFrag->SubPickupMesh);
 		}
-	}
-	else
-	{
-		SubMeshComp->SetStaticMesh(nullptr);
-		// SubMeshComp->SetVisibility(false);
+		else
+		{
+			SubMeshComp->SetStaticMesh(nullptr);
+		}
 	}
 }

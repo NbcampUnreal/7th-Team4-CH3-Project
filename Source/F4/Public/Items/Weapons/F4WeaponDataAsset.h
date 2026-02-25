@@ -50,12 +50,12 @@ public:
 	// 총몸에 만들어둔 소켓 이름 (예: "Socket_Magazine")
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",
 		meta = (EditCondition = "WeaponType == EWeaponType::Gun"))
-	FName MagazineSocketName;
+	FName MagazineSocketName = TEXT("Socket_Magazine");
 	
 	// 총구 소켓 이름
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Visual",
 		meta = (EditCondition = "WeaponType == EWeaponType::Gun"))
-	FName MuzzleSocketName;
+	FName MuzzleSocketName = TEXT("Socket_Muzzle");
 
 	// 3. GAS (능력 및 스탯)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|GAS")

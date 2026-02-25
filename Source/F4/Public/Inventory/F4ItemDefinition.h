@@ -5,7 +5,8 @@
 #include "Engine/DataAsset.h"
 #include "F4ItemDefinition.generated.h"
 
-UCLASS()
+// DataAsset은 클래스가 아니라 인스턴스를 생성하므로 스폰하려면 필요한 지시자
+UCLASS(Blueprintable, BlueprintType)
 class F4_API UF4ItemDefinition : public UPrimaryDataAsset
 {
 	GENERATED_BODY()

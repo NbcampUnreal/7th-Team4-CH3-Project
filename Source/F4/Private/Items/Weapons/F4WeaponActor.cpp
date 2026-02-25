@@ -21,89 +21,23 @@ AF4WeaponActor::AF4WeaponActor()
 void AF4WeaponActor::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
-	// 에디터에서 드래그 앤 드롭으로 데이터를 넣었을 때 미리보기 갱신
-	if (WeaponData)
-	{
-		InitializeWeapon(WeaponData);
-	}
-}
-
-void AF4WeaponActor::InitializeWeapon(const UF4WeaponDataAsset* InWeaponData)
-{
-	if (!InWeaponData)
-	{
-		UE_LOGFMT(LogTemp, Error, "WeaponBase: Invalid Data Asset provided!");
-		return;
-	}
 	
-	WeaponData = InWeaponData;
-	
-	if (WeaponData->PickupMesh)
+	if (AttachmentMeshComponent && MainMeshComponent)
 	{
-		MainMeshComponent->SetStaticMesh(WeaponData->PickupMesh);
-	}
-	
-	if (WeaponData->WeaponType == EWeaponType::Gun)
-	{
-		// 탄창이라면 처리
-		if (WeaponData->MagazineMesh)
-		{
-			// 탄창 메시 설정
-			AttachmentMeshComponent->SetStaticMesh(WeaponData->MagazineMesh);
-			AttachmentMeshComponent->SetVisibility(true);
-			
-			// 소켓에 스냅 시키기
-			if (!WeaponData->MagazineSocketName.IsNone())
-			{
-				AttachmentMeshComponent->AttachToComponent(
-					MainMeshComponent,
-					FAttachmentTransformRules::SnapToTargetIncludingScale,
-					WeaponData->MagazineSocketName
-				);
-			}
-			else
-			{
-				// 소캣 이름이 없을 경우 경고 로그띄우고 임시로 그냥 붙임
-				UE_LOGFMT(LogTemp, Warning, "Weapon: Magazine Socket Name is missing in DataAsset!");
-			
-				AttachmentMeshComponent->AttachToComponent(
-						MainMeshComponent, 
-						FAttachmentTransformRules::SnapToTargetIncludingScale
-						);
-			}
-		}
-	}
-	else
-	{
-		// 근접 무기
-		AttachmentMeshComponent->SetStaticMesh(nullptr);
-		AttachmentMeshComponent->SetVisibility(false);
+		AttachmentMeshComponent->AttachToComponent(
+			MainMeshComponent,
+			FAttachmentTransformRules::SnapToTargetIncludingScale,
+			TEXT("Socket_Magazine")
+		);
 	}
 }
 
 FTransform AF4WeaponActor::GetMuzzleTransform() const
 {
-	// 근접무기
-	if (!WeaponData || !MainMeshComponent || WeaponData->WeaponType == EWeaponType::Melee)
+	if (MainMeshComponent && MainMeshComponent->DoesSocketExist(TEXT("Socket_Muzzle")))
 	{
-		return GetActorTransform();
+		return MainMeshComponent->GetSocketTransform(TEXT("Socket_Muzzle"));
 	}
 	
-	// 총기인데 소켓 이름이 없을 경우
-	if (!WeaponData->MuzzleSocketName.IsNone())
-	{
-		if (MainMeshComponent->DoesSocketExist(WeaponData->MuzzleSocketName))
-		{
-			return MainMeshComponent->GetSocketTransform(WeaponData->MuzzleSocketName);
-		}
-	}
-
-	
-	UE_LOGFMT(LogTemp, Warning, "Weapon: Muzzle Socket is invalid! Using Actor Transform instead.");
 	return GetActorTransform();
-}
-
-const UF4WeaponDataAsset* AF4WeaponActor::GetWeaponData() const
-{
-	return WeaponData;
 }

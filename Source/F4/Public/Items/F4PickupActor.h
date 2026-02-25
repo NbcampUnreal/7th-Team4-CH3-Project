@@ -5,6 +5,7 @@
 #include "Interface/Interactable.h"
 #include "F4PickupActor.generated.h"
 
+class UF4ItemDefinition;
 class UF4ItemDataAsset;
 class USphereComponent;
 
@@ -15,14 +16,18 @@ class F4_API AF4PickupActor : public AActor, public IInteractable
     
 public:    
 	AF4PickupActor();
+	
+protected:
+	virtual void BeginPlay() override;
 
+public:
 	virtual void DoInteract(AActor* Interactor) override;
 	
 	virtual FText GetInteractionText() const override;
 	
-	void InitializePickup(const UF4ItemDataAsset* InItemData);
-
-protected:
+	// 적이 드랍 아이템을 드랍하는 경우 사용
+	void InitializePickup(TSubclassOf<class UF4ItemDefinition> InItemDefinition);
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USphereComponent> CollisionSphere;
 	
@@ -32,6 +37,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> SubMeshComp;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ItemData")
-	TObjectPtr<const UF4ItemDataAsset> ItemData;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item")
+	TSubclassOf<UF4ItemDefinition> ItemDefinition;
 };
