@@ -1,7 +1,6 @@
 #include "Characters/Enemy/F4EnemyBase.h"
-#include "AbilitySystemComponent.h"
 #include "AIController.h"
-#include "System/F4GameplayTags.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AF4EnemyBase::AF4EnemyBase()
 {
@@ -20,5 +19,11 @@ void AF4EnemyBase::PossessedBy(AController* NewController)
 	if (AIC && BehaviorTree)
 	{
 		AIC->RunBehaviorTree(BehaviorTree);
+		
+		UBlackboardComponent* BlackboardComp = AIC->GetBlackboardComponent();
+		if (BlackboardComp)
+		{
+			BlackboardComp->SetValueAsVector("HomeLocation", GetActorLocation());
+		}
 	}
 }
