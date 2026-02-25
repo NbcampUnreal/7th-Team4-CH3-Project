@@ -5,6 +5,7 @@
 #include "Items/Weapons/F4WeaponActor.h"
 #include "F4ItemFragment_Equipment.generated.h"
 
+class UAnimInstance;
 class UGameplayAbility;
 
 UCLASS()
@@ -15,6 +16,9 @@ class F4_API UF4ItemFragment_Equipment : public UF4ItemFragment
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
 	TSubclassOf<AF4WeaponActor> WeaponActorClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment | Animation")
+	TSubclassOf<UAnimInstance> AnimLayerClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
 	FName HandSocketName;

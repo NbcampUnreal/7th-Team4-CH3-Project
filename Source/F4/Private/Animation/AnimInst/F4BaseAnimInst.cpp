@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Animation/AnimInst/F4BaseAnimInst.h"
 #include "KismetAnimationLibrary.h"
 
@@ -10,7 +7,6 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "System/F4GameplayTags.h"
-
 
 void UF4BaseAnimInst::NativeInitializeAnimation()
 {

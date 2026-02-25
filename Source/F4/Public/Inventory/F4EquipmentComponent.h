@@ -27,6 +27,8 @@ struct FEquipmentHandles
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActiveWeaponChanged, UF4ItemInstance*, NewItemInstance);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class F4_API UF4EquipmentComponent : public UActorComponent
 {
@@ -47,6 +49,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void EquipWeapon(UF4ItemInstance* ItemToEquip);
 
+	UPROPERTY(BlueprintAssignable, Category = "Equipment | Event")
+	FOnActiveWeaponChanged OnActiveWeaponChanged;
 protected:
 	virtual void BeginPlay() override;
 

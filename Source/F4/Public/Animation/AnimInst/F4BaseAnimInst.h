@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,6 +6,7 @@
 #include "F4BaseAnimInst.generated.h"
 
 class UCharacterMovementComponent;
+class UF4ItemInstance;
 
 UCLASS()
 class F4_API UF4BaseAnimInst : public UAnimInstance
@@ -22,9 +21,6 @@ public:
 	bool ShouldMove(); 	
 	
 	float CalculateDirection();
-
-
-	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ref") 
 	ACharacter* OwnerCharacter; 

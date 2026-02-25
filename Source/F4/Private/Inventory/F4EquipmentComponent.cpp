@@ -102,9 +102,10 @@ void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
 		}
 	}
 
+	UF4ItemInstance* NewItem = nullptr;
 	if (NewSlot != EWeaponSlot::None && WeaponLoadout.Contains(NewSlot))
 	{
-		UF4ItemInstance* NewItem = WeaponLoadout[NewSlot];
+		NewItem = WeaponLoadout[NewSlot];
 		AF4WeaponActor* NewWeaponActor = SpawnedWeapons.Contains(NewItem) ? SpawnedWeapons[NewItem] : nullptr;
 		const UF4ItemFragment_Equipment* NewFragment = NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>();
 
@@ -129,6 +130,7 @@ void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
 	}
 
 	ActiveSlot = NewSlot;
+	OnActiveWeaponChanged.Broadcast(NewItem);
 }
 
 void UF4EquipmentComponent::EquipWeapon(UF4ItemInstance* ItemToEquip)

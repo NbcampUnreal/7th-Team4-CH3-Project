@@ -6,6 +6,7 @@
 #include "Input/F4InputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
+#include "Animation/AnimInst/F4BaseAnimInst.h"
 #include "System/F4GameplayTags.h"
 #include "Items/Weapons/F4WeaponActor.h"
 #include "Items/Weapons/F4WeaponDataAsset.h"
@@ -35,8 +36,8 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 	StaminaGaugeComponent->SetDrawSize(FVector2D(124.f, 124.f));
 	
 	Inventory = CreateDefaultSubobject<UF4InventoryComponent>(TEXT("Inventory"));
-
 	Equipment = CreateDefaultSubobject<UF4EquipmentComponent>(TEXT("Equipment"));
+	AnimationControl = CreateDefaultSubobject<UF4AnimControlComponent>(TEXT("AnimationControl"));
 }
 
 void AF4PlayerCharacter::BeginPlay()
@@ -342,4 +343,4 @@ void AF4PlayerCharacter::OnStaminaChanged(const FOnAttributeChangeData& Data)
 	StaminaGaugeWidget->UpdateGauge(CurrentStamina / MaxStaamina); 
 }
 
-#pragma endregion 
+#pragma endregion
