@@ -1,8 +1,9 @@
 #include "Items/F4PickupActor.h"
 #include "Components/SphereComponent.h"
 #include "Characters/Player/F4PlayerCharacter.h"
-#include "Items/Weapons/F4WeaponDataAsset.h"
-#include "System/F4GameplayTags.h"
+#include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemInstance.h"
+#include "Items/F4ItemFragment_PickupVisual.h"
 
 AF4PickupActor::AF4PickupActor()
 {

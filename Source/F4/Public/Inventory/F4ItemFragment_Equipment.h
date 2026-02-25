@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Inventory/F4ItemFragment.h"
-#include "Items/Weapons/F4WeaponActor.h"
 #include "F4ItemFragment_Equipment.generated.h"
 
 class UAnimInstance;
+class AF4WeaponActor;
 class UGameplayAbility;
 
 USTRUCT(BlueprintType)

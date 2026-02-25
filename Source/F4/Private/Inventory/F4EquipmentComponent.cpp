@@ -5,6 +5,7 @@
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Equipment.h"
 #include "Inventory/F4ItemInstance.h"
+#include "Items/Weapons/F4WeaponActor.h"
 
 UF4EquipmentComponent::UF4EquipmentComponent()
 {
