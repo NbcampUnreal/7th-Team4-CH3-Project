@@ -2,43 +2,43 @@
 #include "System/F4GameplayTags.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
 
 UF4AttributeSetCharacter::UF4AttributeSetCharacter()
 {
 	Health = 100.f;
-	MaxHealth = 100.f; 
-	
+	MaxHealth = 100.f;
+
 	Stamina = 100.f;
 	MaxStamina = 100.f;
-	
+
 	ATK = 1.f;
 	DEF = 1.f;
-	WalkSpeed = 400.f; 
-	
+	WalkSpeed = 400.f;
 }
 
 void UF4AttributeSetCharacter::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+
+	ClampAttribute(Attribute, NewValue);
 }
 
 void UF4AttributeSetCharacter::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
 {
 	Super::PostAttributeChange(Attribute, OldValue, NewValue);
-	
-	if (Attribute == GetStaminaAttribute()) 
+
+	if (Attribute == GetStaminaAttribute())
 	{
-		HadnleStaminaRegen(); 
+		HandleStaminaRegen();
 	}
 }
 
 void UF4AttributeSetCharacter::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
-	
+
 	// 최종 변환 정보를 바탕으로 사망처리
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -48,10 +48,10 @@ void UF4AttributeSetCharacter::PostGameplayEffectExecute(const FGameplayEffectMo
 			Payload.EventTag = F4GameplayTags::Event_Character_Die;
 			Payload.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
 			Payload.Target = Data.Target.GetAvatarActor();
-			
+
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
-				Data.Target.GetAvatarActor(), 
-				F4GameplayTags::Event_Character_Die, 
+				Data.Target.GetAvatarActor(),
+				F4GameplayTags::Event_Character_Die,
 				Payload
 			);
 		}
@@ -63,37 +63,69 @@ void UF4AttributeSetCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-void UF4AttributeSetCharacter::HadnleStaminaRegen()
+void UF4AttributeSetCharacter::ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue)
 {
-	
+	if (Attribute == GetStaminaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxStamina());
+	}
+	else if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	}
+}
+
+
+void UF4AttributeSetCharacter::InitializeStamina(UAbilitySystemComponent* ASC)
+{
+	if (ASC)
+	{
+		ASC->RegisterGameplayTagEvent(F4GameplayTags::Character_State_NoRegenStamina).
+		     AddUObject(this, &ThisClass::OnNoRegenTagChanged);
+	}
+}
+
+void UF4AttributeSetCharacter::OnNoRegenTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	if (NewCount == 0)
+	{
+		HandleStaminaRegen();
+	}
+}
+
+void UF4AttributeSetCharacter::HandleStaminaRegen()
+{
 	// 1. Get Info from Owner or Avtar 
 	AActor* Owner = GetOwningActor();
 	if (Owner == nullptr) return;
-	
-	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner); 
+
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner);
 	if (ASC == nullptr) return;
-	
-	if (ASC->HasMatchingGameplayTag(StaminaRegenTag)) return;
-	
-	
-	// 2. Check Stamina Value 
-	float CurrentStaminaValue = GetStamina(); 
-	float MaxStaminaValue = GetMaxStamina(); 
-	
+
+	// 2. Check Conditions 
+	FGameplayTagContainer Container;
+	Container.AddTag(F4GameplayTags::Character_State_NoRegenStamina); // 재생 불가 
+	Container.AddTag(F4GameplayTags::Character_State_RegenStamina); // 재생 중
+	if (ASC->HasAnyMatchingGameplayTags(Container)) return;
+
+	// 3. Check Stamina Value 
+	float CurrentStaminaValue = GetStamina();
+	float MaxStaminaValue = GetMaxStamina();
+
 	if (CurrentStaminaValue < MaxStaminaValue)
 	{
-		// 3. Apply Effect 
+		// 4. Apply Effect 
 		if (StaminaRegenGEClass == nullptr) return;
-		
+
 		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
 		EffectContext.AddSourceObject(Owner);
-		
+
 		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(
 			StaminaRegenGEClass,
 			1.f,
 			EffectContext
 		);
-		
+
 		if (SpecHandle.IsValid())
 		{
 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
@@ -101,7 +133,7 @@ void UF4AttributeSetCharacter::HadnleStaminaRegen()
 	}
 	else if (CurrentStaminaValue >= MaxStaminaValue)
 	{
-		// 4. Remove Effect 
+		// 5. Remove Effect 
 		ASC->RemoveActiveGameplayEffectBySourceEffect(StaminaRegenGEClass, ASC);
 	}
 }

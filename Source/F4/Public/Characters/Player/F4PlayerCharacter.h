@@ -15,7 +15,7 @@ class UInputMappingContext;
 class AF4WeaponActor;
 class UCameraComponent;
 class USpringArmComponent;
-class UWidgetComponent; 
+class UWidgetComponent;
 class UF4HUD;
 class UGaugeWidget;
 class UInputAction;
@@ -28,7 +28,7 @@ class F4_API AF4PlayerCharacter : public AF4CharacterBase, public IInteractable
 
 public:
 	AF4PlayerCharacter();
-	
+
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -40,7 +40,9 @@ public:
 public:
 	// input Functions
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 protected:
+	// input Functions
 	void Input_Move(const FInputActionValue& Value);
 
 	void Input_Look(const FInputActionValue& Value);
@@ -53,9 +55,9 @@ protected:
 public:
 	// Interaction Functions 
 	virtual void DoInteract(AActor* Interactor) override;
-	
+
 	virtual FText GetInteractionText() const override;
-	
+
 	UFUNCTION(BlueprintCallable)
 	void ProcessItemPickup(const UF4ItemDataAsset* PickupItemData);
 
@@ -66,10 +68,10 @@ public:
 
 protected:
 	// UI Functions 
-	void CreateHUD(); 
-	
+	void CreateHUD();
+
 	void InitializeStaminaGauge();
-	
+
 	void OnStaminaChanged(const FOnAttributeChangeData& Data);
 
 private:
@@ -86,7 +88,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Equipment", meta = (AllowPrivateAccess = "true"))
 	UF4EquipmentComponent* Equipment;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Animation", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Animation",
+		meta = (AllowPrivateAccess = "true"))
 	UF4AnimControlComponent* AnimationControl;
 
 protected:
@@ -96,21 +99,21 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* DefaultIMC;
-	
+
 public:
 	// UI 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="UI | HUD")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI | HUD")
 	TSubclassOf<UUserWidget> HUDClass; // HUD Class
-	
+
 	UPROPERTY()
 	TObjectPtr<UF4HUD> HUDWidget; // HUD
-	
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category="UI | HUD")
-	TObjectPtr<UWidgetComponent> StaminaGaugeComponent;  
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI | HUD")
+	TObjectPtr<UWidgetComponent> StaminaGaugeComponent;
+
 	UPROPERTY()
 	TObjectPtr<UGaugeWidget> StaminaGaugeWidget;
-	
+
 public:
 	// Equipments 
 	UPROPERTY()

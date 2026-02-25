@@ -17,6 +17,14 @@ class F4_API UGA_Sprint : public UGameplayAbility
 public:
 	UGA_Sprint();
 	
+	virtual bool CanActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags = nullptr, 
+		const FGameplayTagContainer* TargetTags = nullptr,
+		FGameplayTagContainer* OptionalRelevantTags = nullptr
+	) const override;
+	
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
@@ -32,10 +40,25 @@ public:
 		bool bWasCancelled
 	) override; 
 
+	virtual void InputReleased(
+		const FGameplayAbilitySpecHandle Handle, 
+		const FGameplayAbilityActorInfo* ActorInfo, 
+		const FGameplayAbilityActivationInfo ActivationInfo
+	) override;
+	
+public:
+	
+	UFUNCTION()
+	void OnStaminaChanged();
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
 	TSubclassOf<UGameplayEffect> SprintEffect;
 	
 	FActiveGameplayEffectHandle SprintEffectHandle;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
+	TSubclassOf<UGameplayEffect> CostEffect;
+	
 	FActiveGameplayEffectHandle CostEffectHandle;
 };

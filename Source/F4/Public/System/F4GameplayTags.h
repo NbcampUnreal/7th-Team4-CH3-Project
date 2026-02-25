@@ -26,6 +26,7 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing);
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_RegenStamina);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_NoRegenStamina);
 
 	// Weapon Stats Tags 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Stat_BaseDamage);

@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-
 #include "F4HUD.generated.h"
 
 struct FOnAttributeChangeData;
@@ -57,9 +56,6 @@ private:
 
 	UPROPERTY()
 	UAbilitySystemComponent* OwnerASC;
-	
-	UPROPERTY()
-	UAttributeSet* AttributeSet;
 	
 	bool bAiming = false; 
 	
