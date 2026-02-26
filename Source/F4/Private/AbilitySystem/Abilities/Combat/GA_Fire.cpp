@@ -106,12 +106,20 @@ void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 void UGA_Fire::SpawnProjectile()
 {
 	AF4PlayerCharacter* AvatarCharacter = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !AvatarCharacter->CurrentWeapon || !ProjectileClass)
+	if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !ProjectileClass)
 	{
 		return;
 	}
 
-	FTransform MuzzleTransform = AvatarCharacter->CurrentWeapon->GetMuzzleTransform();
+	UF4EquipmentComponent* EquipmentComp = AvatarCharacter->FindComponentByClass<UF4EquipmentComponent>();
+	AF4WeaponActor* ActiveWeapon = EquipmentComp ? EquipmentComp->GetActiveWeaponActor() : nullptr;
+
+	if (!ActiveWeapon)
+	{
+		return;
+	}
+
+	FTransform MuzzleTransform = ActiveWeapon->GetMuzzleTransform();
 	FVector MuzzleLocation = MuzzleTransform.GetLocation();
 
 	FVector CameraLocation;

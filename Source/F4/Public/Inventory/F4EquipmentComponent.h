@@ -60,6 +60,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	UF4ItemInstance* GetActiveWeaponInstance() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	AF4WeaponActor* GetActiveWeaponActor() const;
+
 protected:
 	virtual void BeginPlay() override;
 

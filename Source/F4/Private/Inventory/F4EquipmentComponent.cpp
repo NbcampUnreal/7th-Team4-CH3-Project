@@ -189,6 +189,19 @@ UF4ItemInstance* UF4EquipmentComponent::GetActiveWeaponInstance() const
 	return WeaponLoadout.Contains(ActiveSlot) ? WeaponLoadout[ActiveSlot] : nullptr;
 }
 
+AF4WeaponActor* UF4EquipmentComponent::GetActiveWeaponActor() const
+{
+	if (ActiveSlot != EWeaponSlot::None && WeaponLoadout.Contains(ActiveSlot))
+	{
+		UF4ItemInstance* ActiveItem = WeaponLoadout[ActiveSlot];
+		if (SpawnedWeapons.Contains(ActiveItem))
+		{
+			return SpawnedWeapons[ActiveItem];
+		}
+	}
+	return nullptr;
+}
+
 void UF4EquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
