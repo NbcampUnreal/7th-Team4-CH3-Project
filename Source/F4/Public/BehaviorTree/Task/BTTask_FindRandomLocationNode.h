@@ -21,6 +21,8 @@ public:
 	
 protected:
 	UPROPERTY(EditAnywhere,Category="Blackboard")
+	FBlackboardKeySelector HomeLocationKey;
+	UPROPERTY(EditAnywhere,Category="Blackboard")
 	FBlackboardKeySelector PatrolLocationKey;
 	
 	UPROPERTY(EditAnywhere,Category="AI")

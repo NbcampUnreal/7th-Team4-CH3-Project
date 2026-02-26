@@ -27,7 +27,9 @@ EBTNodeResult::Type UBTTask_FindRandomLocationNode::ExecuteTask(UBehaviorTreeCom
 		return EBTNodeResult::Failed;
 	}
 	
-	const FVector Origin = AiController->GetPawn()->GetActorLocation();
+	UBlackboardComponent* BlackboardCom = OwnerComp.GetBlackboardComponent();
+	
+	const FVector Origin = BlackboardCom->GetValueAsVector(HomeLocationKey.SelectedKeyName);
 	FNavLocation RandomLocation;
 	
 	const bool bFound = NavSystem->GetRandomReachablePointInRadius(Origin, SearchRadius, RandomLocation);
