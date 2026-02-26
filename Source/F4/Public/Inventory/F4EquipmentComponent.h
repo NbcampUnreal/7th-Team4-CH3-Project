@@ -57,6 +57,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Equipment | Event")
 	FOnActiveWeaponChanged OnActiveWeaponChanged;
 
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	UF4ItemInstance* GetActiveWeaponInstance() const;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -75,5 +78,6 @@ protected:
 	UPROPERTY()
 	TMap<UF4ItemInstance*, AF4WeaponActor*> SpawnedWeapons;
 
+	UPROPERTY()
 	TMap<UF4ItemInstance*, FEquipmentHandles> GrantedHandlesMap;
 };

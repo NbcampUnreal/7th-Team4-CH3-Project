@@ -5,6 +5,7 @@
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Equipment.h"
 #include "Inventory/F4ItemInstance.h"
+#include "Inventory/F4QuickSlotComponent.h"
 #include "Items/Weapons/F4WeaponActor.h"
 
 UF4EquipmentComponent::UF4EquipmentComponent()
@@ -47,6 +48,15 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 		{
 			SetActiveWeapon(TargetSlot);
 		}
+
+		if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
+		{
+			int32 QuickSlotIndex = (TargetSlot == EWeaponSlot::Primary) ? 0 : 1;
+			if (QuickSlotComp->GetItemAtIndex(QuickSlotIndex) != ItemToEquip)
+			{
+				QuickSlotComp->RegisterItem(QuickSlotIndex, ItemToEquip);
+			}
+		}
 	}
 }
 
@@ -73,6 +83,11 @@ void UF4EquipmentComponent::UnequipItemFromSlot(EWeaponSlot TargetSlot)
 	}
 
 	WeaponLoadout.Remove(TargetSlot);
+	if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
+	{
+		int32 QuickSlotIndex = (TargetSlot == EWeaponSlot::Primary) ? 0 : 1;
+		QuickSlotComp->UnregisterItem(QuickSlotIndex);
+	}
 }
 
 void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
@@ -141,23 +156,37 @@ void UF4EquipmentComponent::EquipWeapon(UF4ItemInstance* ItemToEquip)
 		return;
 	}
 
+	for (const auto& Pair : WeaponLoadout)
+	{
+		if (Pair.Value == ItemToEquip)
+		{
+			SetActiveWeapon(Pair.Key);
+			return;
+		}
+	}
+
+	EWeaponSlot TargetSlot = EWeaponSlot::None;
 	if (!WeaponLoadout.Contains(EWeaponSlot::Primary))
 	{
-		EquipItemToSlot(ItemToEquip, EWeaponSlot::Primary);
-		return;
+		TargetSlot = EWeaponSlot::Primary;
+	}
+	else if (!WeaponLoadout.Contains(EWeaponSlot::Secondary))
+	{
+		TargetSlot = EWeaponSlot::Secondary;
+	}
+	else
+	{
+		TargetSlot = ActiveSlot;
+		UnequipItemFromSlot(TargetSlot);
 	}
 
-	if (!WeaponLoadout.Contains(EWeaponSlot::Secondary))
-	{
-		EquipItemToSlot(ItemToEquip, EWeaponSlot::Secondary);
-		return;
-	}
+	EquipItemToSlot(ItemToEquip, TargetSlot);
+	SetActiveWeapon(TargetSlot);
+}
 
-	if (ActiveSlot != EWeaponSlot::None)
-	{
-		UnequipItemFromSlot(ActiveSlot);
-		EquipItemToSlot(ItemToEquip, ActiveSlot);
-	}
+UF4ItemInstance* UF4EquipmentComponent::GetActiveWeaponInstance() const
+{
+	return WeaponLoadout.Contains(ActiveSlot) ? WeaponLoadout[ActiveSlot] : nullptr;
 }
 
 void UF4EquipmentComponent::BeginPlay()

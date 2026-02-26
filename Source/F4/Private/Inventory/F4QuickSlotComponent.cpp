@@ -16,34 +16,19 @@ UF4QuickSlotComponent::UF4QuickSlotComponent()
 
 void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemToRegister)
 {
-	if (!QuickSlots.IsValidIndex(SlotIndex) || !ItemToRegister || !ItemToRegister->ItemDefinition)
+	if (!QuickSlots.IsValidIndex(SlotIndex)) return;
+
+	if (QuickSlots[SlotIndex] == ItemToRegister)
 	{
 		return;
 	}
 
-	if (SlotIndex == 0 || SlotIndex == 1)
-	{
-		if (!ItemToRegister->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>())
-		{
-			return;
-		}
-
-		EWeaponSlot TargetSlot = (SlotIndex == 0) ? EWeaponSlot::Primary : EWeaponSlot::Secondary;
-		if (EquipmentComp)
-		{
-			EquipmentComp->EquipItemToSlot(ItemToRegister, TargetSlot);
-		}
-	}
-	else
-	{
-		if (!ItemToRegister->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Consumable>())
-		{
-			return;
-		}
-	}
-
 	QuickSlots[SlotIndex] = ItemToRegister;
-	OnQuickSlotUpdated.Broadcast(SlotIndex, ItemToRegister);
+
+	if (OnQuickSlotUpdated.IsBound())
+	{
+		OnQuickSlotUpdated.Broadcast(SlotIndex, ItemToRegister);
+	}
 }
 
 void UF4QuickSlotComponent::UnregisterItem(int32 SlotIndex)

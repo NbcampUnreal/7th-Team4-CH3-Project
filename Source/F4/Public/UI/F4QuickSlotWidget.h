@@ -23,6 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
 	void UpdateSlotUI(UF4ItemInstance* NewItem);
 
+	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
+	void UpdateSelectionBorder(UF4ItemInstance* ActiveItem);
+
 protected:
 	virtual void NativeConstruct() override;
 
@@ -36,4 +39,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> HotkeyText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> SelectionBorder;
 };

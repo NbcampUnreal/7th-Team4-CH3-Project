@@ -2,6 +2,7 @@
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_UI.h"
 #include "Inventory/F4ItemInstance.h"
@@ -45,6 +46,28 @@ void UF4QuickSlotWidget::UpdateSlotUI(UF4ItemInstance* NewItem)
 			ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
+
+	APawn* OwningPawn = GetOwningPlayerPawn();
+	if (!OwningPawn)
+	{
+		return;
+	}
+
+	if (UF4EquipmentComponent* EquipmentComp = OwningPawn->FindComponentByClass<UF4EquipmentComponent>())
+	{
+		UpdateSelectionBorder(EquipmentComp->GetActiveWeaponInstance());
+	}
+}
+
+void UF4QuickSlotWidget::UpdateSelectionBorder(UF4ItemInstance* ActiveItem)
+{
+	if (!SelectionBorder)
+	{
+		return;
+	}
+
+	const bool bIsActive = (BoundItem != nullptr) && (BoundItem == ActiveItem);
+	SelectionBorder->SetVisibility(bIsActive ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
 void UF4QuickSlotWidget::NativeConstruct()
@@ -55,6 +78,17 @@ void UF4QuickSlotWidget::NativeConstruct()
 	{
 		FString KeyString = FString::FromInt(SlotIndex + 1);
 		HotkeyText->SetText(FText::FromString(KeyString));
+	}
+
+	APawn* OwningPawn = GetOwningPlayerPawn();
+	if (!OwningPawn)
+	{
+		return;
+	}
+
+	if (UF4EquipmentComponent* EquipComp = OwningPawn->FindComponentByClass<UF4EquipmentComponent>())
+	{
+		EquipComp->OnActiveWeaponChanged.AddDynamic(this, &ThisClass::UpdateSelectionBorder);
 	}
 
 	UpdateSlotUI(nullptr);
