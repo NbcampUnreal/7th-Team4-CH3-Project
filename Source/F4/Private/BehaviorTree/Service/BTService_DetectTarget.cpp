@@ -73,6 +73,14 @@ void UBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			// 2. 공격 사거리 판정
 			bool bInAttackRange = (Distance <= AttackRange);
 			BlackBoard->SetValueAsBool(TEXT("bIsInAttackRange"), bInAttackRange);
+			if (Enemy->EnemyType == EEnemyType::Ranged)
+			{
+				Enemy->SetIsAiming(bInAttackRange);
+			}
+			else
+			{
+				Enemy->SetIsAiming(false);
+			}
     
 			// 3. 추적 사거리 판정
 			bool bInTraceRange = (Distance <= TraceRange);
