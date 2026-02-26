@@ -39,6 +39,12 @@ void AF4EnemyBase::PossessedBy(AController* NewController)
 			BlackboardComp->SetValueAsVector("HomeLocation", GetActorLocation());
 		}
 	}
+	
+	if (ASC)
+	{
+		FGameplayTag TypeTag = FGameplayTag::RequestGameplayTag("Character.Enemy");
+		ASC->AddLooseGameplayTag(TypeTag);
+	}
 }
 
 void AF4EnemyBase::SpawnDefaultWeapon()

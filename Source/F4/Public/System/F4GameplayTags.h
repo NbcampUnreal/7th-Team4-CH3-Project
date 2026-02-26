@@ -4,6 +4,10 @@
 
 namespace F4GameplayTags
 {
+	// 피아식별 Tags
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_Player);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_Enemy);
+	
 	// Ability Tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Movement_Jump);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Movement_Sprint);

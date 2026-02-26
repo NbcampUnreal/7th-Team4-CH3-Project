@@ -2,6 +2,10 @@
 
 namespace F4GameplayTags
 {
+	// 피아식별 Tags
+	UE_DEFINE_GAMEPLAY_TAG(Character_Player, TEXT("Character.Player"));
+	UE_DEFINE_GAMEPLAY_TAG(Character_Enemy, TEXT("Character.Enemy"));
+	
 	UE_DEFINE_GAMEPLAY_TAG(State_Firing, TEXT("State.Firing"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Fire, TEXT("Ability.Combat.Fire"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_Fire, TEXT("Event.Montage.Fire"));
