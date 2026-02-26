@@ -30,7 +30,7 @@ void AF4PickupActor::BeginPlay()
 
 	if (ItemDefinition)
 	{
-		const UF4ItemDefinition* DefCDO = GetDefault<UF4ItemDefinition>(ItemDefinition);
+		const UF4ItemDefinition* DefCDO = ItemDefinition;
 
 		const UF4ItemFragment_PickupVisual* VisualFrag = DefCDO->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
 
@@ -75,7 +75,7 @@ void AF4PickupActor::DoInteract(AActor* Interactor)
 		{
 			UF4ItemInstance* PickedItemInstance = NewObject<UF4ItemInstance>(InventoryComp);
 			
-			PickedItemInstance->ItemDefinition = ItemDefinition->GetDefaultObject<UF4ItemDefinition>();
+			PickedItemInstance->ItemDefinition = ItemDefinition;
 			
 			UE_LOGFMT(LogTemp, Warning, "아이템 추가 시도: {0}", ItemDefinition->GetName());
 			
@@ -112,12 +112,12 @@ FText AF4PickupActor::GetInteractionText() const
 	return FText::FromString(TEXT("Player"));
 }
 
-void AF4PickupActor::InitializePickup(TSubclassOf<class UF4ItemDefinition> InItemDefinition)
+void AF4PickupActor::InitializePickup(UF4ItemDefinition* InItemDefinition)
 {
 	if (!InItemDefinition) return;
 	ItemDefinition = InItemDefinition;
 
-	const UF4ItemDefinition* DefCDO = GetDefault<UF4ItemDefinition>(ItemDefinition);
+	const UF4ItemDefinition* DefCDO = ItemDefinition;
 	const UF4ItemFragment_PickupVisual* VisualFrag = DefCDO->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
 	
 	if (VisualFrag)

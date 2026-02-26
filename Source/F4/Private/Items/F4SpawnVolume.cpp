@@ -41,7 +41,7 @@ void AF4SpawnVolume::SpawnItems()
 		
 		int32 RandomIndex = FMath::RandRange(0, SpawnableItems.Num() - 1);
 		
-		TSubclassOf<UF4ItemDefinition> SelectedData = SpawnableItems[RandomIndex];
+		UF4ItemDefinition* SelectedData = SpawnableItems[RandomIndex];
 		
 		FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
 		

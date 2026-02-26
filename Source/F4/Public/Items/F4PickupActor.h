@@ -26,7 +26,7 @@ public:
 	virtual FText GetInteractionText() const override;
 	
 	// 적이 드랍 아이템을 드랍하는 경우 사용
-	void InitializePickup(TSubclassOf<class UF4ItemDefinition> InItemDefinition);
+	void InitializePickup(UF4ItemDefinition* InItemDefinition);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USphereComponent> CollisionSphere;
@@ -38,5 +38,5 @@ public:
 	TObjectPtr<UStaticMeshComponent> SubMeshComp;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item")
-	TSubclassOf<UF4ItemDefinition> ItemDefinition;
+	TObjectPtr<UF4ItemDefinition> ItemDefinition;
 };
