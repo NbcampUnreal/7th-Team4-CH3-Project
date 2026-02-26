@@ -50,6 +50,8 @@ protected:
 
 	void Input_Zoom(const FInputActionValue& Value);
 
+	void Input_QuickSlot(const FInputActionValue& Value);
+
 	void Input_AbilityPressed(const FGameplayTag InputTag);
 	void Input_AbilityReleased(const FGameplayTag InputTag);
 

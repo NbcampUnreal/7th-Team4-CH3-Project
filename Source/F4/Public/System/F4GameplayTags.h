@@ -31,7 +31,8 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Aiming);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Invincible);
-	
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Switching_Weapon);
+
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_RegenStamina);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_NoRegenStamina);
 
@@ -42,7 +43,7 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Reload);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Reload);
-	
+
 	//Enemy State
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Attacking);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Dead);
@@ -57,8 +58,11 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Hit_Damage);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Interaction_Pickup);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Combat_Equip);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Weapon_Switch);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Switching);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Zoom);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_QuickSlot);
 }

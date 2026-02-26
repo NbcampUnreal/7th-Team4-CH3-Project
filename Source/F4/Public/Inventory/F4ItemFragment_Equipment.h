@@ -1,10 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
-#include "Inventory/F4ItemFragment.h"
+#include "F4ItemFragment.h"
 #include "F4ItemFragment_Equipment.generated.h"
 
+class UF4ItemInstance;
 class UAnimInstance;
 class AF4WeaponActor;
 class UGameplayAbility;
@@ -22,7 +22,7 @@ public:
 	TSubclassOf<UAnimInstance> AnimLayerClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
-	FName HandSocketName = TEXT("hand_r");;
+	FName HandSocketName = TEXT("WeaponSocket");;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Equipment")
 	FName HolsterSocketName;

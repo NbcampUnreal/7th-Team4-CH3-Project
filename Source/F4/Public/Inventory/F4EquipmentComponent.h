@@ -13,9 +13,9 @@ class AF4WeaponActor;
 UENUM(BlueprintType)
 enum class EWeaponSlot : uint8
 {
-	None,
-	Primary,
-	Secondary
+	Primary = 0,
+	Secondary = 1,
+	None = 255
 };
 
 USTRUCT()
@@ -83,4 +83,6 @@ protected:
 
 	UPROPERTY()
 	TMap<UF4ItemInstance*, FEquipmentHandles> GrantedHandlesMap;
+
+	FName GetHolsterSocketName(EWeaponSlot Slot) const;
 };

@@ -25,7 +25,8 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 		UnequipItemFromSlot(TargetSlot);
 	}
 
-	const UF4ItemFragment_Equipment* EquipmentFragment = ItemToEquip->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>();
+	const UF4ItemFragment_Equipment* EquipmentFragment = ItemToEquip->ItemDefinition->FindFragmentByClass<
+		UF4ItemFragment_Equipment>();
 	if (!EquipmentFragment || !EquipmentFragment->WeaponActorClass)
 	{
 		return;
@@ -35,11 +36,13 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 	SpawnParams.Owner = GetOwner();
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AF4WeaponActor* NewWeaponActor = GetWorld()->SpawnActor<AF4WeaponActor>(EquipmentFragment->WeaponActorClass, SpawnParams);
+	AF4WeaponActor* NewWeaponActor = GetWorld()->SpawnActor<AF4WeaponActor>(
+		EquipmentFragment->WeaponActorClass, SpawnParams);
 
 	if (NewWeaponActor)
 	{
-		NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, EquipmentFragment->HolsterSocketName);
+		NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+		                                  GetHolsterSocketName(TargetSlot));
 
 		WeaponLoadout.Add(TargetSlot, ItemToEquip);
 		SpawnedWeapons.Add(ItemToEquip, NewWeaponActor);
@@ -51,7 +54,7 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 
 		if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
 		{
-			int32 QuickSlotIndex = (TargetSlot == EWeaponSlot::Primary) ? 0 : 1;
+			int32 QuickSlotIndex = static_cast<int32>(TargetSlot);
 			if (QuickSlotComp->GetItemAtIndex(QuickSlotIndex) != ItemToEquip)
 			{
 				QuickSlotComp->RegisterItem(QuickSlotIndex, ItemToEquip);
@@ -85,7 +88,7 @@ void UF4EquipmentComponent::UnequipItemFromSlot(EWeaponSlot TargetSlot)
 	WeaponLoadout.Remove(TargetSlot);
 	if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
 	{
-		int32 QuickSlotIndex = (TargetSlot == EWeaponSlot::Primary) ? 0 : 1;
+		int32 QuickSlotIndex = static_cast<int32>(TargetSlot);
 		QuickSlotComp->UnregisterItem(QuickSlotIndex);
 	}
 }
@@ -101,11 +104,13 @@ void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
 	{
 		UF4ItemInstance* OldItem = WeaponLoadout[ActiveSlot];
 		AF4WeaponActor* OldWeaponActor = SpawnedWeapons.Contains(OldItem) ? SpawnedWeapons[OldItem] : nullptr;
-		const UF4ItemFragment_Equipment* OldFragment = OldItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>();
+		const UF4ItemFragment_Equipment* OldFragment = OldItem->ItemDefinition->FindFragmentByClass<
+			UF4ItemFragment_Equipment>();
 
 		if (OldWeaponActor && OldFragment)
 		{
-			OldWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, OldFragment->HolsterSocketName);
+			OldWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			                                  GetHolsterSocketName(ActiveSlot));
 
 			if (ASC && GrantedHandlesMap.Contains(OldItem))
 			{
@@ -123,11 +128,12 @@ void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
 	{
 		NewItem = WeaponLoadout[NewSlot];
 		AF4WeaponActor* NewWeaponActor = SpawnedWeapons.Contains(NewItem) ? SpawnedWeapons[NewItem] : nullptr;
-		const UF4ItemFragment_Equipment* NewFragment = NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>();
+		const UF4ItemFragment_Equipment* NewFragment = NewItem->ItemDefinition->FindFragmentByClass< UF4ItemFragment_Equipment>();
 
 		if (NewWeaponActor && NewFragment)
 		{
-			NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, NewFragment->HandSocketName);
+			NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			                                  NewFragment->HandSocketName);
 
 			if (ASC)
 			{
@@ -211,5 +217,18 @@ void UF4EquipmentComponent::BeginPlay()
 	{
 		ASC = OwnerCharacter->FindComponentByClass<UAbilitySystemComponent>();
 		CharacterMesh = OwnerCharacter->GetMesh();
+	}
+}
+
+FName UF4EquipmentComponent::GetHolsterSocketName(EWeaponSlot Slot) const
+{
+	switch (Slot)
+	{
+	case EWeaponSlot::Primary:
+		return TEXT("Holster_Primary");
+	case EWeaponSlot::Secondary:
+		return TEXT("Holster_Secondary");
+	default:
+		return NAME_None;
 	}
 }

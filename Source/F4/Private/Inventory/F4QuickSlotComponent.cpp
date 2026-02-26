@@ -1,10 +1,11 @@
 #include "Inventory/F4QuickSlotComponent.h"
 
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemDefinition.h"
-#include "Inventory/F4ItemFragment_Consumable.h"
-#include "Inventory/F4ItemFragment_Equipment.h"
+#include "Inventory/F4ItemFragment_Usable.h"
 #include "Inventory/F4ItemInstance.h"
 
 UF4QuickSlotComponent::UF4QuickSlotComponent()
@@ -62,30 +63,32 @@ void UF4QuickSlotComponent::ClearSlot(int32 SlotIndex)
 
 void UF4QuickSlotComponent::UseSlot(int32 SlotIndex)
 {
-	if (!QuickSlots.IsValidIndex(SlotIndex))
+	UF4ItemInstance* Item = GetItemAtIndex(SlotIndex);
+	if (!Item || !Item->ItemDefinition)
 	{
 		return;
 	}
 
-	UF4ItemInstance* TargetItem = QuickSlots[SlotIndex];
-	if (!TargetItem)
-	{
-		return;
-	}
 
-	if (SlotIndex == 0 || SlotIndex == 1)
+	if (const UF4ItemFragment_Usable* UsableFragment = Item->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Usable>())
 	{
-		EWeaponSlot TargetSlot = (SlotIndex == 0) ? EWeaponSlot::Primary : EWeaponSlot::Secondary;
-
-		if (EquipmentComp)
+		IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(GetOwner());
+		if (!ASInterface)
 		{
-			EquipmentComp->SetActiveWeapon(TargetSlot);
+			return;
 		}
-	}
-	else
-	{
-		// TODO: item 사용
-		UE_LOG(LogTemp, Log, TEXT("%d번 슬롯 소모품 사용"), SlotIndex + 1);
+
+		if (UAbilitySystemComponent* ASC = ASInterface->GetAbilitySystemComponent())
+		{
+
+			FGameplayEventData Payload;
+			Payload.Instigator = GetOwner();
+			Payload.OptionalObject = Item;
+			Payload.EventTag = UsableFragment->UsageEventTag;
+			Payload.EventMagnitude = static_cast<float>(SlotIndex);
+
+			ASC->HandleGameplayEvent(UsableFragment->UsageEventTag, &Payload);
+		}
 	}
 }
 

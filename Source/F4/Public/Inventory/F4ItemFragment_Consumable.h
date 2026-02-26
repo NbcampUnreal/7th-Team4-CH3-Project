@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Inventory/F4ItemFragment.h"
+#include "F4ItemFragment.h"
 #include "F4ItemFragment_Consumable.generated.h"
 
 class UGameplayAbility;
