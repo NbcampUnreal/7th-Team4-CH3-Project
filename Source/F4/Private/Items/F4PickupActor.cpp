@@ -30,9 +30,7 @@ void AF4PickupActor::BeginPlay()
 
 	if (ItemDefinition)
 	{
-		const UF4ItemDefinition* DefCDO = ItemDefinition;
-
-		const UF4ItemFragment_PickupVisual* VisualFrag = DefCDO->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
+		const UF4ItemFragment_PickupVisual* VisualFrag = ItemDefinition->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
 
 		if (VisualFrag)
 		{
@@ -116,9 +114,8 @@ void AF4PickupActor::InitializePickup(UF4ItemDefinition* InItemDefinition)
 {
 	if (!InItemDefinition) return;
 	ItemDefinition = InItemDefinition;
-
-	const UF4ItemDefinition* DefCDO = ItemDefinition;
-	const UF4ItemFragment_PickupVisual* VisualFrag = DefCDO->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
+	
+	const UF4ItemFragment_PickupVisual* VisualFrag = ItemDefinition->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
 	
 	if (VisualFrag)
 	{
