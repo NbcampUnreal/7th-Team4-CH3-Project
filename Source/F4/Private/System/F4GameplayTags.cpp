@@ -28,6 +28,8 @@ namespace F4GameplayTags
 	
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_RegenStamina, TEXT("Character.State.RegenStamina"));
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_NoRegenStamina, TEXT("Character.State.NoRegenStamina"));
+	
+	UE_DEFINE_GAMEPLAY_TAG(State_Invincible, TEXT("State.Invincible"));
 
 	// Weapon Stats
 	UE_DEFINE_GAMEPLAY_TAG(Weapon_Stat_BaseDamage, TEXT("Weapon.Stat.BaseDamage"));

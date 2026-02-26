@@ -28,7 +28,7 @@ public:
 	TObjectPtr<UBoxComponent> SpawningBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
-	TArray<TSubclassOf<UF4ItemDefinition>> SpawnableItems;
+	TArray<TObjectPtr<UF4ItemDefinition>> SpawnableItems;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
 	TSubclassOf<AF4PickupActor> ItemClassToSpawn;

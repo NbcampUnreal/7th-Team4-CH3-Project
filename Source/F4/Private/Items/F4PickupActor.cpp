@@ -30,9 +30,7 @@ void AF4PickupActor::BeginPlay()
 
 	if (ItemDefinition)
 	{
-		const UF4ItemDefinition* DefCDO = GetDefault<UF4ItemDefinition>(ItemDefinition);
-
-		const UF4ItemFragment_PickupVisual* VisualFrag = DefCDO->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
+		const UF4ItemFragment_PickupVisual* VisualFrag = ItemDefinition->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
 
 		if (VisualFrag)
 		{
@@ -63,6 +61,7 @@ void AF4PickupActor::DoInteract(AActor* Interactor)
 {
 	if (!Interactor || !ItemDefinition)
 	{
+		UE_LOGFMT(LogTemp, Warning, "Interact failed: Interactor 또는 ItemDefinition이 null");
 		return;
 	}
 	
@@ -74,10 +73,35 @@ void AF4PickupActor::DoInteract(AActor* Interactor)
 		{
 			UF4ItemInstance* PickedItemInstance = NewObject<UF4ItemInstance>(InventoryComp);
 			
+			PickedItemInstance->ItemDefinition = ItemDefinition;
+			
+			UE_LOGFMT(LogTemp, Warning, "아이템 추가 시도: {0}", ItemDefinition->GetName());
+			
+			int32 BeforeCount = InventoryComp->GetInventoryItems().Num();
+			
 			InventoryComp->AddItem(PickedItemInstance);
+			
+			int32 AfterCount = InventoryComp->GetInventoryItems().Num();
+			
+			if (AfterCount > BeforeCount)
+			{
+				UE_LOGFMT(LogTemp, Warning, "아이템 추가 성공 (이전: {0}, 현재: {1})", BeforeCount, AfterCount);
+			}
+			else
+			{
+				UE_LOGFMT(LogTemp, Warning, "스택형이므로 합쳐짐");
+			}
 			
 			Destroy();
 		}
+		else
+		{
+			UE_LOGFMT(LogTemp, Error, "Interact 실패: {0}에게 InventoryComponent가 없음.", PlayerCharacter->GetName());
+		}
+	}
+	else
+	{
+		UE_LOGFMT(LogTemp, Warning, "Interact 실패: 상호작용 대상이 PlayerCharacter가 아님.");
 	}
 }
 
@@ -86,13 +110,12 @@ FText AF4PickupActor::GetInteractionText() const
 	return FText::FromString(TEXT("Player"));
 }
 
-void AF4PickupActor::InitializePickup(TSubclassOf<class UF4ItemDefinition> InItemDefinition)
+void AF4PickupActor::InitializePickup(UF4ItemDefinition* InItemDefinition)
 {
 	if (!InItemDefinition) return;
 	ItemDefinition = InItemDefinition;
-
-	const UF4ItemDefinition* DefCDO = GetDefault<UF4ItemDefinition>(ItemDefinition);
-	const UF4ItemFragment_PickupVisual* VisualFrag = DefCDO->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
+	
+	const UF4ItemFragment_PickupVisual* VisualFrag = ItemDefinition->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
 	
 	if (VisualFrag)
 	{
