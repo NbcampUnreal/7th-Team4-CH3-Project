@@ -46,6 +46,15 @@ void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemT
 	OnQuickSlotUpdated.Broadcast(SlotIndex, ItemToRegister);
 }
 
+void UF4QuickSlotComponent::UnregisterItem(int32 SlotIndex)
+{
+	if (QuickSlots.IsValidIndex(SlotIndex))
+	{
+		QuickSlots[SlotIndex] = nullptr;
+		OnQuickSlotUpdated.Broadcast(SlotIndex, nullptr);
+	}
+}
+
 void UF4QuickSlotComponent::ClearSlot(int32 SlotIndex)
 {
 	if (!QuickSlots.IsValidIndex(SlotIndex))
@@ -104,4 +113,43 @@ void UF4QuickSlotComponent::BeginPlay()
 		EquipmentComp = Owner->FindComponentByClass<UF4EquipmentComponent>();
 		InventoryComp = Owner->FindComponentByClass<UF4InventoryComponent>();
 	}
+}
+
+int32 UF4QuickSlotComponent::GetEmptyConsumableSlotIndex() const
+{
+	for (int32 i = 2; i < QuickSlots.Num(); ++i)
+	{
+		if (QuickSlots[i] == nullptr)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+int32 UF4QuickSlotComponent::FindItemSlotIndex(UF4ItemInstance* ItemToFind) const
+{
+	if (!ItemToFind)
+	{
+		return -1;
+	}
+
+	for (int32 i = 0; i < QuickSlots.Num(); ++i)
+	{
+		if (QuickSlots[i] == ItemToFind)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+UF4ItemInstance* UF4QuickSlotComponent::GetItemAtIndex(int32 Index) const
+{
+	if (!QuickSlots.IsValidIndex(Index))
+	{
+		return nullptr;
+	}
+
+	return QuickSlots[Index];
 }

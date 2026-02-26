@@ -25,6 +25,9 @@ public:
 	void RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemToRegister);
 
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
+	void UnregisterItem(int32 SlotIndex);
+
+	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
 	void ClearSlot(int32 SlotIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
@@ -32,6 +35,15 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnQuickSlotUpdated OnQuickSlotUpdated;
+
+	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
+	int32 GetEmptyConsumableSlotIndex() const;
+
+	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
+	int32 FindItemSlotIndex(UF4ItemInstance* ItemToFind) const;
+
+	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
+	UF4ItemInstance* GetItemAtIndex(int32 Index) const;
 
 protected:
 	virtual void BeginPlay() override;

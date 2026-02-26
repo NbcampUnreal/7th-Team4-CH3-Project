@@ -5,6 +5,7 @@
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_UI.h"
 #include "Inventory/F4ItemInstance.h"
+#include "Inventory/F4QuickSlotComponent.h"
 
 void UF4QuickSlotWidget::UpdateSlotUI(UF4ItemInstance* NewItem)
 {
@@ -57,4 +58,26 @@ void UF4QuickSlotWidget::NativeConstruct()
 	}
 
 	UpdateSlotUI(nullptr);
+}
+
+FReply UF4QuickSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetEffectingButton() != EKeys::RightMouseButton)
+	{
+		return Super::NativeOnMouseButtonDown(InGeometry,InMouseEvent);
+	}
+
+	APawn* OwningPawn = GetOwningPlayerPawn();
+	if (!OwningPawn)
+	{
+		return Super::NativeOnMouseButtonDown(InGeometry,InMouseEvent);
+	}
+
+	if (UF4QuickSlotComponent* QuickSlotComp = OwningPawn->FindComponentByClass<UF4QuickSlotComponent>())
+	{
+		QuickSlotComp->UnregisterItem(SlotIndex);
+		return FReply::Handled();
+	}
+
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
