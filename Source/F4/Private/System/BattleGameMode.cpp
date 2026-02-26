@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "System/BattleGameMode.h"
 
 #include "Characters/Player/F4PlayerCharacter.h"

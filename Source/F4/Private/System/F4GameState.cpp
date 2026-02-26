@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "System/F4GameState.h"
 
 void AF4GameState::Tick(float DeltaTime)
