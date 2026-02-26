@@ -1,0 +1,37 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
+#include "F4QuickSlotWidget.generated.h"
+
+class UTextBlock;
+class UImage;
+class UF4ItemInstance;
+
+UCLASS()
+class F4_API UF4QuickSlotWidget : public UUserWidget
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "QuickSlot")
+	int32 SlotIndex;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "QuickSlot")
+	TObjectPtr<UF4ItemInstance> BoundItem;
+
+	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
+	void UpdateSlotUI(UF4ItemInstance* NewItem);
+
+protected:
+	virtual void NativeConstruct() override;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> ItemIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ItemQuantityText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> HotkeyText;
+};
