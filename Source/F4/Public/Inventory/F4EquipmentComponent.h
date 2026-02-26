@@ -49,8 +49,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void EquipWeapon(UF4ItemInstance* ItemToEquip);
 
+	// GameController <-> GameInstance 에 필요한 함수 
+	// SaveEquipment		<< equip 정보 저장 
+	// InitializeEquipment << 저장된 equip 정보 불러오기 
+	// ClearEquipment      << equip 정보 삭제
+	
 	UPROPERTY(BlueprintAssignable, Category = "Equipment | Event")
 	FOnActiveWeaponChanged OnActiveWeaponChanged;
+
 protected:
 	virtual void BeginPlay() override;
 

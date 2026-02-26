@@ -16,7 +16,7 @@ class F4_API UF4InventoryComponent : public UActorComponent
 
 public:	
 	UF4InventoryComponent();
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void AddItem(UF4ItemInstance* NewItem);
 
@@ -26,6 +26,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void ConsumeItem(UF4ItemInstance* ItemToConsume, int32 Amount);
 
+	// GameController <-> GameInstance 에 필요한 함수 
+	// initializeInventory << 저장된 정보들로 인벤토리 데이터 불러오기
+	// SaveInventory << 인벤토리 저장 
+	// clearInventory << 인벤토리 초기화 
+	
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventoryUpdated OnInventoryUpdated;
 
