@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -34,11 +32,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnItemRemoved OnItemRemoved;
 
-	UFUNCTION(BlueprintPure, Category = "Inventory")
-	const TArray<UF4ItemInstance*>& GetInventoryItems() const { return InventoryList; }
-
+	const TArray<TObjectPtr<UF4ItemInstance>>& GetInventoryItems() const { return InventoryList; }
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Inventory")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
 	TArray<TObjectPtr<UF4ItemInstance>> InventoryList;
 };
