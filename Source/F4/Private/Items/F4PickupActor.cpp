@@ -63,6 +63,7 @@ void AF4PickupActor::DoInteract(AActor* Interactor)
 {
 	if (!Interactor || !ItemDefinition)
 	{
+		UE_LOGFMT(LogTemp, Warning, "Interact failed: Interactor 또는 ItemDefinition이 null");
 		return;
 	}
 	
@@ -74,10 +75,35 @@ void AF4PickupActor::DoInteract(AActor* Interactor)
 		{
 			UF4ItemInstance* PickedItemInstance = NewObject<UF4ItemInstance>(InventoryComp);
 			
+			PickedItemInstance->ItemDefinition = ItemDefinition->GetDefaultObject<UF4ItemDefinition>();
+			
+			UE_LOGFMT(LogTemp, Warning, "아이템 추가 시도: {0}", ItemDefinition->GetName());
+			
+			int32 BeforeCount = InventoryComp->GetInventoryItems().Num();
+			
 			InventoryComp->AddItem(PickedItemInstance);
+			
+			int32 AfterCount = InventoryComp->GetInventoryItems().Num();
+			
+			if (AfterCount > BeforeCount)
+			{
+				UE_LOGFMT(LogTemp, Warning, "아이템 추가 성공 (이전: {0}, 현재: {1})", BeforeCount, AfterCount);
+			}
+			else
+			{
+				UE_LOGFMT(LogTemp, Warning, "스택형이므로 합쳐짐");
+			}
 			
 			Destroy();
 		}
+		else
+		{
+			UE_LOGFMT(LogTemp, Error, "Interact 실패: {0}에게 InventoryComponent가 없음.", PlayerCharacter->GetName());
+		}
+	}
+	else
+	{
+		UE_LOGFMT(LogTemp, Warning, "Interact 실패: 상호작용 대상이 PlayerCharacter가 아님.");
 	}
 }
 
