@@ -42,4 +42,7 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
 	TArray<TObjectPtr<UF4ItemInstance>> InventoryList;
+
+private:
+	void UpdateQuickSlotForItem(UF4ItemInstance* Item);
 };

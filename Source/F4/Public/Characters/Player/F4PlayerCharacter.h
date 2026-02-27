@@ -8,6 +8,7 @@
 #include "Inventory/F4InventoryComponent.h"
 #include "F4PlayerCharacter.generated.h"
 
+class UF4QuickSlotComponent;
 struct FInputActionValue;
 
 class UF4ItemDataAsset;
@@ -49,6 +50,8 @@ protected:
 
 	void Input_Zoom(const FInputActionValue& Value);
 
+	void Input_QuickSlot(const FInputActionValue& Value);
+
 	void Input_AbilityPressed(const FGameplayTag InputTag);
 	void Input_AbilityReleased(const FGameplayTag InputTag);
 
@@ -83,10 +86,13 @@ private:
 	UCameraComponent* FollowCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Inventory", meta = (AllowPrivateAccess = "true"))
-	UF4InventoryComponent* Inventory;
+	TObjectPtr<UF4InventoryComponent> Inventory;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Equipment", meta = (AllowPrivateAccess = "true"))
-	UF4EquipmentComponent* Equipment;
+	TObjectPtr<UF4EquipmentComponent> Equipment;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | QuickSlot", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UF4QuickSlotComponent> QuickSlot;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Animation",
 		meta = (AllowPrivateAccess = "true"))

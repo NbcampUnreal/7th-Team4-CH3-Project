@@ -7,10 +7,19 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemInstance.h"
+#include "System/F4GameplayTags.h"
 
 UGA_Potion_Invincible::UGA_Potion_Invincible()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
+	FAbilityTriggerData TriggerData;
+
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Invisible));
+	TriggerData.TriggerTag = F4GameplayTags::Event_Trigger_Invisible;
+	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
+
+	AbilityTriggers.Add(TriggerData);
 }
 
 void UGA_Potion_Invincible::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -53,7 +62,13 @@ void UGA_Potion_Invincible::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		}
 	}
 
-	if (UF4ItemInstance* ItemInst = Cast<UF4ItemInstance>(GetCurrentSourceObject()))
+	UF4ItemInstance* ItemInst = nullptr;
+	if (TriggerEventData && TriggerEventData->OptionalObject)
+	{
+		ItemInst = const_cast<UF4ItemInstance*>(Cast<UF4ItemInstance>(TriggerEventData->OptionalObject));
+	}
+
+	if (ItemInst)
 	{
 		if (UF4InventoryComponent* InvComp = AvatarCharacter->FindComponentByClass<UF4InventoryComponent>())
 		{

@@ -29,6 +29,9 @@ protected:
 	UFUNCTION()
 	void OnQuickSlotClicked();
 
+	UFUNCTION()
+	void OnUnregisterQuickSlotClicked();
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> EquipButton;
 
@@ -37,6 +40,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> QuickSlotButton;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> UnregisterQuickSlotButton;
 
 private:
 	UPROPERTY()

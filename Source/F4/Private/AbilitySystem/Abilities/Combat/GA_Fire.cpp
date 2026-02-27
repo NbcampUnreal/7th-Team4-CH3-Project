@@ -25,7 +25,10 @@ UGA_Fire::UGA_Fire()
 	ActivationRequiredTags.AddTag(F4GameplayTags::State_Aiming);
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
+	ActivationBlockedTags.AddTag(F4GameplayTags::State_Switching_Weapon);
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
+
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Invisible);
 
 	// TODO: cost bullet 추가 필요
 }
@@ -106,12 +109,20 @@ void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 void UGA_Fire::SpawnProjectile()
 {
 	AF4PlayerCharacter* AvatarCharacter = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !AvatarCharacter->CurrentWeapon || !ProjectileClass)
+	if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !ProjectileClass)
 	{
 		return;
 	}
 
-	FTransform MuzzleTransform = AvatarCharacter->CurrentWeapon->GetMuzzleTransform();
+	UF4EquipmentComponent* EquipmentComp = AvatarCharacter->FindComponentByClass<UF4EquipmentComponent>();
+	AF4WeaponActor* ActiveWeapon = EquipmentComp ? EquipmentComp->GetActiveWeaponActor() : nullptr;
+
+	if (!ActiveWeapon)
+	{
+		return;
+	}
+
+	FTransform MuzzleTransform = ActiveWeapon->GetMuzzleTransform();
 	FVector MuzzleLocation = MuzzleTransform.GetLocation();
 
 	FVector CameraLocation;

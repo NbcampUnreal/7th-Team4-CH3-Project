@@ -12,6 +12,7 @@
 #include "Items/Weapons/F4WeaponDataAsset.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/WidgetComponent.h"
+#include "Inventory/F4QuickSlotComponent.h"
 #include "UI/F4HUD.h"
 #include "UI/GaugeWidget.h"
 
@@ -37,6 +38,7 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 	
 	Inventory = CreateDefaultSubobject<UF4InventoryComponent>(TEXT("Inventory"));
 	Equipment = CreateDefaultSubobject<UF4EquipmentComponent>(TEXT("Equipment"));
+	QuickSlot = CreateDefaultSubobject<UF4QuickSlotComponent>(TEXT("QuickSlot"));
 	AnimationControl = CreateDefaultSubobject<UF4AnimControlComponent>(TEXT("AnimationControl"));
 }
 
@@ -139,6 +141,15 @@ void AF4PlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 			true
 		);
 
+		F4EIC->BindNativeAction(
+			InputConfig,
+			F4GameplayTags::InputTag_QuickSlot,
+			ETriggerEvent::Triggered,
+			this,
+			&ThisClass::Input_QuickSlot,
+			true
+		);
+
 		// Ability Input Actions
 		TArray<uint32> BindHandles;
 		F4EIC->BindAbilityActions(
@@ -193,6 +204,18 @@ void AF4PlayerCharacter::Input_Zoom(const FInputActionValue& Value)
 		TargetLength = FMath::Clamp(TargetLength, MinTargetArmLength, MaxTargetArmLength);
 
 		CameraBoom->TargetArmLength = TargetLength;
+	}
+}
+
+void AF4PlayerCharacter::Input_QuickSlot(const FInputActionValue& Value)
+{
+	float RawValue = Value.Get<float>();
+
+	int32 SlotIndex = FMath::RoundToInt(RawValue) - 1;
+
+	if (QuickSlot)
+	{
+		QuickSlot->UseSlot(SlotIndex);
 	}
 }
 
