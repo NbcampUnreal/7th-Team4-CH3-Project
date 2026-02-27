@@ -96,7 +96,7 @@ void UF4InventoryWidget::NativeConstruct()
 
 	if (InventoryComponent)
 	{
-		InventoryComponent->OnInventoryUpdated.AddDynamic(this, &UF4InventoryWidget::RefreshInventory);
+		InventoryComponent->OnInventoryUpdated.AddUniqueDynamic(this, &UF4InventoryWidget::RefreshInventory);
 	}
 
 	RefreshInventory();

@@ -86,7 +86,7 @@ void UF4QuickSlotWidget::NativeConstruct()
 
 	if (UF4EquipmentComponent* EquipComp = OwningPawn->FindComponentByClass<UF4EquipmentComponent>())
 	{
-		EquipComp->OnActiveWeaponChanged.AddDynamic(this, &ThisClass::UpdateSelectionBorder);
+		EquipComp->OnActiveWeaponChanged.AddUniqueDynamic(this, &ThisClass::UpdateSelectionBorder);
 	}
 
 	UpdateSlotUI(nullptr);

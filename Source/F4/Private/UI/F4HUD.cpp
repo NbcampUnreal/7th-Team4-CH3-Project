@@ -121,12 +121,12 @@ void UF4HUD::InitializeAmmoUI()
 
 	if (InventoryComp)
 	{
-		InventoryComp->OnInventoryUpdated.AddDynamic(this, &UF4HUD::HandleInventoryUpdate);
+		InventoryComp->OnInventoryUpdated.AddUniqueDynamic(this, &UF4HUD::HandleInventoryUpdate);
 	}
 
 	if (EquipmentComp)
 	{
-		EquipmentComp->OnActiveWeaponChanged.AddDynamic(this, &UF4HUD::HandleWeaponChange);
+		EquipmentComp->OnActiveWeaponChanged.AddUniqueDynamic(this, &UF4HUD::HandleWeaponChange);
 	}
 
 	RefreshTotalAmmoUI();
