@@ -1,10 +1,34 @@
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "AIController.h"
+#include "AbilitySystem/Attributes/F4AttributeSetEnemy.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayEffect.h"
 
 AF4EnemyBase::AF4EnemyBase()
 {
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	
+	EnemyAttributeSet = CreateDefaultSubobject<UF4AttributeSetEnemy>(TEXT("EnemyAttributeSet"));
+	
+	AttributeSet = EnemyAttributeSet;
+}
+
+void AF4EnemyBase::InitializeAttributes()
+{
+	Super::InitializeAttributes();
+	
+	if (ASC && DefaultEnemyStatus)
+	{
+		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(DefaultEnemyStatus, 1.f, EffectContext);
+		if (SpecHandle.IsValid())
+		{
+			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
 }
 
 void AF4EnemyBase::BeginPlay()
@@ -27,6 +51,25 @@ void AF4EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void AF4EnemyBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	
+	InitializeAttributes();
+	
+	if (ASC && DifficultySideEffectClass)
+	{
+		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		
+		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(
+			DifficultySideEffectClass, 
+			1.0f, 
+			EffectContext
+			);
+        
+		if (SpecHandle.IsValid())
+		{
+			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
 	
 	AAIController* AIC = Cast<AAIController>(NewController);
 	if (AIC && BehaviorTree)

@@ -33,11 +33,11 @@ protected:
 	float TraceDepth = 1000.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Difficulty")
-	int32 BaseMaxEnemyCount = 5;
+	int32 SpawnLimit = 10;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Difficulty")
-	float IncreaseLevelTime = 120.f;
-	
+	int32 BaseMaxEnemyCount = 5;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Difficulty")
 	int32 IncreaseEnemyCount = 2;
 

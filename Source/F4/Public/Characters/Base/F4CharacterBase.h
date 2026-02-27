@@ -25,7 +25,7 @@ public:
 protected:
 	void InitAbilitySystem(); 
 	
-	void InitializeAttributes(); 
+	virtual void InitializeAttributes(); 
 	
 	void OnSpeedChanged(const FOnAttributeChangeData& Data);
 

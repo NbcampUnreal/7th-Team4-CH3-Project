@@ -5,6 +5,7 @@
 #include "Engine/DataTable.h"
 #include "F4EnemyBase.generated.h"
 
+
 class UF4AttributeSetEnemy;
 
 UENUM(BlueprintType)
@@ -17,13 +18,25 @@ class F4_API AF4EnemyBase : public AF4CharacterBase
 
 public:
 	AF4EnemyBase();
-
-	// 로컬 게임이라도 AI Controller가 빙의되는 시점에 초기화하는 것이 가장 안전
+	
 	virtual void PossessedBy(AController* NewController) override;
 	
 	UPROPERTY(editAnywhere, BlueprintReadOnly, Category = "GAS | Data")
 	FDataTableRowHandle CombatDataHandle;
+	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS | GameplayEffect")
+	TSubclassOf<UGameplayEffect> DefaultEnemyStatus;
+	
+	UPROPERTY(editAnywhere, BlueprintReadOnly, Category = "GAS | AttributeSet")
+	TObjectPtr<UF4AttributeSetEnemy> EnemyAttributeSet;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS | GameplayEffect")
+	TSubclassOf<UGameplayEffect> DifficultySideEffectClass;
+	
+	virtual void InitializeAttributes() override; 
 
+public:
 	// 서비스에서 쉽게 가져다 쓸 수 있도록 만든 Getter
 	FORCEINLINE FName GetEnemyRowName() const { return CombatDataHandle.RowName; }
 	FORCEINLINE TObjectPtr<const UDataTable> GetCombatDataTable() const { return CombatDataHandle.DataTable; }
@@ -31,7 +44,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-protected:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	
