@@ -11,7 +11,7 @@ struct FEnemyData : public FTableRowBase
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float AttackRange;
+	float AttackRange = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float TraceRange;
+	float TraceRange = 0.f;
 };

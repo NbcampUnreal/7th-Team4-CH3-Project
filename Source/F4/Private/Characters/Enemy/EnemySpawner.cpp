@@ -2,6 +2,7 @@
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/F4GameState.h"
 
 AEnemySpawner::AEnemySpawner()
 {
@@ -73,9 +74,31 @@ void AEnemySpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChange
 
 int32 AEnemySpawner::GetCurrentMaxCount() const
 {
-	// 스포너 로컬로 시간경과에 따른 몹 spawn 수 증가 >> gamemanager에서 시간을 가져오거나 spawn 마리수 조절하는걸로 변경예정
-	int32 IncreaseAmount = FMath::FloorToInt(GetWorld()->GetTimeSeconds() / IncreaseLevelTime) * IncreaseEnemyCount;
-	return BaseMaxEnemyCount + IncreaseAmount;
+	int32 FinalMaxCount = BaseMaxEnemyCount;
+
+	if (UWorld* World = GetWorld())
+	{
+		if (AF4GameState* GameState = World->GetGameState<AF4GameState>())
+		{
+			int32 IncreaseAmount = (GameState->DifficultyPhase - 1) * IncreaseEnemyCount;
+			
+			// 음수 상승치 방지
+			if (IncreaseAmount < 0)
+			{
+				IncreaseAmount = 0;
+			}
+
+			FinalMaxCount += IncreaseAmount;
+			
+			// 상한 적용
+			if (FinalMaxCount > SpawnLimit)
+			{
+				FinalMaxCount = SpawnLimit;
+			}
+		}
+	}
+
+	return FinalMaxCount;
 }
 
 void AEnemySpawner::CleanUpList()
