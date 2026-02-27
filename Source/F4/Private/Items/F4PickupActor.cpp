@@ -18,7 +18,7 @@ AF4PickupActor::AF4PickupActor()
 	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
 	CollisionSphere->SetGenerateOverlapEvents(true);
 
 	ItemMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
