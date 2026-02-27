@@ -33,6 +33,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Weapon Stats")
 	FGameplayAttributeData CurrentAmmo;
 	ATTRIBUTE_ACCESSORS(UF4AttributeSetWeapon, CurrentAmmo)
+
+	// 발사 속도
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon|Stats")
+	FGameplayAttributeData FireRate;
+	ATTRIBUTE_ACCESSORS(UF4AttributeSetWeapon, FireRate)
 	
 	// TODO: 인벤토리 내에 있는 여분 탄약 추가
 	

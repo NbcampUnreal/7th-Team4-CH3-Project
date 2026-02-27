@@ -41,7 +41,7 @@ protected:
 	float RecoilSpread = 20.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire|Montage")
-	float MontageRate = 2.0f;
+	float MontageRate = 1.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Fire | Effects")
 	TSubclassOf<UCameraShakeBase> FireCameraShakeClass;

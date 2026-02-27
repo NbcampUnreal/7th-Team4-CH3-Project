@@ -59,6 +59,8 @@ void UGA_Fire::ActivateAbility(
 	}
 
 	CachedFinalDamage = 0.0f;
+	float DynamicMontageRate = MontageRate;
+
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
 	if (ASC)
 	{
@@ -72,13 +74,18 @@ void UGA_Fire::ActivateAbility(
 			float CharacterATK = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetATKAttribute());
 			CachedFinalDamage *= CharacterATK;
 		}
+
+		if (ASC->HasAttributeSetForAttribute(UF4AttributeSetWeapon::GetFireRateAttribute()))
+		{
+			DynamicMontageRate = ASC->GetNumericAttribute(UF4AttributeSetWeapon::GetFireRateAttribute());
+		}
 	}
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
 		NAME_None,
 		FireMontage,
-		MontageRate
+		DynamicMontageRate
 	);
 
 	if (!PlayMontageTask)

@@ -28,8 +28,7 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 		UnequipItemFromSlot(TargetSlot);
 	}
 
-	const UF4ItemFragment_Equipment* EquipmentFragment = ItemToEquip->ItemDefinition->FindFragmentByClass<
-		UF4ItemFragment_Equipment>();
+	const UF4ItemFragment_Equipment* EquipmentFragment = ItemToEquip->ItemDefinition->FindFragmentByClass< UF4ItemFragment_Equipment>();
 	if (!EquipmentFragment || !EquipmentFragment->WeaponActorClass)
 	{
 		return;
@@ -39,13 +38,11 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 	SpawnParams.Owner = GetOwner();
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-	AF4WeaponActor* NewWeaponActor = GetWorld()->SpawnActor<AF4WeaponActor>(
-		EquipmentFragment->WeaponActorClass, SpawnParams);
+	AF4WeaponActor* NewWeaponActor = GetWorld()->SpawnActor<AF4WeaponActor>(EquipmentFragment->WeaponActorClass, SpawnParams);
 
 	if (NewWeaponActor)
 	{
-		NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-		                                  GetHolsterSocketName(TargetSlot));
+		NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, GetHolsterSocketName(TargetSlot));
 
 		WeaponLoadout.Add(TargetSlot, ItemToEquip);
 		SpawnedWeapons.Add(ItemToEquip, NewWeaponActor);
@@ -102,75 +99,29 @@ void UF4EquipmentComponent::UnequipItemFromSlot(EWeaponSlot TargetSlot)
 
 void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
 {
-if (ActiveSlot == NewSlot) return;
+	if (ActiveSlot == NewSlot)
+	{
+		return;
+	}
 
-    if (ActiveSlot != EWeaponSlot::None && WeaponLoadout.Contains(ActiveSlot))
-    {
-       UF4ItemInstance* OldItem = WeaponLoadout[ActiveSlot];
-       AF4WeaponActor* OldWeaponActor = SpawnedWeapons.FindRef(OldItem);
-       const UF4ItemFragment_Equipment* OldFragment = OldItem ? OldItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>() : nullptr;
+	if (ActiveSlot != EWeaponSlot::None && WeaponLoadout.Contains(ActiveSlot))
+	{
+		CleanUpOldWeapon(WeaponLoadout[ActiveSlot], ActiveSlot);
+	}
 
-       if (OldWeaponActor && OldFragment)
-       {
-          OldWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, GetHolsterSocketName(ActiveSlot));
-       }
+	ActiveSlot = NewSlot;
 
-       if (OldItem && ASC)
-       {
-          if (ASC->HasAttributeSetForAttribute(UF4AttributeSetWeapon::GetCurrentAmmoAttribute()))
-          {
-             float LeftAmmo = ASC->GetNumericAttribute(UF4AttributeSetWeapon::GetCurrentAmmoAttribute());
-             OldItem->DynamicStats.Add(F4GameplayTags::Weapon_Ammo_Loaded, LeftAmmo);
-          }
+	if (NewSlot == EWeaponSlot::None || !WeaponLoadout.Contains(NewSlot))
+	{
+		OnActiveWeaponChanged.Broadcast(nullptr);
+		return;
+	}
 
-          if (GrantedHandlesMap.Contains(OldItem))
-          {
-             for (const FGameplayAbilitySpecHandle& Handle : GrantedHandlesMap[OldItem].AbilitySpecHandles)
-             {
-                ASC->ClearAbility(Handle);
-             }
-             GrantedHandlesMap.Remove(OldItem);
-          }
-       }
-    }
+	UF4ItemInstance* NewItem = WeaponLoadout[NewSlot];
+	SetupNewWeapon(NewItem);
 
-    ActiveSlot = NewSlot;
-
-    if (NewSlot == EWeaponSlot::None || !WeaponLoadout.Contains(NewSlot))
-    {
-       OnActiveWeaponChanged.Broadcast(nullptr);
-       return;
-    }
-
-    UF4ItemInstance* NewItem = WeaponLoadout[NewSlot];
-    AF4WeaponActor* NewWeaponActor = SpawnedWeapons.FindRef(NewItem);
-    const UF4ItemFragment_Equipment* NewFragment = NewItem ? NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>() : nullptr;
-
-    if (!NewItem || !NewWeaponActor || !NewFragment || !ASC) return;
-
-    NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, NewFragment->HandSocketName);
-
-    const UF4ItemFragment_Firearm* FirearmFragment = NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Firearm>();
-    if (FirearmFragment)
-    {
-       ASC->SetNumericAttributeBase(UF4AttributeSetWeapon::GetBaseDamageAttribute(), FirearmFragment->BaseDamage);
-       ASC->SetNumericAttributeBase(UF4AttributeSetWeapon::GetMaxAmmoAttribute(), FirearmFragment->MaxMagazineSize);
-    }
-
-    float SavedAmmo = NewItem->GetStatValue(F4GameplayTags::Weapon_Ammo_Loaded);
-    ASC->SetNumericAttributeBase(UF4AttributeSetWeapon::GetCurrentAmmoAttribute(), SavedAmmo);
-
-    FEquipmentHandles NewHandles;
-    for (TSubclassOf<UGameplayAbility> AbilityClass : NewFragment->GrantedAbilities)
-    {
-       if (AbilityClass)
-       {
-          FGameplayAbilitySpec Spec(AbilityClass, 1, INDEX_NONE, NewItem);
-          NewHandles.AbilitySpecHandles.Add(ASC->GiveAbility(Spec));
-       }
-    }
-    GrantedHandlesMap.Add(NewItem, NewHandles);
-    OnActiveWeaponChanged.Broadcast(NewItem);}
+	OnActiveWeaponChanged.Broadcast(NewItem);
+}
 
 void UF4EquipmentComponent::EquipWeapon(UF4ItemInstance* ItemToEquip)
 {
@@ -188,18 +139,9 @@ void UF4EquipmentComponent::EquipWeapon(UF4ItemInstance* ItemToEquip)
 		}
 	}
 
-	EWeaponSlot TargetSlot = EWeaponSlot::None;
-	if (!WeaponLoadout.Contains(EWeaponSlot::Primary))
+	EWeaponSlot TargetSlot = DetermineTargetSlotForNewWeapon();
+	if (TargetSlot == ActiveSlot && WeaponLoadout.Contains(TargetSlot))
 	{
-		TargetSlot = EWeaponSlot::Primary;
-	}
-	else if (!WeaponLoadout.Contains(EWeaponSlot::Secondary))
-	{
-		TargetSlot = EWeaponSlot::Secondary;
-	}
-	else
-	{
-		TargetSlot = ActiveSlot;
 		UnequipItemFromSlot(TargetSlot);
 	}
 
@@ -248,4 +190,129 @@ FName UF4EquipmentComponent::GetHolsterSocketName(EWeaponSlot Slot) const
 	default:
 		return NAME_None;
 	}
+}
+
+void UF4EquipmentComponent::ApplyWeaponStatEffect(UF4ItemInstance* ItemInstance, const UF4ItemFragment_Firearm* FirearmFragment)
+{
+	if (!FirearmFragment || !FirearmFragment->EquipStatEffect || !ASC)
+	{
+		return;
+	}
+
+	FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
+	ContextHandle.AddInstigator(GetOwner(), GetOwner());
+	ContextHandle.AddSourceObject(ItemInstance);
+
+	FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(FirearmFragment->EquipStatEffect, 1.0f, ContextHandle);
+
+	if (SpecHandle.IsValid())
+	{
+		CurrentWeaponGEHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	}
+}
+
+void UF4EquipmentComponent::GrantWeaponAbilities(UF4ItemInstance* Item, const UF4ItemFragment_Equipment* Fragment)
+{
+	if (!Item || !Fragment || !ASC)
+	{
+		return;
+	}
+
+	FEquipmentHandles NewHandles;
+	for (TSubclassOf<UGameplayAbility> AbilityClass : Fragment->GrantedAbilities)
+	{
+		if (AbilityClass)
+		{
+			FGameplayAbilitySpec Spec(AbilityClass, 1, INDEX_NONE, Item);
+			NewHandles.AbilitySpecHandles.Add(ASC->GiveAbility(Spec));
+		}
+	}
+	GrantedHandlesMap.Add(Item, NewHandles);
+}
+
+void UF4EquipmentComponent::RemoveWeaponAbilities(UF4ItemInstance* Item)
+{
+	if (!Item || !ASC || !GrantedHandlesMap.Contains(Item))
+	{
+		return;
+	}
+
+	for (const FGameplayAbilitySpecHandle& Handle : GrantedHandlesMap[Item].AbilitySpecHandles)
+	{
+		ASC->ClearAbility(Handle);
+	}
+	GrantedHandlesMap.Remove(Item);
+}
+
+void UF4EquipmentComponent::CleanUpOldWeapon(UF4ItemInstance* OldItem, EWeaponSlot OldSlot)
+{
+	if (!OldItem)
+	{
+		return;
+	}
+
+	AF4WeaponActor* OldWeaponActor = SpawnedWeapons.FindRef(OldItem);
+	const UF4ItemFragment_Equipment* OldFragment = OldItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>();
+
+	if (OldWeaponActor && OldFragment)
+	{
+		OldWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, GetHolsterSocketName(OldSlot));
+	}
+
+	if (ASC)
+	{
+		if (ASC->HasAttributeSetForAttribute(UF4AttributeSetWeapon::GetCurrentAmmoAttribute()))
+		{
+			float LeftAmmo = ASC->GetNumericAttribute(UF4AttributeSetWeapon::GetCurrentAmmoAttribute());
+			OldItem->DynamicStats.Add(F4GameplayTags::Weapon_Ammo_Loaded, LeftAmmo);
+		}
+
+		RemoveWeaponAbilities(OldItem);
+		if (CurrentWeaponGEHandle.IsValid())
+		{
+			ASC->RemoveActiveGameplayEffect(CurrentWeaponGEHandle);
+			CurrentWeaponGEHandle.Invalidate();
+		}
+	}
+}
+
+void UF4EquipmentComponent::SetupNewWeapon(UF4ItemInstance* NewItem)
+{
+	if (!NewItem || !ASC)
+	{
+		return;
+	}
+
+	AF4WeaponActor* NewWeaponActor = SpawnedWeapons.FindRef(NewItem);
+	const UF4ItemFragment_Equipment* NewFragment = NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>();
+
+	if (!NewWeaponActor || !NewFragment)
+	{
+		return;
+	}
+
+	NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, NewFragment->HandSocketName);
+
+	if (const UF4ItemFragment_Firearm* FirearmFragment = NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Firearm>())
+	{
+		ApplyWeaponStatEffect(NewItem, FirearmFragment);
+	}
+
+	float SavedAmmo = NewItem->GetStatValue(F4GameplayTags::Weapon_Ammo_Loaded);
+	ASC->SetNumericAttributeBase(UF4AttributeSetWeapon::GetCurrentAmmoAttribute(), SavedAmmo);
+
+	GrantWeaponAbilities(NewItem, NewFragment);
+}
+
+EWeaponSlot UF4EquipmentComponent::DetermineTargetSlotForNewWeapon() const
+{
+	if (!WeaponLoadout.Contains(EWeaponSlot::Primary))
+	{
+		return EWeaponSlot::Primary;
+	}
+	if (!WeaponLoadout.Contains(EWeaponSlot::Secondary))
+	{
+		return EWeaponSlot::Secondary;
+	}
+	return ActiveSlot;
 }
