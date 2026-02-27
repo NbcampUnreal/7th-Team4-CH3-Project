@@ -13,6 +13,7 @@ UGA_Reload::UGA_Reload()
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Reloading);
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Rolling);
 
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Reloading);
 

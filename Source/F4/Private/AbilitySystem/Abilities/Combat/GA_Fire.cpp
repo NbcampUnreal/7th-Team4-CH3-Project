@@ -26,9 +26,14 @@ UGA_Fire::UGA_Fire()
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Switching_Weapon);
-	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Rolling);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_HurricaneKicking);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Sprinting);
 
 	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Invisible);
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Reload);
+
+	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
 
 	// TODO: cost bullet 추가 필요
 }
