@@ -14,6 +14,7 @@ UGA_Sprint::UGA_Sprint()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Movement_Sprint));
+	ActivationBlockedTags.AddTag(F4GameplayTags::State_Reloading);
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_Sprinting);
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_NoRegenStamina);
 }
