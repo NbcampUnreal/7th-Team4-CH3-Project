@@ -5,10 +5,7 @@ namespace F4GameplayTags
 	// 피아식별 Tags
 	UE_DEFINE_GAMEPLAY_TAG(Character_Player, TEXT("Character.Player"));
 	UE_DEFINE_GAMEPLAY_TAG(Character_Enemy, TEXT("Character.Enemy"));
-
-	UE_DEFINE_GAMEPLAY_TAG(State_Aiming, TEXT("State.Aiming"));
-	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Aim, TEXT("Ability.Combat.Aim"));
-    UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Equip, TEXT("Ability.Combat.Equip"));
+	
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Invisible, TEXT("Ability.Combat.Invisible"));
 
 	// Ability Tags
