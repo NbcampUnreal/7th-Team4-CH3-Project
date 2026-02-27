@@ -78,6 +78,7 @@ namespace F4GameplayTags
 	// Gameplay Cue 
 	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_HurricaneKick, "GameplayCue.HurricaneKick");
 	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Weapon_Triggered, "GameplayCue.Weapon.Triggered");
+	UE_DEFINE_GAMEPLAY_TAG(GameplayCue_Weapon_DryFire, "GameplayCue.Weapon.DryFire");
 
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Move, "InputTag.Move");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Look, "InputTag.Look");

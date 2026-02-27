@@ -15,6 +15,14 @@ class F4_API UGA_Fire : public UGameplayAbility
 public:
 	UGA_Fire();
 
+	virtual bool CanActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags = nullptr,
+		const FGameplayTagContainer* TargetTags = nullptr,
+		OUT FGameplayTagContainer* OptionalRelevantTags = nullptr
+	) const override;
+
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
@@ -78,4 +86,10 @@ protected:
 
 	UFUNCTION()
 	void ApplyAimRecoil();
+
+private:
+	void HandleDryFire();
+
+	UFUNCTION()
+	void OnDryFireFinished();
 };

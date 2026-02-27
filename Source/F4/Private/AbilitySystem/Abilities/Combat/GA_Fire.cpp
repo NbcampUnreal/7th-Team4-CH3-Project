@@ -2,14 +2,12 @@
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
 #include "GameFramework/Character.h"
 #include "Characters/Player/F4PlayerCharacter.h"
-#include "Inventory/F4ItemDefinition.h"
-#include "Inventory/F4ItemFragment_Firearm.h"
-#include "Inventory/F4ItemInstance.h"
 #include "Items/Weapons/F4Projectile.h"
 #include "Items/Weapons/F4WeaponActor.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -24,9 +22,6 @@ UGA_Fire::UGA_Fire()
 
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Fire));
 
-	// TODO: 달리기 중이라면 끊기
-	// CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Movement_Sprint)
-
 	ActivationRequiredTags.AddTag(F4GameplayTags::State_Aiming);
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
@@ -39,8 +34,26 @@ UGA_Fire::UGA_Fire()
 	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Reload);
 
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
+}
 
-	// TODO: cost bullet 추가 필요
+bool UGA_Fire::CanActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags,
+	OUT FGameplayTagContainer* OptionalRelevantTags) const
+{
+	if (!ActorInfo || !ActorInfo->AbilitySystemComponent.IsValid())
+	{
+		return false;
+	}
+
+	if (!DoesAbilitySatisfyTagRequirements(*ActorInfo->AbilitySystemComponent.Get(), SourceTags, TargetTags, OptionalRelevantTags))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void UGA_Fire::ActivateAbility(
@@ -53,8 +66,7 @@ void UGA_Fire::ActivateAbility(
 
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
-		// TODO: 총알 빈 소리
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		HandleDryFire();
 		return;
 	}
 
@@ -261,4 +273,29 @@ void UGA_Fire::ApplyAimRecoil()
 
 	float RandomYaw = FMath::FRandRange(-HorizontalRecoilRange, HorizontalRecoilRange);
 	PlayerController->AddYawInput(RandomYaw);
+}
+
+void UGA_Fire::HandleDryFire()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	if (ASC)
+	{
+		ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Weapon_DryFire);
+	}
+
+	UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, 0.25f);
+	if (WaitDelayTask)
+	{
+		WaitDelayTask->OnFinish.AddDynamic(this, &UGA_Fire::OnDryFireFinished);
+		WaitDelayTask->ReadyForActivation();
+	}
+	else
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	}
+}
+
+void UGA_Fire::OnDryFireFinished()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
