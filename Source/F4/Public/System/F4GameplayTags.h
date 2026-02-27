@@ -22,12 +22,15 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Fire);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Invisible);
 
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_HurricaneKick);
+	
 	// Character State Tags 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_InAir);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_Sprinting);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_Rolling);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_Crouching);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_Interacting);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_HurricaneKicking);
 	
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Aiming);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Firing);
@@ -59,6 +62,10 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Hit_Damage);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Interaction_Pickup);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Combat_Equip);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Stamina_Exhuast);
+	
+	
+	// Input Tag
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Weapon_Switch);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Switching);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Trigger_Invisible);
@@ -67,4 +74,8 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Zoom);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_QuickSlot);
+	
+	
+	// Gameplay Cue
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_HurricaneKick);
 }
