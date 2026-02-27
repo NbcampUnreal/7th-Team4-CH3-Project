@@ -183,7 +183,7 @@ void UGA_HurricaneKick::DetectEnemies()
 			Payload.Instigator = GetAvatarActorFromActorInfo(); 
 			Payload.Target = HitActor;
 			
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitActor(), F4GameplayTags::Event_Hit_Damage, Payload);
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitActor, F4GameplayTags::Event_Hit_Damage, Payload);
 		}
 	}
 }
