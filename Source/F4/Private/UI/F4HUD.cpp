@@ -4,6 +4,13 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
+#include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
+#include "Components/TextBlock.h"
+#include "Inventory/F4EquipmentComponent.h"
+#include "Inventory/F4InventoryComponent.h"
+#include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemFragment_Firearm.h"
+#include "Inventory/F4ItemInstance.h"
 #include "System/F4GameplayTags.h"
 
 void UF4HUD::NativeConstruct()
@@ -13,7 +20,14 @@ void UF4HUD::NativeConstruct()
 	Owner = GetOwningPlayerPawn();
 	OwnerASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Owner);
 
-	InitializeHealthBar(); 
+	if (Owner)
+	{
+		EquipmentComp = Owner->FindComponentByClass<UF4EquipmentComponent>();
+		InventoryComp = Owner->FindComponentByClass<UF4InventoryComponent>();
+	}
+
+	InitializeHealthBar();
+	InitializeAmmoUI();
 }
 
 void UF4HUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -55,7 +69,7 @@ void UF4HUD::AddRecoilImpulse(float ImpulseAmount)
 #pragma endregion 
 
 
-#pragma region HealthBar 
+#pragma region HealthBar
 
 void UF4HUD::InitializeHealthBar()
 {
@@ -85,4 +99,80 @@ void UF4HUD::UpdateHealthBar(const float Current,const float Max) const
 	HealthBar->UpdateStatBar(Current, Max);
 }
 
-#pragma endregion 
+#pragma endregion
+
+
+#pragma region AmmoUI
+
+void UF4HUD::InitializeAmmoUI()
+{
+	if (OwnerASC)
+	{
+		OwnerASC->GetGameplayAttributeValueChangeDelegate(
+			UF4AttributeSetWeapon::GetCurrentAmmoAttribute()).AddUObject(this, &UF4HUD::OnCurrentAmmoChanged);
+
+		float Current = OwnerASC->GetNumericAttribute(UF4AttributeSetWeapon::GetCurrentAmmoAttribute());
+		FOnAttributeChangeData InitialData;
+		InitialData.Attribute = UF4AttributeSetWeapon::GetCurrentAmmoAttribute();
+		InitialData.NewValue = Current;
+		InitialData.OldValue = Current;
+		OnCurrentAmmoChanged(InitialData);
+	}
+
+	if (InventoryComp)
+	{
+		InventoryComp->OnInventoryUpdated.AddDynamic(this, &UF4HUD::HandleInventoryUpdate);
+	}
+
+	if (EquipmentComp)
+	{
+		EquipmentComp->OnActiveWeaponChanged.AddDynamic(this, &UF4HUD::HandleWeaponChange);
+	}
+
+	RefreshTotalAmmoUI();
+}
+
+void UF4HUD::OnCurrentAmmoChanged(const FOnAttributeChangeData& Data)
+{
+	if (CurrentAmmoText)
+	{
+		CurrentAmmoText->SetText(FText::AsNumber(FMath::FloorToInt(Data.NewValue)));
+	}
+}
+
+void UF4HUD::HandleInventoryUpdate()
+{
+	RefreshTotalAmmoUI();
+}
+
+void UF4HUD::HandleWeaponChange(UF4ItemInstance* NewWeapon)
+{
+	RefreshTotalAmmoUI();
+}
+
+void UF4HUD::RefreshTotalAmmoUI()
+{
+	if (!TotalAmmoText || !InventoryComp || !EquipmentComp || !AmmoUIContainer)
+	{
+		return;
+	}
+
+	UF4ItemInstance* ActiveWeapon = EquipmentComp->GetActiveWeaponInstance();
+
+	if (ActiveWeapon && ActiveWeapon->ItemDefinition)
+	{
+		const UF4ItemFragment_Firearm* FirearmFragment = ActiveWeapon->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Firearm>();
+		if (FirearmFragment)
+		{
+			AmmoUIContainer->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+			int32 Total = InventoryComp->GetTotalItemCountByDefinition(FirearmFragment->AmmoItemDefinition);
+			TotalAmmoText->SetText(FText::AsNumber(Total));
+			return;
+		}
+	}
+
+	AmmoUIContainer->SetVisibility(ESlateVisibility::Collapsed);
+}
+
+#pragma endregion
