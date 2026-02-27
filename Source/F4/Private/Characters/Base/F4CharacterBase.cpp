@@ -3,6 +3,7 @@
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
 
 
 AF4CharacterBase::AF4CharacterBase()
@@ -30,6 +31,7 @@ AF4CharacterBase::AF4CharacterBase()
 	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed); 
 	
 	AttributeSet = CreateDefaultSubobject<UF4AttributeSetCharacter>(TEXT("AttributeSet"));
+	WeaponAttributeSet = CreateDefaultSubobject<UF4AttributeSetWeapon>(TEXT("WeaponAttributeSet"));
 }
 
 void AF4CharacterBase::PossessedBy(AController* NewController)

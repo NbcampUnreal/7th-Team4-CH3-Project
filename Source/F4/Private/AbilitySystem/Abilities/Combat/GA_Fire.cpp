@@ -3,8 +3,13 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
+#include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
 #include "GameFramework/Character.h"
 #include "Characters/Player/F4PlayerCharacter.h"
+#include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemFragment_Firearm.h"
+#include "Inventory/F4ItemInstance.h"
 #include "Items/Weapons/F4Projectile.h"
 #include "Items/Weapons/F4WeaponActor.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -48,8 +53,25 @@ void UGA_Fire::ActivateAbility(
 
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
+		// TODO: 총알 빈 소리
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
+	}
+
+	CachedFinalDamage = 0.0f;
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	if (ASC)
+	{
+		if (ASC->HasAttributeSetForAttribute(UF4AttributeSetWeapon::GetBaseDamageAttribute()))
+		{
+			CachedFinalDamage = ASC->GetNumericAttribute(UF4AttributeSetWeapon::GetBaseDamageAttribute());
+		}
+
+		if (ASC->HasAttributeSetForAttribute(UF4AttributeSetCharacter::GetATKAttribute()))
+		{
+			float CharacterATK = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetATKAttribute());
+			CachedFinalDamage *= CharacterATK;
+		}
 	}
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
@@ -114,62 +136,61 @@ void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 void UGA_Fire::SpawnProjectile()
 {
 	AF4PlayerCharacter* AvatarCharacter = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo());
-	if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !ProjectileClass)
-	{
-		return;
-	}
+    if (!AvatarCharacter || !AvatarCharacter->GetMesh() || !ProjectileClass)
+    {
+       return;
+    }
 
-	UF4EquipmentComponent* EquipmentComp = AvatarCharacter->FindComponentByClass<UF4EquipmentComponent>();
-	AF4WeaponActor* ActiveWeapon = EquipmentComp ? EquipmentComp->GetActiveWeaponActor() : nullptr;
+    UF4EquipmentComponent* EquipmentComp = AvatarCharacter->FindComponentByClass<UF4EquipmentComponent>();
+    AF4WeaponActor* ActiveWeapon = EquipmentComp ? EquipmentComp->GetActiveWeaponActor() : nullptr;
 
-	if (!ActiveWeapon)
-	{
-		return;
-	}
+    if (!ActiveWeapon)
+    {
+       return;
+    }
 
-	FTransform MuzzleTransform = ActiveWeapon->GetMuzzleTransform();
-	FVector MuzzleLocation = MuzzleTransform.GetLocation();
+    FTransform MuzzleTransform = ActiveWeapon->GetMuzzleTransform();
+    FVector MuzzleLocation = MuzzleTransform.GetLocation();
 
-	FVector CameraLocation;
-	FRotator CameraRotation;
-	AvatarCharacter->GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+    FVector CameraLocation;
+    FRotator CameraRotation;
+    AvatarCharacter->GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
 
-	FVector TraceEnd = CameraLocation + (CameraRotation.Vector() * 50000.f);
-	FHitResult HitResult;
-	FCollisionQueryParams TraceParams;
-	TraceParams.AddIgnoredActor(AvatarCharacter);
+    FVector TraceEnd = CameraLocation + (CameraRotation.Vector() * 50000.f);
+    FHitResult HitResult;
+    FCollisionQueryParams TraceParams;
+    TraceParams.AddIgnoredActor(AvatarCharacter);
 
-	GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_GameTraceChannel1, TraceParams);
-	if (HitResult.bBlockingHit && HitResult.GetActor() && bIsDebugMode)
-	{
-		// TODO: debug 용도
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("타겟 액터: %s"), *HitResult.GetActor()->GetName()));
-	}
-	FVector TargetLocation = HitResult.bBlockingHit ? HitResult.ImpactPoint : TraceEnd;
+    GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_GameTraceChannel1, TraceParams);
+    if (HitResult.bBlockingHit && HitResult.GetActor() && bIsDebugMode)
+    {
+       GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("타겟 액터: %s"), *HitResult.GetActor()->GetName()));
+    }
+    FVector TargetLocation = HitResult.bBlockingHit ? HitResult.ImpactPoint : TraceEnd;
 
-	FRotator AimRotation = UKismetMathLibrary::FindLookAtRotation(MuzzleLocation, TargetLocation);
-	FTransform SpawnTransform(AimRotation, MuzzleLocation);
+    FRotator AimRotation = UKismetMathLibrary::FindLookAtRotation(MuzzleLocation, TargetLocation);
+    FTransform SpawnTransform(AimRotation, MuzzleLocation);
 
-	AF4Projectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<AF4Projectile>(
-		ProjectileClass,
-		SpawnTransform,
-		AvatarCharacter,
-		AvatarCharacter,
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
-	);
+    AF4Projectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<AF4Projectile>(
+       ProjectileClass,
+       SpawnTransform,
+       AvatarCharacter,
+       AvatarCharacter,
+       ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+    );
 
-	if (bIsDebugMode)
-	{
-		// TODO: debug 용도
-		DrawDebugLine(GetWorld(), CameraLocation, TargetLocation, FColor::Red, false, 3.0f, 0, 0.2f);
-		DrawDebugLine(GetWorld(), MuzzleLocation, TargetLocation, FColor::Green, false, 3.0f, 0, 1.5f);
-		DrawDebugSphere(GetWorld(), TargetLocation, 15.0f, 12, FColor::Yellow, false, 3.0f);
-	}
+    if (bIsDebugMode)
+    {
+       DrawDebugLine(GetWorld(), CameraLocation, TargetLocation, FColor::Red, false, 3.0f, 0, 0.2f);
+       DrawDebugLine(GetWorld(), MuzzleLocation, TargetLocation, FColor::Green, false, 3.0f, 0, 1.5f);
+       DrawDebugSphere(GetWorld(), TargetLocation, 15.0f, 12, FColor::Yellow, false, 3.0f);
+    }
 
-	if (SpawnedProjectile)
-	{
-		SpawnedProjectile->FinishSpawning(SpawnTransform);
-	}
+    if (SpawnedProjectile)
+    {
+       SpawnedProjectile->DamagePayload = CachedFinalDamage;
+       SpawnedProjectile->FinishSpawning(SpawnTransform);
+    }
 }
 
 void UGA_Fire::CrosshairRecoil()

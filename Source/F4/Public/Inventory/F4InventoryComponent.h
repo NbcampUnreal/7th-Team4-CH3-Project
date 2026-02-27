@@ -39,6 +39,10 @@ public:
 
 	const TArray<TObjectPtr<UF4ItemInstance>>& GetInventoryItems() const { return InventoryList; }
 
+	int32 GetTotalItemCountByDefinition(class UF4ItemDefinition* ItemDef) const;
+
+	void ConsumeItemByDefinition(class UF4ItemDefinition* ItemDef, int32 AmountToConsume);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
 	TArray<TObjectPtr<UF4ItemInstance>> InventoryList;

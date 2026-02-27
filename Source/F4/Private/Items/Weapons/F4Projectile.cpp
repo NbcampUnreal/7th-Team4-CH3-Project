@@ -71,6 +71,8 @@ void AF4Projectile::OnHit(
 		Payload.Instigator = GetInstigator();
 		Payload.Target = OtherActor;
 
+		Payload.EventMagnitude = DamagePayload;
+
 		FHitResult* MutableHit = const_cast<FHitResult*>(&Hit);
 		Payload.TargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(*MutableHit));
 

@@ -8,7 +8,8 @@
 #include "AbilitySystemInterface.h"
 #include "F4CharacterBase.generated.h"
 
-class UGameplayAbility; 
+class UF4AttributeSetWeapon;
+class UGameplayAbility;
 class UF4AttributeSetCharacter; 
 
 struct FGameplayAbilitySpecHandle;
@@ -37,8 +38,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS")
 	TObjectPtr<UF4AbilitySystemComponent> ASC; // 어빌리티 시스템 컴포넌트 
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GAS | Attributes")
-	TObjectPtr<UF4AttributeSetCharacter> AttributeSet; // 어트리뷰트 셋 
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "GAS | Attributes")
+	TObjectPtr<UF4AttributeSetCharacter> AttributeSet; // 어트리뷰트 셋
+
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "GAS | Attributes")
+	TObjectPtr<UF4AttributeSetWeapon> WeaponAttributeSet;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS | Abilities")
 	TArray<FGameplayAbilitySpecHandle> InitialAbilitySpecHandles;// 기본 어빌리티 SpecHandle 

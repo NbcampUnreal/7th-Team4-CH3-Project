@@ -24,38 +24,42 @@ void AF4SpawnVolume::BeginPlay()
 
 void AF4SpawnVolume::SpawnItems()
 {
-	if (!ItemClassToSpawn || SpawnableItems.IsEmpty())
+	if (SpawnableItems.IsEmpty())
 	{
-		UE_LOGFMT(LogTemp, Warning, "SpawnVolume: ItemClass or DataList is empty in {0}", GetName());
+		UE_LOGFMT(LogTemp, Warning, "SpawnVolume: SpawnableItems is empty in {0}", GetName());
 		return;
 	}
-	
+
 	for (int32 i = 0; i < SpawnCount; ++i)
 	{
 		FVector SpawnLocation;
-		// 바닥 못찾으면 패스
 		if (!GetRandomGroundPoint(SpawnLocation))
 		{
 			continue;
 		}
-		
+
 		int32 RandomIndex = FMath::RandRange(0, SpawnableItems.Num() - 1);
-		
-		UF4ItemDefinition* SelectedData = SpawnableItems[RandomIndex];
-		
+
+		FF4SpawnItemData SelectedData = SpawnableItems[RandomIndex];
+
+		if (!SelectedData.ItemDefinition) continue;
+
+		TSubclassOf<AF4PickupActor> ClassToSpawn = SelectedData.OverridePickupClass ? SelectedData.OverridePickupClass : DefaultItemClassToSpawn;
+
+		if (!ClassToSpawn) continue;
+
 		FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
-		
-		// Deferred Spawn: 스폰->BeginPlay()전에 멈춤->데이터 먼저 주입->다시 스폰
+
 		AF4PickupActor* NewItem = GetWorld()->SpawnActorDeferred<AF4PickupActor>(
-			ItemClassToSpawn,
-			FTransform(SpawnRotation, SpawnLocation)
+		   ClassToSpawn,
+		   FTransform(SpawnRotation, SpawnLocation)
 		);
-		
+
 		if (NewItem)
 		{
-			NewItem->InitializePickup(SelectedData);
-			
-			// BeginPlay 호출시점
+			NewItem->ItemQuantity = SelectedData.Quantity;
+
+			NewItem->InitializePickup(SelectedData.ItemDefinition);
 			NewItem->FinishSpawning(FTransform(SpawnRotation, SpawnLocation));
 		}
 	}

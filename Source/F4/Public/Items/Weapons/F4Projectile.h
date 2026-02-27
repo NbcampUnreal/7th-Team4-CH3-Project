@@ -16,6 +16,9 @@ class F4_API AF4Projectile : public AActor
 public:	
 	AF4Projectile();
 
+	UPROPERTY(BlueprintReadWrite, Category = "Projectile")
+	float DamagePayload = 0.0f;
+
 protected:
 	virtual void BeginPlay() override;
 

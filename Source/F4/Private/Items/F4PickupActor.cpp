@@ -91,6 +91,7 @@ void AF4PickupActor::DoInteract(AActor* Interactor)
 			UF4ItemInstance* PickedItemInstance = NewObject<UF4ItemInstance>(InventoryComp);
 			
 			PickedItemInstance->ItemDefinition = ItemDefinition;
+			PickedItemInstance->Quantity = ItemQuantity;
 			
 			UE_LOGFMT(LogTemp, Warning, "아이템 추가 시도: {0}", ItemDefinition->GetName());
 			
