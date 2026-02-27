@@ -1,9 +1,13 @@
 #include "Items/F4PickupActor.h"
 #include "Components/SphereComponent.h"
 #include "Characters/Player/F4PlayerCharacter.h"
+#include "Components/WidgetComponent.h"
 #include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemFragment_UI.h"
 #include "Inventory/F4ItemInstance.h"
 #include "Items/F4ItemFragment_PickupVisual.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "UI/F4InteractionWidget.h"
 
 AF4PickupActor::AF4PickupActor()
 {
@@ -12,8 +16,10 @@ AF4PickupActor::AF4PickupActor()
 
 	CollisionSphere->SetCollisionProfileName(TEXT("Custom"));
 	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
+	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	CollisionSphere->SetGenerateOverlapEvents(true);
 
 	ItemMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	ItemMeshComp->SetupAttachment(RootComponent);
@@ -22,6 +28,13 @@ AF4PickupActor::AF4PickupActor()
 	SubMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SubMeshComp"));
 	SubMeshComp->SetupAttachment(RootComponent);
 	SubMeshComp->SetCollisionProfileName(TEXT("NoCollision"));
+
+	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComponent"));
+	WidgetComponent->SetupAttachment(RootComponent);
+	WidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+	WidgetComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 60.0f));
+	WidgetComponent->SetDrawSize(FVector2D(200.0f, 50.0f));
+	WidgetComponent->SetVisibility(false);
 }
 
 void AF4PickupActor::BeginPlay()
@@ -54,7 +67,11 @@ void AF4PickupActor::BeginPlay()
 				SubMeshComp->SetStaticMesh(nullptr);
 			}
 		}
+
 	}
+
+	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AF4PickupActor::OnSphereBeginOverlap);
+	CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &AF4PickupActor::OnSphereEndOverlap);
 }
 
 void AF4PickupActor::DoInteract(AActor* Interactor)
@@ -130,5 +147,46 @@ void AF4PickupActor::InitializePickup(UF4ItemDefinition* InItemDefinition)
 		{
 			SubMeshComp->SetStaticMesh(nullptr);
 		}
+	}
+}
+
+void AF4PickupActor::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor->IsA<AF4PlayerCharacter>())
+	{
+		if (UF4InteractionWidget* InteractionWidget = Cast<UF4InteractionWidget>(WidgetComponent->GetUserWidgetObject()))
+		{
+			const UF4ItemFragment_UI* UIFragment = ItemDefinition->FindFragmentByClass<UF4ItemFragment_UI>();
+			if (UIFragment)
+			{
+				FText FormattedText = FText::Format(FText::FromString(TEXT("F - {0} 줍기")), UIFragment->ItemName);
+				InteractionWidget->SetInteractText(FormattedText);
+			}
+		}
+
+		APlayerController* PC = GetWorld()->GetFirstPlayerController();
+		if (PC && PC->PlayerCameraManager)
+		{
+			FVector CameraLocation = PC->PlayerCameraManager->GetCameraLocation();
+			FVector WidgetLocation = WidgetComponent->GetComponentLocation();
+
+			FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(WidgetLocation, CameraLocation);
+
+			// 깔끔하게 좌우만 맞추고 싶다면 아래처럼 (위젯이 뒤집히는 것 방지)
+			// LookAtRot.Pitch = 0.0f;
+			// LookAtRot.Roll = 0.0f;
+
+			WidgetComponent->SetWorldRotation(LookAtRot);
+		}
+
+		WidgetComponent->SetVisibility(true);
+	}
+}
+
+void AF4PickupActor::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor && OtherActor->IsA<AF4PlayerCharacter>())
+	{
+		WidgetComponent->SetVisibility(false);
 	}
 }
