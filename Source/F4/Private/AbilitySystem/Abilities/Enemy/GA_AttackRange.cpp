@@ -91,10 +91,6 @@ void UGA_AttackRange::SpawnEnemyProjectile()
 
 	if (Projectile)
 	{
-		// 난이도 배율 데미지 증가 여기서 추가하면됨
 		Projectile->FinishSpawning(SpawnTransform);
 	}
-
-	// 디버그용 (발사 위치 확인)
-	// DrawDebugSphere(GetWorld(), FakeMuzzleLocation, 10.f, 8, FColor::Cyan, false, 2.f);
 }
