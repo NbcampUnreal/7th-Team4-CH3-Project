@@ -39,9 +39,11 @@ void UF4AttributeSetCharacter::PostGameplayEffectExecute(const FGameplayEffectMo
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	// 최종 변환 정보를 바탕으로 사망처리
+	
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+		// 최종 변환 정보를 바탕으로 사망처리
 		if (GetHealth() <= 0.0f)
 		{
 			FGameplayEventData Payload;
@@ -52,6 +54,25 @@ void UF4AttributeSetCharacter::PostGameplayEffectExecute(const FGameplayEffectMo
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
 				Data.Target.GetAvatarActor(),
 				F4GameplayTags::Event_Character_Die,
+				Payload
+			);
+		}
+	}
+
+	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
+	{
+		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
+
+		if (GetStamina() <= 0.0f)
+		{
+			FGameplayEventData Payload;
+			Payload.EventTag = F4GameplayTags::Event_Stamina_Exhuast;
+			Payload.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
+			Payload.Target = Data.Target.GetAvatarActor();
+			
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+				Data.Target.GetAvatarActor(),
+				F4GameplayTags::Event_Stamina_Exhuast,
 				Payload
 			);
 		}
@@ -109,8 +130,8 @@ void UF4AttributeSetCharacter::HandleStaminaRegen()
 	if (ASC->HasAnyMatchingGameplayTags(Container)) return;
 
 	// 3. Check Stamina Value 
-	float CurrentStaminaValue = GetStamina();
-	float MaxStaminaValue = GetMaxStamina();
+	const float CurrentStaminaValue = GetStamina();
+	const float MaxStaminaValue = GetMaxStamina();
 
 	if (CurrentStaminaValue < MaxStaminaValue)
 	{
