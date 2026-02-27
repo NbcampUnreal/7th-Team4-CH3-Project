@@ -6,6 +6,16 @@ UGA_Roll::UGA_Roll()
 {
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Movement_Roll));
 
+	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
+	ActivationBlockedTags.AddTag(F4GameplayTags::State_Switching_Weapon);
+
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Fire);
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Reload);
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_HurricaneKick);
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Aim);
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Invisible);
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_SwitchWeapon);
+
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_Rolling);
 }
 

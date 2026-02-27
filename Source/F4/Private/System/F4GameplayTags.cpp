@@ -21,7 +21,8 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Aim, TEXT("Ability.Combat.Aim"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Fire, TEXT("Ability.Combat.Fire"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_HurricaneKick,TEXT("Ability.Combat.HurricaneKick"));
-	
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_SwitchWeapon,TEXT("Ability.Combat.SwitchWeapon"));
+
 	// Character State
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_InAir, TEXT("Character.State.InAir"));
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_Sprinting, TEXT("Character.State.Sprinting"));

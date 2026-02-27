@@ -23,7 +23,8 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Invisible);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_HurricaneKick);
-	
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_SwitchWeapon);
+
 	// Character State Tags 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_InAir);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_Sprinting);

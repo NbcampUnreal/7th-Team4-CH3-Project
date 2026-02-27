@@ -10,7 +10,11 @@ UGA_SwitchWeapon::UGA_SwitchWeapon()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_SwitchWeapon));
+
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Rolling);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_HurricaneKicking);
 
 	FAbilityTriggerData TriggerData;
 	TriggerData.TriggerTag = F4GameplayTags::Event_Weapon_Switch;
@@ -18,6 +22,7 @@ UGA_SwitchWeapon::UGA_SwitchWeapon()
 	AbilityTriggers.Add(TriggerData);
 
 	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Reload);
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Aim);
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Switching_Weapon);
 }
 

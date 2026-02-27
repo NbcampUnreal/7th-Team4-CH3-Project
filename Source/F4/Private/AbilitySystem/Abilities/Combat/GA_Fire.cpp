@@ -26,9 +26,14 @@ UGA_Fire::UGA_Fire()
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Switching_Weapon);
-	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Rolling);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_HurricaneKicking);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Sprinting);
 
 	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Invisible);
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Reload);
+
+	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
 
 	// TODO: cost bullet 추가 필요
 }
@@ -135,7 +140,7 @@ void UGA_Fire::SpawnProjectile()
 	TraceParams.AddIgnoredActor(AvatarCharacter);
 
 	GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_GameTraceChannel1, TraceParams);
-	if (HitResult.bBlockingHit && HitResult.GetActor())
+	if (HitResult.bBlockingHit && HitResult.GetActor() && bIsDebugMode)
 	{
 		// TODO: debug 용도
 		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Red, FString::Printf(TEXT("타겟 액터: %s"), *HitResult.GetActor()->GetName()));
@@ -153,10 +158,13 @@ void UGA_Fire::SpawnProjectile()
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
 	);
 
-	// TODO: debug 용도
-	DrawDebugLine(GetWorld(), CameraLocation, TargetLocation, FColor::Red, false, 3.0f, 0, 0.2f);
-	DrawDebugLine(GetWorld(), MuzzleLocation, TargetLocation, FColor::Green, false, 3.0f, 0, 1.5f);
-	DrawDebugSphere(GetWorld(), TargetLocation, 15.0f, 12, FColor::Yellow, false, 3.0f);
+	if (bIsDebugMode)
+	{
+		// TODO: debug 용도
+		DrawDebugLine(GetWorld(), CameraLocation, TargetLocation, FColor::Red, false, 3.0f, 0, 0.2f);
+		DrawDebugLine(GetWorld(), MuzzleLocation, TargetLocation, FColor::Green, false, 3.0f, 0, 1.5f);
+		DrawDebugSphere(GetWorld(), TargetLocation, 15.0f, 12, FColor::Yellow, false, 3.0f);
+	}
 
 	if (SpawnedProjectile)
 	{

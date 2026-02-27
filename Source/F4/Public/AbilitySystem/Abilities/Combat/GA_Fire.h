@@ -52,6 +52,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire|Recoil")
 	float HorizontalRecoilRange = 0.2f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire|Debug")
+	bool bIsDebugMode = false;
+
 	UFUNCTION()
 	void OnMontageCompleted();
 
