@@ -89,8 +89,7 @@ void AF4PlayerCharacter::PossessedBy(AController* NewController)
 	{
 		ASC->InitAbilityActorInfo(this, this);
 		
-		FGameplayTag PlayerTag = FGameplayTag::RequestGameplayTag(FName("Character.Player"));
-		ASC->AddLooseGameplayTag(PlayerTag);
+		ASC->AddLooseGameplayTag(F4GameplayTags::Character_Player);
 	}
 	
 	InitializeStaminaGauge(); 
