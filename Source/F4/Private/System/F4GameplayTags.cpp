@@ -13,6 +13,7 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(State_Aiming, TEXT("State.Aiming"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Aim, TEXT("Ability.Combat.Aim"));
     UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Equip, TEXT("Ability.Combat.Equip"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Invisible, TEXT("Ability.Combat.Invisible"));
 
 	// Ability Tags
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Jump, TEXT("Ability.Movement.Jump"));
@@ -51,6 +52,7 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Event_Interaction_Pickup, TEXT("Event.Interaction.Pickup"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Combat_Equip, TEXT("Event.Combat.Equip"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Weapon_Switch, TEXT("Event.Weapon.Switch"));
+	UE_DEFINE_GAMEPLAY_TAG(Event_Trigger_Invisible, TEXT("Event.Trigger.Invisible"));
 
 	// Enemy State
 	UE_DEFINE_GAMEPLAY_TAG(State_Attacking, TEXT("State.Attacking"));

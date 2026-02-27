@@ -5,6 +5,7 @@
 #include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemFragment_Consumable.h"
 #include "Inventory/F4ItemFragment_Usable.h"
 #include "Inventory/F4ItemInstance.h"
 
@@ -17,14 +18,13 @@ UF4QuickSlotComponent::UF4QuickSlotComponent()
 
 void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemToRegister)
 {
-	if (!QuickSlots.IsValidIndex(SlotIndex)) return;
-
-	if (QuickSlots[SlotIndex] == ItemToRegister)
+	if (!QuickSlots.IsValidIndex(SlotIndex) || QuickSlots[SlotIndex] == ItemToRegister)
 	{
 		return;
 	}
 
 	QuickSlots[SlotIndex] = ItemToRegister;
+	GrantConsumableAbility(SlotIndex, ItemToRegister);
 
 	if (OnQuickSlotUpdated.IsBound())
 	{
@@ -34,11 +34,15 @@ void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemT
 
 void UF4QuickSlotComponent::UnregisterItem(int32 SlotIndex)
 {
-	if (QuickSlots.IsValidIndex(SlotIndex))
+	if (!QuickSlots.IsValidIndex(SlotIndex) || !QuickSlots[SlotIndex])
 	{
-		QuickSlots[SlotIndex] = nullptr;
-		OnQuickSlotUpdated.Broadcast(SlotIndex, nullptr);
+		return;
 	}
+
+	ClearConsumableAbility(SlotIndex);
+
+	QuickSlots[SlotIndex] = nullptr;
+	OnQuickSlotUpdated.Broadcast(SlotIndex, nullptr);
 }
 
 void UF4QuickSlotComponent::ClearSlot(int32 SlotIndex)
@@ -96,11 +100,55 @@ void UF4QuickSlotComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (GrantedAbilityHandles.Num() < 8)
+	{
+		GrantedAbilityHandles.SetNum(8);
+	}
+
 	if (AActor* Owner = GetOwner())
 	{
 		EquipmentComp = Owner->FindComponentByClass<UF4EquipmentComponent>();
 		InventoryComp = Owner->FindComponentByClass<UF4InventoryComponent>();
 	}
+}
+
+void UF4QuickSlotComponent::GrantConsumableAbility(int32 SlotIndex, UF4ItemInstance* Item)
+{
+	if (!GrantedAbilityHandles.IsValidIndex(SlotIndex))
+	{
+		GrantedAbilityHandles.SetNum(SlotIndex + 1);
+	}
+
+	if (!Item || !Item->ItemDefinition)
+	{
+		return;
+	}
+
+	const UF4ItemFragment_Consumable* ConsumableFrag = Item->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Consumable>();
+	if (!ConsumableFrag) return;
+
+	IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(GetOwner());
+	if (!ASInterface) return;
+
+	UAbilitySystemComponent* ASC = ASInterface->GetAbilitySystemComponent();
+	if (!ASC) return;
+
+	FGameplayAbilitySpec Spec(ConsumableFrag->ConsumeAbility, 1, INDEX_NONE, Item);
+	GrantedAbilityHandles[SlotIndex] = ASC->GiveAbility(Spec);
+}
+
+void UF4QuickSlotComponent::ClearConsumableAbility(int32 SlotIndex)
+{
+	if (!GrantedAbilityHandles.IsValidIndex(SlotIndex) || !GrantedAbilityHandles[SlotIndex].IsValid()) return;
+
+	IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(GetOwner());
+	if (!ASInterface) return;
+
+	UAbilitySystemComponent* ASC = ASInterface->GetAbilitySystemComponent();
+	if (!ASC) return;
+
+	ASC->ClearAbility(GrantedAbilityHandles[SlotIndex]);
+	GrantedAbilityHandles[SlotIndex] = FGameplayAbilitySpecHandle();
 }
 
 int32 UF4QuickSlotComponent::GetEmptyConsumableSlotIndex() const

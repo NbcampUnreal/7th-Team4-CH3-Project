@@ -12,36 +12,29 @@ void UF4QuickSlotWidget::UpdateSlotUI(UF4ItemInstance* NewItem)
 {
 	BoundItem = NewItem;
 
-	if (BoundItem && BoundItem->ItemDefinition)
+	if (!BoundItem || !BoundItem->ItemDefinition)
 	{
-		const UF4ItemFragment_UI* UIFragment = BoundItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_UI>();
-		if (UIFragment && ItemIcon)
-		{
-			ItemIcon->SetBrushFromTexture(UIFragment->ItemIcon);
-			ItemIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		}
-
-		if (ItemQuantityText)
-		{
-			if (BoundItem->Quantity > 1)
-			{
-				ItemQuantityText->SetText(FText::AsNumber(BoundItem->Quantity));
-				ItemQuantityText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-			}
-			else
-			{
-				ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
-			}
-		}
+		if (ItemIcon) ItemIcon->SetVisibility(ESlateVisibility::Hidden);
+		if (ItemQuantityText) ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
+		UpdateSelectionBorder(nullptr);
+		return;
 	}
-	else
-	{
-		if (ItemIcon)
-		{
-			ItemIcon->SetVisibility(ESlateVisibility::Hidden);
-		}
 
-		if (ItemQuantityText)
+	const UF4ItemFragment_UI* UIFragment = BoundItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_UI>();
+	if (UIFragment && ItemIcon)
+	{
+		ItemIcon->SetBrushFromTexture(UIFragment->ItemIcon);
+		ItemIcon->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
+
+	if (ItemQuantityText)
+	{
+		if (BoundItem->Quantity > 1)
+		{
+			ItemQuantityText->SetText(FText::AsNumber(BoundItem->Quantity));
+			ItemQuantityText->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		}
+		else
 		{
 			ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		}
@@ -86,6 +79,11 @@ void UF4QuickSlotWidget::NativeConstruct()
 		return;
 	}
 
+	if (UF4QuickSlotComponent* QuickSlotComp = OwningPawn->FindComponentByClass<UF4QuickSlotComponent>())
+	{
+		QuickSlotComp->OnQuickSlotUpdated.AddDynamic(this, &ThisClass::OnQuickSlotUpdatedCallback);
+	}
+
 	if (UF4EquipmentComponent* EquipComp = OwningPawn->FindComponentByClass<UF4EquipmentComponent>())
 	{
 		EquipComp->OnActiveWeaponChanged.AddDynamic(this, &ThisClass::UpdateSelectionBorder);
@@ -114,4 +112,12 @@ FReply UF4QuickSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 	}
 
 	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
+void UF4QuickSlotWidget::OnQuickSlotUpdatedCallback(int32 InSlotIndex, UF4ItemInstance* InItem)
+{
+	if (SlotIndex == InSlotIndex)
+	{
+		UpdateSlotUI(InItem);
+	}
 }

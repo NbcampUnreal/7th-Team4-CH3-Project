@@ -28,6 +28,8 @@ UGA_Fire::UGA_Fire()
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Switching_Weapon);
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
 
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Invisible);
+
 	// TODO: cost bullet 추가 필요
 }
 

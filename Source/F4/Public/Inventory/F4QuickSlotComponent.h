@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "F4QuickSlotComponent.generated.h"
 
+struct FGameplayAbilitySpecHandle;
 class UF4InventoryComponent;
 class UF4EquipmentComponent;
 class UF4ItemInstance;
@@ -53,4 +54,11 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UF4InventoryComponent> InventoryComp;
+
+private:
+	UPROPERTY()
+	TArray<FGameplayAbilitySpecHandle> GrantedAbilityHandles;
+
+	void GrantConsumableAbility(int32 SlotIndex, UF4ItemInstance* Item);
+	void ClearConsumableAbility(int32 SlotIndex);
 };

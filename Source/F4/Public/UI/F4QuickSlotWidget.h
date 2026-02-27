@@ -31,6 +31,9 @@ protected:
 
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
+	UFUNCTION()
+	void OnQuickSlotUpdatedCallback(int32 InSlotIndex, UF4ItemInstance* InItem);
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> ItemIcon;
 
