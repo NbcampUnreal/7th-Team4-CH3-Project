@@ -17,6 +17,7 @@ Saved/
 # Idea
 .idea/
 Plugins/
+*.DotSettings.user
 
 # Compiled Object files
 *.slo
