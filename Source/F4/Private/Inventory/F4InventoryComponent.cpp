@@ -88,6 +88,52 @@ void UF4InventoryComponent::ConsumeItem(UF4ItemInstance* ItemToConsume, int32 Am
 	OnInventoryUpdated.Broadcast();
 }
 
+int32 UF4InventoryComponent::GetTotalItemCountByDefinition(class UF4ItemDefinition* ItemDef) const
+{
+	if (!ItemDef)
+	{
+		return 0;
+	}
+
+
+	int32 TotalCount = 0;
+	for (UF4ItemInstance* Item : InventoryList)
+	{
+		if (Item && Item->ItemDefinition == ItemDef)
+		{
+			TotalCount += Item->Quantity;
+		}
+	}
+	return TotalCount;
+}
+
+void UF4InventoryComponent::ConsumeItemByDefinition(class UF4ItemDefinition* ItemDef, int32 AmountToConsume)
+{
+	if (!ItemDef || AmountToConsume <= 0) return;
+
+	int32 RemainingToConsume = AmountToConsume;
+
+	for (int32 i = InventoryList.Num() - 1; i >= 0; --i)
+	{
+		UF4ItemInstance* CurrentItem = InventoryList[i];
+		if (CurrentItem && CurrentItem->ItemDefinition == ItemDef)
+		{
+			int32 TakeAmount = FMath::Min(CurrentItem->Quantity, RemainingToConsume);
+			CurrentItem->Quantity -= TakeAmount;
+			RemainingToConsume -= TakeAmount;
+
+			if (CurrentItem->Quantity <= 0)
+			{
+				InventoryList.RemoveAt(i);
+			}
+
+			if (RemainingToConsume <= 0) break;
+		}
+	}
+
+	OnInventoryUpdated.Broadcast();
+}
+
 void UF4InventoryComponent::UpdateQuickSlotForItem(UF4ItemInstance* Item)
 {
 	if (!Item)

@@ -4,6 +4,10 @@
 #include "Blueprint/UserWidget.h"
 #include "F4HUD.generated.h"
 
+class UF4ItemInstance;
+class UF4InventoryComponent;
+class UF4EquipmentComponent;
+class UTextBlock;
 struct FOnAttributeChangeData;
 
 class UCrosshairWidget; 
@@ -29,6 +33,18 @@ public:
 	void OnHealthChanged(const FOnAttributeChangeData& Data);
 	
 	void UpdateHealthBar(const float Current, const float Max) const;
+
+	void InitializeAmmoUI();
+
+	void OnCurrentAmmoChanged(const FOnAttributeChangeData& Data);
+
+	UFUNCTION()
+	void HandleInventoryUpdate();
+
+	UFUNCTION()
+	void HandleWeaponChange(UF4ItemInstance* NewWeapon);
+
+	void RefreshTotalAmmoUI();
 	
 protected:
 	UPROPERTY(meta=(BindWidget))
@@ -36,6 +52,15 @@ protected:
 	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UStatBarWidget> HealthBar;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UWidget> AmmoUIContainer;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> CurrentAmmoText;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> TotalAmmoText;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI | Crosshair")
@@ -55,7 +80,13 @@ private:
 	TObjectPtr<APawn> Owner;
 
 	UPROPERTY()
-	UAbilitySystemComponent* OwnerASC;
+	TObjectPtr<UAbilitySystemComponent> OwnerASC;
+
+	UPROPERTY()
+	TObjectPtr<UF4EquipmentComponent> EquipmentComp;
+
+	UPROPERTY()
+	TObjectPtr<UF4InventoryComponent> InventoryComp;
 	
 	bool bAiming = false; 
 	

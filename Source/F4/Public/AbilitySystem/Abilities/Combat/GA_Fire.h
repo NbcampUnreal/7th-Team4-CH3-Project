@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire|Debug")
 	bool bIsDebugMode = false;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Fire|Damage")
+	float CachedFinalDamage = 0.0f;
+
 	UFUNCTION()
 	void OnMontageCompleted();
 

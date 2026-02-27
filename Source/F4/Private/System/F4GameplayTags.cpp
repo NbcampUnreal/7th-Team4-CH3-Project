@@ -48,6 +48,7 @@ namespace F4GameplayTags
 	// Weapon Stats
 	UE_DEFINE_GAMEPLAY_TAG(Weapon_Stat_BaseDamage, TEXT("Weapon.Stat.BaseDamage"));
 	UE_DEFINE_GAMEPLAY_TAG(Weapon_Stat_MaxAmmo, TEXT("Weapon.Stat.MaxAmmo"));
+	UE_DEFINE_GAMEPLAY_TAG(Weapon_Ammo_Loaded, TEXT("Weapon.Ammo.Loaded"));
 
 	UE_DEFINE_GAMEPLAY_TAG(State_Reloading, TEXT("State.Reloading"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Reload, TEXT("Ability.Combat.Reload"));
@@ -81,4 +82,6 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_Zoom, "InputTag.Zoom");
 	UE_DEFINE_GAMEPLAY_TAG(InputTag_QuickSlot, "InputTag.QuickSlot");
 
+	// Data Value Tag
+	UE_DEFINE_GAMEPLAY_TAG(Data_Reload_Ammo, "Data.Reload.Ammo");
 }

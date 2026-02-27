@@ -44,6 +44,7 @@ namespace F4GameplayTags
 	// Weapon Stats Tags 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Stat_BaseDamage);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Stat_MaxAmmo);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Weapon_Ammo_Loaded);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(State_Reloading);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Reload);
@@ -79,4 +80,8 @@ namespace F4GameplayTags
 	
 	// Gameplay Cue
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_HurricaneKick);
+
+
+	// Data Value Tag
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Data_Reload_Ammo);
 }
