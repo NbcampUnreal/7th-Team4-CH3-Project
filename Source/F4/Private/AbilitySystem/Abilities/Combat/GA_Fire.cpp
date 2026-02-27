@@ -131,6 +131,35 @@ void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 	
 	CrosshairRecoil();
 	ApplyAimRecoil();
+
+	ExecuteTriggerGameplayCue();
+}
+
+void UGA_Fire::ExecuteTriggerGameplayCue()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	AF4PlayerCharacter* PlayerChar = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo());
+
+	if (!ASC || !PlayerChar)
+	{
+		return;
+	}
+
+	UF4EquipmentComponent* EquipComp = PlayerChar->FindComponentByClass<UF4EquipmentComponent>();
+	AF4WeaponActor* ActiveWeapon = EquipComp ? EquipComp->GetActiveWeaponActor() : nullptr;
+
+	if (ActiveWeapon)
+	{
+		FGameplayCueParameters Params;
+		Params.Instigator = PlayerChar;
+
+		Params.Location = ActiveWeapon->GetMuzzleTransform().GetLocation();
+		Params.Normal = ActiveWeapon->GetMuzzleTransform().GetRotation().GetForwardVector();
+
+		Params.EffectCauser = ActiveWeapon;
+
+		ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Weapon_Triggered, Params);
+	}
 }
 
 void UGA_Fire::SpawnProjectile()

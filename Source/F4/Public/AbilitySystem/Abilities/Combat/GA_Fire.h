@@ -67,9 +67,15 @@ protected:
 	UFUNCTION()
 	void OnFireGameplayEvent(FGameplayEventData EventData);
 
+	UFUNCTION()
+	void ExecuteTriggerGameplayCue();
+
+	UFUNCTION()
 	void SpawnProjectile();
-	
+
+	UFUNCTION()
 	void CrosshairRecoil();
 
+	UFUNCTION()
 	void ApplyAimRecoil();
 };
