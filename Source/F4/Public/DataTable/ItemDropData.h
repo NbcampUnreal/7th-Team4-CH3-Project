@@ -15,7 +15,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName ItemName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float DropRate;
+	float DropRate = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftClassPtr<AActor> ItemClass;
 };
