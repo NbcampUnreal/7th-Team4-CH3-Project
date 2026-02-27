@@ -5,6 +5,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemInstance.h"
 #include "System/F4GameplayTags.h"
@@ -56,6 +57,9 @@ void UGA_Potion_Invincible::ActivateAbility(const FGameplayAbilitySpecHandle Han
 				OriginalMaterials.Add(Mesh->GetMaterial(i));
 				if (TransparentMaterial)
 				{
+					if (GEngine)
+						GEngine->AddOnScreenDebugMessage(
+							-1, 5.f, FColor::Red, FString::Printf(TEXT("투명화")));
 					Mesh->SetMaterial(i, TransparentMaterial);
 				}
 			}
