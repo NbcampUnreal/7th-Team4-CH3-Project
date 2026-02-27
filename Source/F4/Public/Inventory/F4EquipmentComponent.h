@@ -65,6 +65,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	AF4WeaponActor* GetActiveWeaponActor() const;
 
+	EWeaponSlot GetActiveSlot() const { return ActiveSlot; }
+
 protected:
 	virtual void BeginPlay() override;
 

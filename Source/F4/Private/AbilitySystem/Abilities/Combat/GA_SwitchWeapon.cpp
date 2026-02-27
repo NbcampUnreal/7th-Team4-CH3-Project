@@ -35,19 +35,23 @@ void UGA_SwitchWeapon::ActivateAbility(
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	if (!TriggerEventData || !CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
-	if (!TriggerEventData)
+	AF4PlayerCharacter* Character = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo());
+	UF4EquipmentComponent* EquipComp = Character ? Character->FindComponentByClass<UF4EquipmentComponent>() : nullptr;
+
+	EWeaponSlot TargetSlot = static_cast<EWeaponSlot>(TriggerEventData->EventMagnitude);
+	if (!EquipComp || EquipComp->GetActiveSlot() == TargetSlot)
 	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
 
-	CachedTargetSlotIndex = static_cast<int32>(TriggerEventData->EventMagnitude);
+	CachedTargetSlot = TargetSlot;
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
@@ -104,7 +108,6 @@ void UGA_SwitchWeapon::PerformSwitch()
 		return;
 	}
 
-	EWeaponSlot TargetSlot = static_cast<EWeaponSlot>(CachedTargetSlotIndex);
-	EquipmentComp->SetActiveWeapon(TargetSlot);
+	EquipmentComp->SetActiveWeapon(CachedTargetSlot);
 }
 
