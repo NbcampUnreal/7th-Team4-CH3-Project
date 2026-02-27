@@ -2,12 +2,15 @@
 
 #include "Interface/Interactable.h"
 #include "System/F4GameplayTags.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
 UGA_Interact::UGA_Interact()
 {
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Interaction_Interact));
 	
 	ActivationOwnedTags.AddTag(F4GameplayTags::Character_State_Interacting); 
+	
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Interacting);
 }
 
 void UGA_Interact::ActivateAbility(
@@ -71,5 +74,15 @@ void UGA_Interact::ActivateAbility(
 		}
 	}
 	
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false); 
+	UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, InteractionCoolDown);
+	if (WaitDelayTask)
+	{
+		WaitDelayTask->OnFinish.AddDynamic(this, &UGA_Interact::OnInteractFinished);
+		WaitDelayTask->ReadyForActivation();
+	}
+}
+
+void UGA_Interact::OnInteractFinished()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,true, false);
 }

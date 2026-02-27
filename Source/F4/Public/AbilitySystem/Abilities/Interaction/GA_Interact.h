@@ -21,15 +21,21 @@ public:
 	
 protected:
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact | Trace")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact|Trace")
 	float InteractionDistance = 350.0f; 
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact | Trace")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact|Trace")
 	float DrawTime = 1.f;  
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact | Trace")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact|Trace")
 	bool bDrawTrace = true; 
 	
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact | Trace")
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact|Trace")
 	FColor TraceColor = FColor::Yellow;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interact|Cooldown")
+	float InteractionCoolDown = 1.0f;
+	
+	UFUNCTION()
+	void OnInteractFinished();
 };
