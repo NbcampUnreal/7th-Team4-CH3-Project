@@ -20,6 +20,7 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Equip, TEXT("Ability.Combat.Equip"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Aim, TEXT("Ability.Combat.Aim"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Fire, TEXT("Ability.Combat.Fire"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Melee, TEXT("Ability.Combat.Melee"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_HurricaneKick,TEXT("Ability.Combat.HurricaneKick"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_SwitchWeapon,TEXT("Ability.Combat.SwitchWeapon"));
 

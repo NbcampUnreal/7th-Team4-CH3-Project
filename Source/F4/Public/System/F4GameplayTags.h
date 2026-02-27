@@ -20,6 +20,7 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Aim);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Equip);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Fire);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Melee);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Invisible);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_HurricaneKick);
