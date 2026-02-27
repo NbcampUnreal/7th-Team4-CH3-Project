@@ -84,12 +84,13 @@ void UGA_AttackMelee::PerformMeleeTrace()
         FCollisionShape::MakeSphere(TraceRadius),
         Params
     );
-
     // ===== Debug Draw (개발용) =====
     DrawDebugSphere(GetWorld(), Start, TraceRadius, 12, FColor::Red, false, 1.0f);
     DrawDebugSphere(GetWorld(), End, TraceRadius, 12, FColor::Red, false, 1.0f);
 
     // ===== Hit된 Actor들에게 Damage Effect 적용 =====
+    TSet<AActor*> UniqueActors;
+    
     if (bHit)
     {
         for (const FHitResult& Hit : HitResults)
@@ -99,7 +100,12 @@ void UGA_AttackMelee::PerformMeleeTrace()
             {
                 continue;
             }
-
+            if (UniqueActors.Contains(HitActor))
+            {
+                continue;
+            }
+            UniqueActors.Add(HitActor);
+            
             // Hit Actor의 ASC 가져오기
             UAbilitySystemComponent* TargetASC = HitActor->FindComponentByClass<UAbilitySystemComponent>();
             if (!TargetASC)
