@@ -31,57 +31,42 @@ void UGA_Interact::ActivateAbility(
 	FVector StartLocation = AvatarPawn->GetPawnViewLocation();
 	FVector EndLocation = StartLocation + (AvatarPawn->GetViewRotation().Vector() * InteractionDistance);
 	
-	TArray<FHitResult> HitResults;
+	FHitResult HitResult;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(AvatarPawn);
 	
-	bool bHit = GetWorld()->SweepMultiByChannel(
-		HitResults, 
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult, 
 		StartLocation,
 		EndLocation,
-		FQuat::Identity,
 		ECC_Visibility,
-		FCollisionShape::MakeSphere(InteractionRadius),
 		Params
 	);
 	
 	if (bDrawTrace)
 	{
 		// Debug 
-		DrawDebugSphere(
+		DrawDebugLine(
 			GetWorld(),
 			StartLocation,
-			InteractionRadius,
-			InteractionDistance,
+			EndLocation,
 			TraceColor,
 			false,
-			DrawTime
+			DrawTime,
+			0,
+			15.0f
 		);
-		
-		DrawDebugSphere(
-		GetWorld(),
-		EndLocation,
-		InteractionRadius,
-		InteractionDistance,
-		TraceColor,
-		false,
-		DrawTime
-	);
-		
 	}
 	
 	if (bHit)
 	{
-		for (const FHitResult& HitResult : HitResults)
+		AActor* HitActor = HitResult.GetActor();
+		if (HitActor != nullptr)
 		{
-			AActor* HitActor = HitResult.GetActor();
-			if (HitActor == nullptr) continue;
-			
 			IInteractable* Interactable = Cast<IInteractable>(HitActor);
 			if (Interactable)
 			{
 				Interactable->DoInteract(AvatarPawn);
-				break; 
 			}
 		}
 	}
