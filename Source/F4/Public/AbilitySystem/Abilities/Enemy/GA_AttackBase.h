@@ -16,10 +16,6 @@ protected:
 	TObjectPtr<UAnimMontage> AttackMontage;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Attack | Montage")
 	float MontageSpeed = 1.f;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Attack | Montage")
-	float ExtraRootMotionForce = 800.f;
-	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Attack | Montage")
-	float ExtraRootMotionDuration = 0.4f;
 
 	UFUNCTION()
 	virtual void OnMontageCompleted();
