@@ -30,6 +30,7 @@ struct FEquipmentHandles
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActiveWeaponChanged, UF4ItemInstance*, NewItemInstance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnWeaponEquippedToSlot, int32, QuickSlotIndex, UF4ItemInstance*, ItemInstance);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class F4_API UF4EquipmentComponent : public UActorComponent
@@ -58,6 +59,9 @@ public:
 	
 	UPROPERTY(BlueprintAssignable, Category = "Equipment | Event")
 	FOnActiveWeaponChanged OnActiveWeaponChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Equipment | Event")
+	FOnWeaponEquippedToSlot OnWeaponEquippedToSlot;
 
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	UF4ItemInstance* GetActiveWeaponInstance() const;

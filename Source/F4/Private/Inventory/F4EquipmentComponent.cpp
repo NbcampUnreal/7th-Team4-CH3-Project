@@ -7,7 +7,6 @@
 #include "Inventory/F4ItemFragment_Equipment.h"
 #include "Inventory/F4ItemFragment_Firearm.h"
 #include "Inventory/F4ItemInstance.h"
-#include "Inventory/F4QuickSlotComponent.h"
 #include "Items/Weapons/F4WeaponActor.h"
 #include "System/F4GameplayTags.h"
 
@@ -23,14 +22,7 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 		return;
 	}
 
-	if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
-	{
-		int32 QuickSlotIndex = static_cast<int32>(TargetSlot);
-		if (QuickSlotComp->GetItemAtIndex(QuickSlotIndex) != ItemToEquip)
-		{
-			QuickSlotComp->RegisterItem(QuickSlotIndex, ItemToEquip);
-		}
-	}
+	OnWeaponEquippedToSlot.Broadcast(static_cast<int32>(TargetSlot), ItemToEquip);
 
 	if (WeaponLoadout.Contains(TargetSlot))
 	{

@@ -3,7 +3,6 @@
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Stackable.h"
 #include "Inventory/F4ItemInstance.h"
-#include "Inventory/F4QuickSlotComponent.h"
 
 UF4InventoryComponent::UF4InventoryComponent()
 {
@@ -35,7 +34,7 @@ void UF4InventoryComponent::AddItem(UF4ItemInstance* NewItem)
 			ExistItem->Quantity += AmountToAdd;
 			QuantityLeft -= AmountToAdd;
 
-			UpdateQuickSlotForItem(ExistItem);
+			OnItemQuantityChanged.Broadcast(ExistItem, ExistItem->Quantity);
 
 			if (QuantityLeft <= 0)
 			{
@@ -49,7 +48,7 @@ void UF4InventoryComponent::AddItem(UF4ItemInstance* NewItem)
 		NewItem->Quantity = QuantityLeft;
 		InventoryList.Add(NewItem);
 
-		UpdateQuickSlotForItem(NewItem);
+		OnItemQuantityChanged.Broadcast(NewItem, NewItem->Quantity);
 	}
 	else
 	{
@@ -63,16 +62,8 @@ void UF4InventoryComponent::RemoveItem(UF4ItemInstance* ItemToRemove)
 {
 	if (ItemToRemove && InventoryList.Contains(ItemToRemove))
 	{
-		if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
-		{
-			int32 FoundSlotIndex = QuickSlotComp->FindItemSlotIndex(ItemToRemove);
-			if (FoundSlotIndex != -1)
-			{
-				QuickSlotComp->ClearSlot(FoundSlotIndex);
-			}
-		}
-
 		InventoryList.Remove(ItemToRemove);
+		OnItemRemoved.Broadcast(ItemToRemove);
 		OnInventoryUpdated.Broadcast();
 	}
 }
@@ -84,7 +75,10 @@ void UF4InventoryComponent::ConsumeItem(UF4ItemInstance* ItemToConsume, int32 Am
 	ItemToConsume->Quantity -= Amount;
 	const bool bIsDepleted = (ItemToConsume->Quantity <= 0);
 
-	UpdateQuickSlotForItem(ItemToConsume);
+	if (!bIsDepleted)
+	{
+		OnItemQuantityChanged.Broadcast(ItemToConsume, ItemToConsume->Quantity);
+	}
 
 	if (bIsDepleted)
 	{
@@ -143,31 +137,3 @@ void UF4InventoryComponent::ConsumeItemByDefinition(class UF4ItemDefinition* Ite
 	OnInventoryUpdated.Broadcast();
 }
 
-void UF4InventoryComponent::UpdateQuickSlotForItem(UF4ItemInstance* Item)
-{
-	if (!Item)
-	{
-		return;
-	}
-
-	UF4QuickSlotComponent* QuickSlotComp = GetOwner() ? GetOwner()->FindComponentByClass<UF4QuickSlotComponent>() : nullptr;
-	if (!QuickSlotComp)
-	{
-		return;
-	}
-
-	const int32 SlotIndex = QuickSlotComp->FindItemSlotIndex(Item);
-	if (SlotIndex == -1)
-	{
-		return;
-	}
-
-	if (Item->Quantity <= 0)
-	{
-		QuickSlotComp->ClearSlot(SlotIndex);
-	}
-	else
-	{
-		QuickSlotComp->OnQuickSlotUpdated.Broadcast(SlotIndex, Item);
-	}
-}

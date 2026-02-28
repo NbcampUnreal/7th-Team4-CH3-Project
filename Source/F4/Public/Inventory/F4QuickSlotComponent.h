@@ -6,7 +6,6 @@
 
 class UAbilitySystemComponent;
 struct FGameplayAbilitySpecHandle;
-class UF4InventoryComponent;
 class UF4EquipmentComponent;
 class UF4ItemInstance;
 
@@ -44,14 +43,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
 	UF4ItemInstance* GetItemAtIndex(int32 Index) const;
 
+	UFUNCTION()
+	void OnInventoryItemQuantityChanged(UF4ItemInstance* Item, int32 NewQuantity);
+
+	UFUNCTION()
+	void OnInventoryItemRemoved(UF4ItemInstance* RemovedItem);
+
+	UFUNCTION()
+	void OnWeaponEquippedToQuickSlot(int32 QuickSlotIndex, UF4ItemInstance* Item);
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	TObjectPtr<UF4EquipmentComponent> EquipmentComp;
-
-	UPROPERTY()
-	TObjectPtr<UF4InventoryComponent> InventoryComp;
 
 private:
 	UPROPERTY()

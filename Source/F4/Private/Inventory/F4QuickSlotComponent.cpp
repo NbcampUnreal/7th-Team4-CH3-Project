@@ -102,7 +102,17 @@ void UF4QuickSlotComponent::BeginPlay()
 	if (AActor* Owner = GetOwner())
 	{
 		EquipmentComp = Owner->FindComponentByClass<UF4EquipmentComponent>();
-		InventoryComp = Owner->FindComponentByClass<UF4InventoryComponent>();
+
+		if (UF4InventoryComponent* InvComp = Owner->FindComponentByClass<UF4InventoryComponent>())
+		{
+			InvComp->OnItemQuantityChanged.AddDynamic(this, &ThisClass::OnInventoryItemQuantityChanged);
+			InvComp->OnItemRemoved.AddDynamic(this, &ThisClass::OnInventoryItemRemoved);
+		}
+
+		if (EquipmentComp)
+		{
+			EquipmentComp->OnWeaponEquippedToSlot.AddDynamic(this, &ThisClass::OnWeaponEquippedToQuickSlot);
+		}
 	}
 }
 
@@ -210,4 +220,36 @@ UF4ItemInstance* UF4QuickSlotComponent::GetItemAtIndex(int32 Index) const
 	}
 
 	return QuickSlots[Index];
+}
+
+void UF4QuickSlotComponent::OnInventoryItemQuantityChanged(UF4ItemInstance* Item, int32 NewQuantity)
+{
+	const int32 SlotIndex = FindItemSlotIndex(Item);
+	if (SlotIndex == -1) return;
+
+	if (NewQuantity <= 0)
+	{
+		ClearSlot(SlotIndex);
+	}
+	else
+	{
+		OnQuickSlotUpdated.Broadcast(SlotIndex, Item);
+	}
+}
+
+void UF4QuickSlotComponent::OnInventoryItemRemoved(UF4ItemInstance* RemovedItem)
+{
+	const int32 SlotIndex = FindItemSlotIndex(RemovedItem);
+	if (SlotIndex != -1)
+	{
+		ClearSlot(SlotIndex);
+	}
+}
+
+void UF4QuickSlotComponent::OnWeaponEquippedToQuickSlot(int32 QuickSlotIndex, UF4ItemInstance* Item)
+{
+	if (GetItemAtIndex(QuickSlotIndex) != Item)
+	{
+		RegisterItem(QuickSlotIndex, Item);
+	}
 }
