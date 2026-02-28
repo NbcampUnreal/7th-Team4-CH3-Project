@@ -2,6 +2,8 @@
 #include"AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Abilities/Tasks/AbilityTask_ApplyRootMotionConstantForce.h"
+#include "GameFramework/Character.h"
 
 UGA_AttackMelee::UGA_AttackMelee()
 {
@@ -18,13 +20,16 @@ void UGA_AttackMelee::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
         EndAbility(Handle, ActorInfo, ActivationInfo, true,false);
         return;
     }
-	
+    
+
+
+    
     UAbilityTask_PlayMontageAndWait* MontageTask = 
         UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
         this, 
         NAME_None,
         AttackMontage,
-        1.0f
+        MontageSpeed
         );
 	
     if (!MontageTask)

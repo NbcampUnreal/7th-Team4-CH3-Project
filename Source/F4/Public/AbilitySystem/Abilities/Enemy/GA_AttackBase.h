@@ -14,6 +14,8 @@ public:
 protected:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Attack | Montage")
 	TObjectPtr<UAnimMontage> AttackMontage;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category="Attack | Montage")
+	float MontageSpeed = 1.f;
 
 	UFUNCTION()
 	virtual void OnMontageCompleted();
