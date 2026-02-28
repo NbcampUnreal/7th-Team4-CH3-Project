@@ -12,6 +12,7 @@ UGA_SwitchWeapon::UGA_SwitchWeapon()
 
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_SwitchWeapon));
 
+	ActivationBlockedTags.AddTag(F4GameplayTags::State_Switching_Weapon);
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
 	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Rolling);
 	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_HurricaneKicking);
@@ -47,8 +48,7 @@ void UGA_SwitchWeapon::ActivateAbility(
 	EWeaponSlot TargetSlot = static_cast<EWeaponSlot>(TriggerEventData->EventMagnitude);
 	if (!EquipComp || EquipComp->GetActiveSlot() == TargetSlot)
 	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
-		return;
+		TargetSlot = EWeaponSlot::None;
 	}
 
 	CachedTargetSlot = TargetSlot;
