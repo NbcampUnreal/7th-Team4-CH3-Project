@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "F4EquipmentComponent.generated.h"
 
+class UF4ItemFragment_Equipment;
+class UF4ItemFragment_Firearm;
 class UF4ItemInstance;
 class UAbilitySystemComponent;
 class AF4WeaponActor;
@@ -63,6 +65,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	AF4WeaponActor* GetActiveWeaponActor() const;
 
+	EWeaponSlot GetActiveSlot() const { return ActiveSlot; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -84,5 +88,14 @@ protected:
 	UPROPERTY()
 	TMap<UF4ItemInstance*, FEquipmentHandles> GrantedHandlesMap;
 
+	FActiveGameplayEffectHandle CurrentWeaponGEHandle;
+
 	FName GetHolsterSocketName(EWeaponSlot Slot) const;
+	void ApplyWeaponStatEffect(UF4ItemInstance* ItemInstance, const UF4ItemFragment_Firearm* FirearmFragment);
+	void GrantWeaponAbilities(UF4ItemInstance* Item, const UF4ItemFragment_Equipment* Fragment);
+	void RemoveWeaponAbilities(UF4ItemInstance* Item);
+	void CleanUpOldWeapon(UF4ItemInstance* OldItem, EWeaponSlot OldSlot);
+	void SetupNewWeapon(UF4ItemInstance* NewItem);
+	EWeaponSlot DetermineTargetSlotForNewWeapon() const;
 };
+

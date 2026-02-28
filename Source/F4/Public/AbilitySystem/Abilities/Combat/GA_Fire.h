@@ -15,6 +15,14 @@ class F4_API UGA_Fire : public UGameplayAbility
 public:
 	UGA_Fire();
 
+	virtual bool CanActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags = nullptr,
+		const FGameplayTagContainer* TargetTags = nullptr,
+		OUT FGameplayTagContainer* OptionalRelevantTags = nullptr
+	) const override;
+
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
 		const FGameplayAbilityActorInfo* ActorInfo,
@@ -41,7 +49,7 @@ protected:
 	float RecoilSpread = 20.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Fire|Montage")
-	float MontageRate = 2.0f;
+	float MontageRate = 1.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Fire | Effects")
 	TSubclassOf<UCameraShakeBase> FireCameraShakeClass;
@@ -67,9 +75,21 @@ protected:
 	UFUNCTION()
 	void OnFireGameplayEvent(FGameplayEventData EventData);
 
+	UFUNCTION()
+	void ExecuteTriggerGameplayCue();
+
+	UFUNCTION()
 	void SpawnProjectile();
-	
+
+	UFUNCTION()
 	void CrosshairRecoil();
 
+	UFUNCTION()
 	void ApplyAimRecoil();
+
+private:
+	void HandleDryFire();
+
+	UFUNCTION()
+	void OnDryFireFinished();
 };

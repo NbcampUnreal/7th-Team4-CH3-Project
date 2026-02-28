@@ -66,8 +66,7 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Interaction_Pickup);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Combat_Equip);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Stamina_Exhuast);
-	
-	
+
 	// Input Tag
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Weapon_Switch);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Switching);
@@ -81,6 +80,8 @@ namespace F4GameplayTags
 	
 	// Gameplay Cue
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_HurricaneKick);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_Weapon_Triggered);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_Weapon_DryFire);
 
 
 	// Data Value Tag

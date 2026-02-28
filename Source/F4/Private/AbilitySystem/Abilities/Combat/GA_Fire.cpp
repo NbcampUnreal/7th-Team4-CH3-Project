@@ -2,14 +2,12 @@
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
 #include "GameFramework/Character.h"
 #include "Characters/Player/F4PlayerCharacter.h"
-#include "Inventory/F4ItemDefinition.h"
-#include "Inventory/F4ItemFragment_Firearm.h"
-#include "Inventory/F4ItemInstance.h"
 #include "Items/Weapons/F4Projectile.h"
 #include "Items/Weapons/F4WeaponActor.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -24,9 +22,6 @@ UGA_Fire::UGA_Fire()
 
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Fire));
 
-	// TODO: 달리기 중이라면 끊기
-	// CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Movement_Sprint)
-
 	ActivationRequiredTags.AddTag(F4GameplayTags::State_Aiming);
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
@@ -39,8 +34,26 @@ UGA_Fire::UGA_Fire()
 	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Combat_Reload);
 
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Firing);
+}
 
-	// TODO: cost bullet 추가 필요
+bool UGA_Fire::CanActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayTagContainer* SourceTags,
+	const FGameplayTagContainer* TargetTags,
+	OUT FGameplayTagContainer* OptionalRelevantTags) const
+{
+	if (!ActorInfo || !ActorInfo->AbilitySystemComponent.IsValid())
+	{
+		return false;
+	}
+
+	if (!DoesAbilitySatisfyTagRequirements(*ActorInfo->AbilitySystemComponent.Get(), SourceTags, TargetTags, OptionalRelevantTags))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void UGA_Fire::ActivateAbility(
@@ -53,12 +66,13 @@ void UGA_Fire::ActivateAbility(
 
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
-		// TODO: 총알 빈 소리
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		HandleDryFire();
 		return;
 	}
 
 	CachedFinalDamage = 0.0f;
+	float DynamicMontageRate = MontageRate;
+
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
 	if (ASC)
 	{
@@ -72,13 +86,18 @@ void UGA_Fire::ActivateAbility(
 			float CharacterATK = ASC->GetNumericAttribute(UF4AttributeSetCharacter::GetATKAttribute());
 			CachedFinalDamage *= CharacterATK;
 		}
+
+		if (ASC->HasAttributeSetForAttribute(UF4AttributeSetWeapon::GetFireRateAttribute()))
+		{
+			DynamicMontageRate = ASC->GetNumericAttribute(UF4AttributeSetWeapon::GetFireRateAttribute());
+		}
 	}
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
 		NAME_None,
 		FireMontage,
-		MontageRate
+		DynamicMontageRate
 	);
 
 	if (!PlayMontageTask)
@@ -131,6 +150,35 @@ void UGA_Fire::OnFireGameplayEvent(FGameplayEventData EventData)
 	
 	CrosshairRecoil();
 	ApplyAimRecoil();
+
+	ExecuteTriggerGameplayCue();
+}
+
+void UGA_Fire::ExecuteTriggerGameplayCue()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	AF4PlayerCharacter* PlayerChar = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo());
+
+	if (!ASC || !PlayerChar)
+	{
+		return;
+	}
+
+	UF4EquipmentComponent* EquipComp = PlayerChar->FindComponentByClass<UF4EquipmentComponent>();
+	AF4WeaponActor* ActiveWeapon = EquipComp ? EquipComp->GetActiveWeaponActor() : nullptr;
+
+	if (ActiveWeapon)
+	{
+		FGameplayCueParameters Params;
+		Params.Instigator = PlayerChar;
+
+		Params.Location = ActiveWeapon->GetMuzzleTransform().GetLocation();
+		Params.Normal = ActiveWeapon->GetMuzzleTransform().GetRotation().GetForwardVector();
+
+		Params.EffectCauser = ActiveWeapon;
+
+		ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Weapon_Triggered, Params);
+	}
 }
 
 void UGA_Fire::SpawnProjectile()
@@ -225,4 +273,29 @@ void UGA_Fire::ApplyAimRecoil()
 
 	float RandomYaw = FMath::FRandRange(-HorizontalRecoilRange, HorizontalRecoilRange);
 	PlayerController->AddYawInput(RandomYaw);
+}
+
+void UGA_Fire::HandleDryFire()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	if (ASC)
+	{
+		ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Weapon_DryFire);
+	}
+
+	UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, 0.25f);
+	if (WaitDelayTask)
+	{
+		WaitDelayTask->OnFinish.AddDynamic(this, &UGA_Fire::OnDryFireFinished);
+		WaitDelayTask->ReadyForActivation();
+	}
+	else
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	}
+}
+
+void UGA_Fire::OnDryFireFinished()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

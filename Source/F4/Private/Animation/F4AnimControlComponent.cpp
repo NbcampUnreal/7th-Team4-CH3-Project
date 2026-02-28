@@ -24,7 +24,7 @@ void UF4AnimControlComponent::BeginPlay()
 
 		if (UF4EquipmentComponent* EquipmentComponent = OwnerCharacter->FindComponentByClass<UF4EquipmentComponent>())
 		{
-			EquipmentComponent->OnActiveWeaponChanged.AddDynamic(this, &ThisClass::OnWeaponChanged);
+			EquipmentComponent->OnActiveWeaponChanged.AddUniqueDynamic(this, &ThisClass::OnWeaponChanged);
 			UpdateAnimationLayer(nullptr);
 		}
 	}

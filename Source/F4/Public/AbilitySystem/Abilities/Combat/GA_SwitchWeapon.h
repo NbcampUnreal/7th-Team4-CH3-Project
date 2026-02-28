@@ -4,6 +4,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "GA_SwitchWeapon.generated.h"
 
+enum class EWeaponSlot : uint8;
+
 UCLASS()
 class F4_API UGA_SwitchWeapon : public UGameplayAbility
 {
@@ -33,7 +35,7 @@ protected:
 	void OnSwitchingGameplayEvent(FGameplayEventData EventData);
 
 private:
-	int32 CachedTargetSlotIndex = 0;
+	EWeaponSlot CachedTargetSlot;
 
 	void PerformSwitch();
 };

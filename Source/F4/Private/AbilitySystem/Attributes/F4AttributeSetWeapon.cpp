@@ -6,6 +6,7 @@ UF4AttributeSetWeapon::UF4AttributeSetWeapon()
 	InitBaseDamage(0.f);
 	InitMaxAmmo(0.f);
 	InitCurrentAmmo(0.f);
+	InitFireRate(1.0f);
 }
 
 void UF4AttributeSetWeapon::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
