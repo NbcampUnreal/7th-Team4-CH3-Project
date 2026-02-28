@@ -23,6 +23,15 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 		return;
 	}
 
+	if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
+	{
+		int32 QuickSlotIndex = static_cast<int32>(TargetSlot);
+		if (QuickSlotComp->GetItemAtIndex(QuickSlotIndex) != ItemToEquip)
+		{
+			QuickSlotComp->RegisterItem(QuickSlotIndex, ItemToEquip);
+		}
+	}
+
 	if (WeaponLoadout.Contains(TargetSlot))
 	{
 		UnequipItemFromSlot(TargetSlot);
@@ -50,15 +59,6 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 		if (ActiveSlot == EWeaponSlot::None)
 		{
 			SetActiveWeapon(TargetSlot);
-		}
-
-		if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
-		{
-			int32 QuickSlotIndex = static_cast<int32>(TargetSlot);
-			if (QuickSlotComp->GetItemAtIndex(QuickSlotIndex) != ItemToEquip)
-			{
-				QuickSlotComp->RegisterItem(QuickSlotIndex, ItemToEquip);
-			}
 		}
 	}
 }
@@ -89,12 +89,6 @@ void UF4EquipmentComponent::UnequipItemFromSlot(EWeaponSlot TargetSlot)
 
 	SpawnedWeapons.Remove(ItemToRemove);
 	WeaponLoadout.Remove(TargetSlot);
-
-	UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>();
-	if (QuickSlotComp)
-	{
-		QuickSlotComp->UnregisterItem(static_cast<int32>(TargetSlot));
-	}
 }
 
 void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
@@ -140,10 +134,6 @@ void UF4EquipmentComponent::EquipWeapon(UF4ItemInstance* ItemToEquip)
 	}
 
 	EWeaponSlot TargetSlot = DetermineTargetSlotForNewWeapon();
-	if (TargetSlot == ActiveSlot && WeaponLoadout.Contains(TargetSlot))
-	{
-		UnequipItemFromSlot(TargetSlot);
-	}
 
 	EquipItemToSlot(ItemToEquip, TargetSlot);
 	SetActiveWeapon(TargetSlot);

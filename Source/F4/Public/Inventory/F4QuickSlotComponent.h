@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "F4QuickSlotComponent.generated.h"
 
+class UAbilitySystemComponent;
 struct FGameplayAbilitySpecHandle;
 class UF4InventoryComponent;
 class UF4EquipmentComponent;
@@ -24,9 +25,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
 	void RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemToRegister);
-
-	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
-	void UnregisterItem(int32 SlotIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
 	void ClearSlot(int32 SlotIndex);
@@ -61,4 +59,9 @@ private:
 
 	void GrantConsumableAbility(int32 SlotIndex, UF4ItemInstance* Item);
 	void ClearConsumableAbility(int32 SlotIndex);
+
+	bool IsRegisteredSlot(int32 SlotIndex) const;
+	bool IsWeaponSlot(int32 SlotIndex) const;
+	UAbilitySystemComponent* GetOwnerASC() const;
+	void UnequipWeaponFromSlot(int32 SlotIndex);
 };

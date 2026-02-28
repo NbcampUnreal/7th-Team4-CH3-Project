@@ -63,6 +63,15 @@ void UF4InventoryComponent::RemoveItem(UF4ItemInstance* ItemToRemove)
 {
 	if (ItemToRemove && InventoryList.Contains(ItemToRemove))
 	{
+		if (UF4QuickSlotComponent* QuickSlotComp = GetOwner()->FindComponentByClass<UF4QuickSlotComponent>())
+		{
+			int32 FoundSlotIndex = QuickSlotComp->FindItemSlotIndex(ItemToRemove);
+			if (FoundSlotIndex != -1)
+			{
+				QuickSlotComp->ClearSlot(FoundSlotIndex);
+			}
+		}
+
 		InventoryList.Remove(ItemToRemove);
 		OnInventoryUpdated.Broadcast();
 	}

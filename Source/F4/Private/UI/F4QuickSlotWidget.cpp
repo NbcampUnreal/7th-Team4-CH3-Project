@@ -107,7 +107,7 @@ FReply UF4QuickSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 
 	if (UF4QuickSlotComponent* QuickSlotComp = OwningPawn->FindComponentByClass<UF4QuickSlotComponent>())
 	{
-		QuickSlotComp->UnregisterItem(SlotIndex);
+		QuickSlotComp->ClearSlot(SlotIndex);
 		return FReply::Handled();
 	}
 
