@@ -6,11 +6,13 @@
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
 #include "Components/TextBlock.h"
+#include "Enviroment/DynamicSky.h"
 #include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Firearm.h"
 #include "Inventory/F4ItemInstance.h"
+#include "Kismet/GameplayStatics.h"
 #include "System/F4GameplayTags.h"
 
 void UF4HUD::NativeConstruct()
@@ -28,6 +30,7 @@ void UF4HUD::NativeConstruct()
 
 	InitializeHealthBar();
 	InitializeAmmoUI();
+	InitializeTimeText();
 }
 
 void UF4HUD::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -81,6 +84,19 @@ void UF4HUD::InitializeHealthBar()
 		float CurrentHealth = OwnerASC->GetNumericAttribute(UF4AttributeSetCharacter::GetHealthAttribute());
 		float MaxHealth = OwnerASC->GetNumericAttribute(UF4AttributeSetCharacter::GetMaxHealthAttribute());
 		UpdateHealthBar(CurrentHealth, MaxHealth);
+	}
+}
+
+void UF4HUD::InitializeTimeText()
+{
+	AActor* SkyActor = UGameplayStatics::GetActorOfClass(GetWorld(), ADynamicSky::StaticClass());
+	ADynamicSky* DynamicSky = Cast<ADynamicSky>(SkyActor);
+	
+	if (DynamicSky)
+	{
+		DynamicSky->OnTimeChanged.AddDynamic(this, &ThisClass::UF4HUD::UpdateTimeDisplay); 
+		DawnTime = DynamicSky->GetDawnTime();
+		DuskTime = DynamicSky->GetDuskTime();
 	}
 }
 
@@ -148,6 +164,25 @@ void UF4HUD::HandleInventoryUpdate()
 void UF4HUD::HandleWeaponChange(UF4ItemInstance* NewWeapon)
 {
 	RefreshTotalAmmoUI();
+}
+
+void UF4HUD::UpdateTimeDisplay(int32 Hour, int32 Minute)
+{
+	if (Time)
+	{
+		FString TimeString = FString::Printf(TEXT("%02d:%02d"), Hour, Minute);
+		Time->SetText(FText::FromString(TimeString));
+		
+		float CurrentTime = Hour + Minute/60; 
+		if (CurrentTime >= DawnTime && CurrentTime <= DuskTime)
+		{
+			TimeText->SetText(FText::FromString(DayTimeText));
+		}
+		else
+		{
+			TimeText->SetText(FText::FromString(NightTimeText));
+		}
+	}
 }
 
 void UF4HUD::RefreshTotalAmmoUI()
