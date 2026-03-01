@@ -21,10 +21,10 @@ void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 
 	if (AvatarCharacter && ASC)
 	{
-		if (InvincibilityEffectClass)
+		if (ConsumableEffectClass)
 		{
 			FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(InvincibilityEffectClass, 1.0f, EffectContext);
+			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ConsumableEffectClass, 1.0f, EffectContext);
 			ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 
