@@ -8,6 +8,7 @@ class UF4ItemInstance;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemoved, UF4ItemInstance*, RemovedItemInstance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemQuantityChanged, UF4ItemInstance*, ItemInstance, int32, NewQuantity);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class F4_API UF4InventoryComponent : public UActorComponent
@@ -37,6 +38,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnItemRemoved OnItemRemoved;
 
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+	FOnItemQuantityChanged OnItemQuantityChanged;
+
 	const TArray<TObjectPtr<UF4ItemInstance>>& GetInventoryItems() const { return InventoryList; }
 
 	int32 GetTotalItemCountByDefinition(class UF4ItemDefinition* ItemDef) const;
@@ -47,6 +51,4 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
 	TArray<TObjectPtr<UF4ItemInstance>> InventoryList;
 
-private:
-	void UpdateQuickSlotForItem(UF4ItemInstance* Item);
 };

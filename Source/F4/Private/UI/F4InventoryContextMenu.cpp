@@ -179,7 +179,7 @@ void UF4InventoryContextMenu::OnUnregisterQuickSlotClicked()
 		int32 QuickSlotIdx = QuickSlotComp->FindItemSlotIndex(TargetItemInstance);
 		if (QuickSlotIdx != -1)
 		{
-			QuickSlotComp->UnregisterItem(QuickSlotIdx);
+			QuickSlotComp->ClearSlot(QuickSlotIdx);
 		}
 	}
 	RemoveFromParent();

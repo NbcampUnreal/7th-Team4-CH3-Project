@@ -23,8 +23,16 @@ void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemT
 		return;
 	}
 
+	if (QuickSlots[SlotIndex] != nullptr)
+	{
+		ClearSlot(SlotIndex);
+	}
 	QuickSlots[SlotIndex] = ItemToRegister;
-	GrantConsumableAbility(SlotIndex, ItemToRegister);
+
+	if (!IsWeaponSlot(SlotIndex))
+	{
+		GrantConsumableAbility(SlotIndex, ItemToRegister);
+	}
 
 	if (OnQuickSlotUpdated.IsBound())
 	{
@@ -32,33 +40,20 @@ void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemT
 	}
 }
 
-void UF4QuickSlotComponent::UnregisterItem(int32 SlotIndex)
-{
-	if (!QuickSlots.IsValidIndex(SlotIndex) || !QuickSlots[SlotIndex])
-	{
-		return;
-	}
-
-	ClearConsumableAbility(SlotIndex);
-
-	QuickSlots[SlotIndex] = nullptr;
-	OnQuickSlotUpdated.Broadcast(SlotIndex, nullptr);
-}
-
 void UF4QuickSlotComponent::ClearSlot(int32 SlotIndex)
 {
-	if (!QuickSlots.IsValidIndex(SlotIndex))
+	if (!IsRegisteredSlot(SlotIndex))
 	{
 		return;
 	}
 
-	if (SlotIndex == 0 || SlotIndex == 1)
+	if (IsWeaponSlot(SlotIndex))
 	{
-		EWeaponSlot TargetSlot = (SlotIndex == 0) ? EWeaponSlot::Primary : EWeaponSlot::Secondary;
-		if (EquipmentComp)
-		{
-			EquipmentComp->UnequipItemFromSlot(TargetSlot);
-		}
+		UnequipWeaponFromSlot(SlotIndex);
+	}
+	else
+	{
+		ClearConsumableAbility(SlotIndex);
 	}
 
 	QuickSlots[SlotIndex] = nullptr;
@@ -82,9 +77,8 @@ void UF4QuickSlotComponent::UseSlot(int32 SlotIndex)
 			return;
 		}
 
-		if (UAbilitySystemComponent* ASC = ASInterface->GetAbilitySystemComponent())
+		if (UAbilitySystemComponent* ASC = GetOwnerASC())
 		{
-
 			FGameplayEventData Payload;
 			Payload.Instigator = GetOwner();
 			Payload.OptionalObject = Item;
@@ -108,7 +102,17 @@ void UF4QuickSlotComponent::BeginPlay()
 	if (AActor* Owner = GetOwner())
 	{
 		EquipmentComp = Owner->FindComponentByClass<UF4EquipmentComponent>();
-		InventoryComp = Owner->FindComponentByClass<UF4InventoryComponent>();
+
+		if (UF4InventoryComponent* InvComp = Owner->FindComponentByClass<UF4InventoryComponent>())
+		{
+			InvComp->OnItemQuantityChanged.AddDynamic(this, &ThisClass::OnInventoryItemQuantityChanged);
+			InvComp->OnItemRemoved.AddDynamic(this, &ThisClass::OnInventoryItemRemoved);
+		}
+
+		if (EquipmentComp)
+		{
+			EquipmentComp->OnWeaponEquippedToSlot.AddDynamic(this, &ThisClass::OnWeaponEquippedToQuickSlot);
+		}
 	}
 }
 
@@ -125,30 +129,58 @@ void UF4QuickSlotComponent::GrantConsumableAbility(int32 SlotIndex, UF4ItemInsta
 	}
 
 	const UF4ItemFragment_Consumable* ConsumableFrag = Item->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Consumable>();
-	if (!ConsumableFrag) return;
+	if (!ConsumableFrag)
+	{
+		return;
+	}
 
-	IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(GetOwner());
-	if (!ASInterface) return;
-
-	UAbilitySystemComponent* ASC = ASInterface->GetAbilitySystemComponent();
-	if (!ASC) return;
-
-	FGameplayAbilitySpec Spec(ConsumableFrag->ConsumeAbility, 1, INDEX_NONE, Item);
-	GrantedAbilityHandles[SlotIndex] = ASC->GiveAbility(Spec);
+	if (UAbilitySystemComponent* ASC = GetOwnerASC())
+	{
+		FGameplayAbilitySpec Spec(ConsumableFrag->ConsumeAbility, 1, INDEX_NONE, Item);
+		GrantedAbilityHandles[SlotIndex] = ASC->GiveAbility(Spec);
+	}
 }
 
 void UF4QuickSlotComponent::ClearConsumableAbility(int32 SlotIndex)
 {
-	if (!GrantedAbilityHandles.IsValidIndex(SlotIndex) || !GrantedAbilityHandles[SlotIndex].IsValid()) return;
+	if (!GrantedAbilityHandles.IsValidIndex(SlotIndex) || !GrantedAbilityHandles[SlotIndex].IsValid())
+	{
+		return;
+	}
 
-	IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(GetOwner());
-	if (!ASInterface) return;
+	if (UAbilitySystemComponent* ASC = GetOwnerASC())
+	{
+		ASC->ClearAbility(GrantedAbilityHandles[SlotIndex]);
+		GrantedAbilityHandles[SlotIndex] = FGameplayAbilitySpecHandle();
+	}
+}
 
-	UAbilitySystemComponent* ASC = ASInterface->GetAbilitySystemComponent();
-	if (!ASC) return;
+bool UF4QuickSlotComponent::IsRegisteredSlot(int32 SlotIndex) const
+{
+	return QuickSlots.IsValidIndex(SlotIndex) && QuickSlots[SlotIndex] != nullptr;
+}
 
-	ASC->ClearAbility(GrantedAbilityHandles[SlotIndex]);
-	GrantedAbilityHandles[SlotIndex] = FGameplayAbilitySpecHandle();
+bool UF4QuickSlotComponent::IsWeaponSlot(int32 SlotIndex) const
+{
+	return SlotIndex == 0 || SlotIndex == 1;
+}
+
+UAbilitySystemComponent* UF4QuickSlotComponent::GetOwnerASC() const
+{
+	if (IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(GetOwner()))
+	{
+		return ASInterface->GetAbilitySystemComponent();
+	}
+	return nullptr;
+}
+
+void UF4QuickSlotComponent::UnequipWeaponFromSlot(int32 SlotIndex)
+{
+	if (EquipmentComp)
+	{
+		EWeaponSlot TargetSlot = (SlotIndex == 0) ? EWeaponSlot::Primary : EWeaponSlot::Secondary;
+		EquipmentComp->UnequipItemFromSlot(TargetSlot);
+	}
 }
 
 int32 UF4QuickSlotComponent::GetEmptyConsumableSlotIndex() const
@@ -188,4 +220,36 @@ UF4ItemInstance* UF4QuickSlotComponent::GetItemAtIndex(int32 Index) const
 	}
 
 	return QuickSlots[Index];
+}
+
+void UF4QuickSlotComponent::OnInventoryItemQuantityChanged(UF4ItemInstance* Item, int32 NewQuantity)
+{
+	const int32 SlotIndex = FindItemSlotIndex(Item);
+	if (SlotIndex == -1) return;
+
+	if (NewQuantity <= 0)
+	{
+		ClearSlot(SlotIndex);
+	}
+	else
+	{
+		OnQuickSlotUpdated.Broadcast(SlotIndex, Item);
+	}
+}
+
+void UF4QuickSlotComponent::OnInventoryItemRemoved(UF4ItemInstance* RemovedItem)
+{
+	const int32 SlotIndex = FindItemSlotIndex(RemovedItem);
+	if (SlotIndex != -1)
+	{
+		ClearSlot(SlotIndex);
+	}
+}
+
+void UF4QuickSlotComponent::OnWeaponEquippedToQuickSlot(int32 QuickSlotIndex, UF4ItemInstance* Item)
+{
+	if (GetItemAtIndex(QuickSlotIndex) != Item)
+	{
+		RegisterItem(QuickSlotIndex, Item);
+	}
 }

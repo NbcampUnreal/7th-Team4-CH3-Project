@@ -4,8 +4,8 @@
 #include "Components/ActorComponent.h"
 #include "F4QuickSlotComponent.generated.h"
 
+class UAbilitySystemComponent;
 struct FGameplayAbilitySpecHandle;
-class UF4InventoryComponent;
 class UF4EquipmentComponent;
 class UF4ItemInstance;
 
@@ -26,9 +26,6 @@ public:
 	void RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemToRegister);
 
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
-	void UnregisterItem(int32 SlotIndex);
-
-	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
 	void ClearSlot(int32 SlotIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
@@ -46,14 +43,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "QuickSlot")
 	UF4ItemInstance* GetItemAtIndex(int32 Index) const;
 
+	UFUNCTION()
+	void OnInventoryItemQuantityChanged(UF4ItemInstance* Item, int32 NewQuantity);
+
+	UFUNCTION()
+	void OnInventoryItemRemoved(UF4ItemInstance* RemovedItem);
+
+	UFUNCTION()
+	void OnWeaponEquippedToQuickSlot(int32 QuickSlotIndex, UF4ItemInstance* Item);
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY()
 	TObjectPtr<UF4EquipmentComponent> EquipmentComp;
-
-	UPROPERTY()
-	TObjectPtr<UF4InventoryComponent> InventoryComp;
 
 private:
 	UPROPERTY()
@@ -61,4 +64,9 @@ private:
 
 	void GrantConsumableAbility(int32 SlotIndex, UF4ItemInstance* Item);
 	void ClearConsumableAbility(int32 SlotIndex);
+
+	bool IsRegisteredSlot(int32 SlotIndex) const;
+	bool IsWeaponSlot(int32 SlotIndex) const;
+	UAbilitySystemComponent* GetOwnerASC() const;
+	void UnequipWeaponFromSlot(int32 SlotIndex);
 };

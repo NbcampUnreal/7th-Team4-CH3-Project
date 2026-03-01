@@ -28,4 +28,9 @@ public:
 		}
 		return nullptr;
 	}
+
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		return FPrimaryAssetId(FPrimaryAssetType("ItemDefinition"), GetFName());
+	}
 };
