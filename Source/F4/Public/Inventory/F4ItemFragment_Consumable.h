@@ -14,4 +14,7 @@ class F4_API UF4ItemFragment_Consumable : public UF4ItemFragment
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
 	TSubclassOf<UGameplayAbility> ConsumeAbility;
+
+	virtual void OnItemAddedToQuickSlot(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance, int32 SlotIndex) override;
+	virtual void OnItemRemovedFromQuickSlot(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance, int32 SlotIndex) override;
 };

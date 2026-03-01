@@ -5,7 +5,6 @@
 #include "F4QuickSlotComponent.generated.h"
 
 class UAbilitySystemComponent;
-struct FGameplayAbilitySpecHandle;
 class UF4EquipmentComponent;
 class UF4ItemInstance;
 
@@ -59,12 +58,6 @@ protected:
 	TObjectPtr<UF4EquipmentComponent> EquipmentComp;
 
 private:
-	UPROPERTY()
-	TArray<FGameplayAbilitySpecHandle> GrantedAbilityHandles;
-
-	void GrantConsumableAbility(int32 SlotIndex, UF4ItemInstance* Item);
-	void ClearConsumableAbility(int32 SlotIndex);
-
 	bool IsRegisteredSlot(int32 SlotIndex) const;
 	bool IsWeaponSlot(int32 SlotIndex) const;
 	UAbilitySystemComponent* GetOwnerASC() const;

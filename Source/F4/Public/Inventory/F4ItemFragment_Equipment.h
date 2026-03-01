@@ -29,4 +29,7 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GAS")
 	TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
+
+	virtual void OnItemEquipped(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance) override;
+	virtual void OnItemUnequipped(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance) override;
 };

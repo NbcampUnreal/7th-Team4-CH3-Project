@@ -21,4 +21,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon|Ammo")
 	float AmmoCostPerFire = 1.0f;
+
+	virtual void OnItemEquipped(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance) override;
+	virtual void OnItemUnequipped(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance) override;
 };
