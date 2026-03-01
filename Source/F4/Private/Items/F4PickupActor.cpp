@@ -45,7 +45,10 @@ void AF4PickupActor::BeginPlay()
 	{
 		for (UF4ItemFragment* Fragment : ItemDefinition->Fragments)
 		{
-			Fragment->OnPickupActorSpawned(ItemMeshComp, SubMeshComp);
+			if (Fragment)
+			{
+				Fragment->OnPickupActorSpawned(ItemMeshComp, SubMeshComp);
+			}
 		}
 	}
 
@@ -114,7 +117,10 @@ void AF4PickupActor::InitializePickup(UF4ItemDefinition* InItemDefinition)
 
 	for (UF4ItemFragment* Fragment : ItemDefinition->Fragments)
 	{
-		Fragment->OnPickupActorSpawned(ItemMeshComp, SubMeshComp);
+		if (Fragment)
+		{
+			Fragment->OnPickupActorSpawned(ItemMeshComp, SubMeshComp);
+		}
 	}
 }
 

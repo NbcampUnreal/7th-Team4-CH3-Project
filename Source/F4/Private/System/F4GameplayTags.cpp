@@ -61,6 +61,7 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Event_Combat_Equip, TEXT("Event.Combat.Equip"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Weapon_Switch, TEXT("Event.Weapon.Switch"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Trigger_Invisible, TEXT("Event.Trigger.Invisible"));
+	UE_DEFINE_GAMEPLAY_TAG(Event_Trigger_UseConsumable, TEXT("Event.Trigger.UseConsumable"));
 
 	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_Fire, TEXT("Event.Montage.Fire"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Stamina_Exhuast, TEXT("Event.Stamina.Exhaust")); 

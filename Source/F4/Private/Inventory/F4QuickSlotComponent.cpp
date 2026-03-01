@@ -6,7 +6,7 @@
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment.h"
-#include "Inventory/F4ItemFragment_Usable.h"
+#include "Inventory/F4ItemFragment.h"
 #include "Inventory/F4ItemInstance.h"
 
 UF4QuickSlotComponent::UF4QuickSlotComponent()
@@ -78,24 +78,30 @@ void UF4QuickSlotComponent::UseSlot(int32 SlotIndex)
 	}
 
 
-	if (const UF4ItemFragment_Usable* UsableFragment = Item->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Usable>())
+	FGameplayTag UsageTag;
+	for (UF4ItemFragment* Fragment : Item->ItemDefinition->Fragments)
 	{
-		IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(GetOwner());
-		if (!ASInterface)
+		UsageTag = Fragment->GetUsageEventTag();
+		if (UsageTag.IsValid())
 		{
-			return;
+			break;
 		}
+	}
 
-		if (UAbilitySystemComponent* ASC = GetOwnerASC())
-		{
-			FGameplayEventData Payload;
-			Payload.Instigator = GetOwner();
-			Payload.OptionalObject = Item;
-			Payload.EventTag = UsableFragment->UsageEventTag;
-			Payload.EventMagnitude = static_cast<float>(SlotIndex);
+	if (!UsageTag.IsValid())
+	{
+		return;
+	}
 
-			ASC->HandleGameplayEvent(UsableFragment->UsageEventTag, &Payload);
-		}
+	if (UAbilitySystemComponent* ASC = GetOwnerASC())
+	{
+		FGameplayEventData Payload;
+		Payload.Instigator = GetOwner();
+		Payload.OptionalObject = Item;
+		Payload.EventTag = UsageTag;
+		Payload.EventMagnitude = static_cast<float>(SlotIndex);
+
+		ASC->HandleGameplayEvent(UsageTag, &Payload);
 	}
 }
 

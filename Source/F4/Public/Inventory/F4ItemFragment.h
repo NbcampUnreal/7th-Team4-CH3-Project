@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GameplayTagContainer.h"
 #include "F4ItemFragment.generated.h"
 
 class UAbilitySystemComponent;
@@ -22,4 +23,7 @@ public:
 
 	virtual TSubclassOf<UAnimInstance> GetEquipAnimLayer() const { return nullptr; }
 	virtual void OnPickupActorSpawned(UStaticMeshComponent* MeshComp, UStaticMeshComponent* SubMeshComp) {}
+
+	// UseSlot 호출 시 전송할 이벤트 태그. 사용 가능한 Fragment만 유효한 태그를 반환
+	virtual FGameplayTag GetUsageEventTag() const { return FGameplayTag(); }
 };

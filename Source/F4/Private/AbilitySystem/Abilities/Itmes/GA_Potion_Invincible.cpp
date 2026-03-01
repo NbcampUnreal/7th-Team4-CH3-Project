@@ -5,51 +5,29 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
-#include "Engine/TextureRenderTarget2D.h"
-#include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemInstance.h"
 #include "System/F4GameplayTags.h"
 
 UGA_Potion_Invincible::UGA_Potion_Invincible()
 {
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-
-	FAbilityTriggerData TriggerData;
-
+	// 트리거 설정은 GA_ConsumableBase 생성자에서 처리
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Invisible));
-	TriggerData.TriggerTag = F4GameplayTags::Event_Trigger_Invisible;
-	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
-
-	AbilityTriggers.Add(TriggerData);
 }
 
-void UGA_Potion_Invincible::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                            const FGameplayAbilityActorInfo* ActorInfo,
-                                            const FGameplayAbilityActivationInfo ActivationInfo,
-                                            const FGameplayEventData* TriggerEventData)
+void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
-
-	ACharacter* AvatarCharacter = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
-	UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+	UAbilitySystemComponent* ASC = CurrentActorInfo->AbilitySystemComponent.Get();
+	ACharacter* AvatarCharacter = Cast<ACharacter>(CurrentActorInfo->AvatarActor.Get());
 
 	if (AvatarCharacter && ASC)
 	{
 		if (InvincibilityEffectClass)
 		{
 			FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-			FGameplayEffectSpecHandle SpecHandle =
-				ASC->MakeOutgoingSpec(InvincibilityEffectClass, 1.0f, EffectContext);
+			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(InvincibilityEffectClass, 1.0f, EffectContext);
 			ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 
-		// 원래 Materials 백업
 		if (USkeletalMeshComponent* Mesh = AvatarCharacter->GetMesh())
 		{
 			for (int32 i = 0; i < Mesh->GetNumMaterials(); ++i)
@@ -58,29 +36,13 @@ void UGA_Potion_Invincible::ActivateAbility(const FGameplayAbilitySpecHandle Han
 				if (TransparentMaterial)
 				{
 					if (GEngine)
-						GEngine->AddOnScreenDebugMessage(
-							-1, 5.f, FColor::Red, FString::Printf(TEXT("투명화")));
+						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("투명화"));
 					Mesh->SetMaterial(i, TransparentMaterial);
 				}
 			}
 		}
 	}
 
-	UF4ItemInstance* ItemInst = nullptr;
-	if (TriggerEventData && TriggerEventData->OptionalObject)
-	{
-		ItemInst = const_cast<UF4ItemInstance*>(Cast<UF4ItemInstance>(TriggerEventData->OptionalObject));
-	}
-
-	if (ItemInst)
-	{
-		if (UF4InventoryComponent* InvComp = AvatarCharacter->FindComponentByClass<UF4InventoryComponent>())
-		{
-			InvComp->ConsumeItem(ItemInst, 1);
-		}
-	}
-
-	// 강제 해제 조건
 	UAbilityTask_WaitGameplayTagAdded* WaitFireTag = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(
 		this, FGameplayTag::RequestGameplayTag(TEXT("Ability.Combat.Fire")));
 	WaitFireTag->Added.AddDynamic(this, &UGA_Potion_Invincible::OnActionDetected);
@@ -91,10 +53,35 @@ void UGA_Potion_Invincible::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	WaitSprintTag->Added.AddDynamic(this, &UGA_Potion_Invincible::OnActionDetected);
 	WaitSprintTag->ReadyForActivation();
 
-	// 5초 경과
 	UAbilityTask_WaitDelay* WaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, Duration);
 	WaitDelay->OnFinish.AddDynamic(this, &UGA_Potion_Invincible::OnDurationEnded);
 	WaitDelay->ReadyForActivation();
+}
+
+void UGA_Potion_Invincible::OnConsumeEnded()
+{
+	if (ACharacter* AvatarCharacter = Cast<ACharacter>(CurrentActorInfo->AvatarActor.Get()))
+	{
+		if (USkeletalMeshComponent* Mesh = AvatarCharacter->GetMesh())
+		{
+			for (int32 i = 0; i < OriginalMaterials.Num(); ++i)
+			{
+				if (OriginalMaterials[i])
+					Mesh->SetMaterial(i, OriginalMaterials[i]);
+			}
+		}
+	}
+
+	if (UAbilitySystemComponent* ASC = CurrentActorInfo->AbilitySystemComponent.Get())
+	{
+		if (ActiveEffectHandle.IsValid())
+		{
+			ASC->RemoveActiveGameplayEffect(ActiveEffectHandle);
+			ActiveEffectHandle.Invalidate();
+		}
+	}
+
+	OriginalMaterials.Empty();
 }
 
 void UGA_Potion_Invincible::OnDurationEnded()
@@ -105,36 +92,4 @@ void UGA_Potion_Invincible::OnDurationEnded()
 void UGA_Potion_Invincible::OnActionDetected()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-}
-
-void UGA_Potion_Invincible::EndAbility(const FGameplayAbilitySpecHandle Handle,
-                                       const FGameplayAbilityActorInfo* ActorInfo,
-                                       const FGameplayAbilityActivationInfo ActivationInfo,
-                                       bool bReplicateEndAbility, bool bWasCancelled)
-{
-	ACharacter* AvatarCharacter = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
-	if (AvatarCharacter)
-	{
-		if (USkeletalMeshComponent* Mesh = AvatarCharacter->GetMesh())
-		{
-			for (int i = 0; i < OriginalMaterials.Num(); ++i)
-			{
-				if (OriginalMaterials[i])
-				{
-					Mesh->SetMaterial(i, OriginalMaterials[i]);
-				}
-			}
-		}
-	}
-
-	UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
-	if (ASC && ActiveEffectHandle.IsValid())
-	{
-		ASC->RemoveActiveGameplayEffect(ActiveEffectHandle);
-		ActiveEffectHandle.Invalidate();
-	}
-
-	OriginalMaterials.Empty();
-
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
