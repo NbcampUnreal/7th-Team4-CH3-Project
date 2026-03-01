@@ -4,6 +4,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffect.h"
+#include "Components/WidgetComponent.h"
+#include "UI/UW_EnemyWidget.h"
 
 AF4EnemyBase::AF4EnemyBase()
 {
@@ -12,6 +14,82 @@ AF4EnemyBase::AF4EnemyBase()
 	EnemyAttributeSet = CreateDefaultSubobject<UF4AttributeSetEnemy>(TEXT("EnemyAttributeSet"));
 	
 	AttributeSet = EnemyAttributeSet;
+	
+	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
+	HealthBarWidget->SetupAttachment(GetRootComponent());
+	HealthBarWidget->SetRelativeLocation(FVector(0.f, 0.f, 100.f));
+	HealthBarWidget->SetWidgetSpace(EWidgetSpace::Screen);
+}
+
+void AF4EnemyBase::InitializeHealthBar()
+{
+	if (ASC && EnemyAttributeSet)
+	{
+		if (HealthBarWidget->GetWidget() == nullptr)
+		{
+			GetWorldTimerManager().SetTimerForNextTick(this, &AF4EnemyBase::InitializeHealthBar);
+			return;
+		}
+
+		ASC->GetGameplayAttributeValueChangeDelegate(EnemyAttributeSet->GetHealthAttribute())
+		   .AddUObject(this, &AF4EnemyBase::OnHealthChanged);
+		
+		float CurrentHealth = EnemyAttributeSet->GetHealth();
+		float MaxHealth = EnemyAttributeSet->GetMaxHealth();
+		UpdateHealthBar(CurrentHealth, MaxHealth);
+		UpdateHealthBarVisibility();
+	}
+}
+
+void AF4EnemyBase::OnHealthChanged(const FOnAttributeChangeData& Data)
+{
+	if (!EnemyAttributeSet) return;
+	
+	const float CurrentHealth = Data.NewValue; 
+	const float MaxHealth = EnemyAttributeSet->GetMaxHealth();
+
+	UpdateHealthBar(CurrentHealth, MaxHealth);
+	
+	UpdateHealthBarVisibility();
+}
+
+void AF4EnemyBase::UpdateHealthBar(float Current, float Max)
+{
+	if (!HealthBarWidget)
+	{
+		return;
+	}
+	
+	UUserWidget* RawWidget = HealthBarWidget->GetWidget();
+	if (!RawWidget)
+	{
+		return;
+	}
+	
+	UUW_EnemyWidget* EnemyWidget = Cast<UUW_EnemyWidget>(RawWidget);
+	if (!EnemyWidget)
+	{
+		return;
+	}
+	
+	EnemyWidget->UpdateStatBar(Current, Max);
+}
+
+void AF4EnemyBase::UpdateHealthBarVisibility()
+{
+	if (UUserWidget* RawWidget = HealthBarWidget->GetWidget())
+	{
+		if (UUW_EnemyWidget* EnemyWidget = Cast<UUW_EnemyWidget>(RawWidget))
+		{
+			// 현재 체력 상태에 따라 노출 여부 판단
+			float CurrentHealth = EnemyAttributeSet->GetHealth();
+			float MaxHealth = EnemyAttributeSet->GetMaxHealth();
+			
+			bool bShouldBeVisible = (CurrentHealth < MaxHealth) && (CurrentHealth > 0.f);
+			
+			EnemyWidget->UpdateWidgetVisibility(bShouldBeVisible);
+		}
+	}
 }
 
 void AF4EnemyBase::InitializeAttributes()
@@ -69,6 +147,9 @@ void AF4EnemyBase::PossessedBy(AController* NewController)
 		{
 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
+		
+		// 체력바 초기화
+		InitializeHealthBar();
 	}
 	
 	AAIController* AIC = Cast<AAIController>(NewController);

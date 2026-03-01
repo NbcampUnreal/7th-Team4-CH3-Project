@@ -6,6 +6,7 @@
 #include "F4EnemyBase.generated.h"
 
 
+class UWidgetComponent;
 class UF4AttributeSetEnemy;
 
 UENUM(BlueprintType)
@@ -34,6 +35,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS | GameplayEffect")
 	TSubclassOf<UGameplayEffect> DifficultySideEffectClass;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "F4 | UI")
+	TObjectPtr<UWidgetComponent> HealthBarWidget;
+	
+	void InitializeHealthBar();
+	void OnHealthChanged(const FOnAttributeChangeData& Data);
+	void UpdateHealthBar(float Current, float Max);
+	// 피격시에만 체력바 보이도록
+	void UpdateHealthBarVisibility();
+	
 	virtual void InitializeAttributes() override; 
 
 public:
@@ -45,20 +55,20 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | AI")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Status")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | Status")
 	bool bIsDead = false;
 
 public:
 	void SetIsDead(bool NewIsDead) { bIsDead = NewIsDead; }
 	
 protected:
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, Category = "F4 | Combat")
 	TSubclassOf<AActor> WeaponClass;
 	
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, Category = "F4 | Combat")
 	FName WeaponSocketName = TEXT("WeaponSocket");
 	
 	UPROPERTY()
@@ -66,15 +76,15 @@ protected:
 	
 	void SpawnDefaultWeapon();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | Combat")
 	bool bIsAiming = false;
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="F4 | Combat")
 	EEnemyType EnemyType;
 	
 	void SetIsAiming(bool bNewState) { bIsAiming = bNewState; }
     
-	UFUNCTION(BlueprintPure, Category = "Combat")
+	UFUNCTION(BlueprintPure, Category = "F4 | Combat")
 	bool GetIsAiming() const { return bIsAiming; }
 };
