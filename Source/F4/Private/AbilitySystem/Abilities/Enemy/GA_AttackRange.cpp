@@ -1,5 +1,5 @@
 #include "AbilitySystem/Abilities/Enemy/GA_AttackRange.h"
-#include"AbilitySystemComponent.h"
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Characters/Enemy/F4EnemyBase.h"
@@ -8,7 +8,6 @@
 
 UGA_AttackRange::UGA_AttackRange()
 {
-	
 }
 
 void UGA_AttackRange::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -28,7 +27,7 @@ void UGA_AttackRange::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		this, 
 		NAME_None,
 		AttackMontage,
-		1.0f
+		MontageSpeed
 		);
 	
 	if (!MontageTask)
