@@ -72,7 +72,7 @@ void UF4QuickSlotComponent::ClearSlot(int32 SlotIndex)
 void UF4QuickSlotComponent::UseSlot(int32 SlotIndex)
 {
 	UF4ItemInstance* Item = GetItemAtIndex(SlotIndex);
-	if (!Item || !Item->ItemDefinition)
+	if (!Item || !Item->ItemDefinition || Item->Quantity <= 0)
 	{
 		return;
 	}
