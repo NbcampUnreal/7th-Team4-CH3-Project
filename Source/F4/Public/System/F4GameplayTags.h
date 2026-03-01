@@ -78,6 +78,10 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Zoom);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_QuickSlot);
 	
+	// Item Tag
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Item_Health);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Item_Stamina);
+	
 	
 	// Gameplay Cue
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_HurricaneKick);
