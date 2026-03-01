@@ -21,10 +21,14 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Equip);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Fire);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Melee);
-	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Invisible);
+	
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_HurricaneKick);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_SwitchWeapon);
+	
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Combat_Invisible);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Item_Health);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Item_Stamina);
 
 	// Character State Tags 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Character_State_InAir);
@@ -77,6 +81,10 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Zoom);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_QuickSlot);
+	
+	// Item Tag
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Item_Health);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Item_Stamina);
 	
 	
 	// Gameplay Cue
