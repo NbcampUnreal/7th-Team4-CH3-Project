@@ -1,13 +1,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ActiveGameplayEffectHandle.h"
-#include "GameplayAbilitySpecHandle.h"
 #include "Components/ActorComponent.h"
 #include "F4EquipmentComponent.generated.h"
 
 class UF4ItemFragment_Equipment;
-class UF4ItemFragment_Firearm;
 class UF4ItemInstance;
 class UAbilitySystemComponent;
 class AF4WeaponActor;
@@ -18,15 +15,6 @@ enum class EWeaponSlot : uint8
 	Primary = 0,
 	Secondary = 1,
 	None = 255
-};
-
-USTRUCT()
-struct FEquipmentHandles
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActiveWeaponChanged, UF4ItemInstance*, NewItemInstance);
@@ -89,15 +77,7 @@ protected:
 	UPROPERTY()
 	TMap<UF4ItemInstance*, AF4WeaponActor*> SpawnedWeapons;
 
-	UPROPERTY()
-	TMap<UF4ItemInstance*, FEquipmentHandles> GrantedHandlesMap;
-
-	FActiveGameplayEffectHandle CurrentWeaponGEHandle;
-
 	FName GetHolsterSocketName(EWeaponSlot Slot) const;
-	void ApplyWeaponStatEffect(UF4ItemInstance* ItemInstance, const UF4ItemFragment_Firearm* FirearmFragment);
-	void GrantWeaponAbilities(UF4ItemInstance* Item, const UF4ItemFragment_Equipment* Fragment);
-	void RemoveWeaponAbilities(UF4ItemInstance* Item);
 	void CleanUpOldWeapon(UF4ItemInstance* OldItem, EWeaponSlot OldSlot);
 	void SetupNewWeapon(UF4ItemInstance* NewItem);
 	EWeaponSlot DetermineTargetSlotForNewWeapon() const;

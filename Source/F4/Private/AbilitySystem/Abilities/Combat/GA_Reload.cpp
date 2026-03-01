@@ -23,9 +23,6 @@ UGA_Reload::UGA_Reload()
 	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Rolling);
 
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Reloading);
-
-	// TODO: cost - ammo(총알) 인벤토리에 있어야 장전가능 일단은 그냥 총알 무한으로 장전가능하게
-	// TODO: 이미 탄창이 MAX라면 실행안되게
 }
 
 bool UGA_Reload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

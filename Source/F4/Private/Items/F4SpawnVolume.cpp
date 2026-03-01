@@ -6,7 +6,6 @@
 #include "Items/F4PickupActor.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Spawnable.h"
-#include "Items/F4ItemFragment_PickupVisual.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AF4SpawnVolume::AF4SpawnVolume()
@@ -102,12 +101,6 @@ void AF4SpawnVolume::TrySpawnItem(UF4ItemDefinition* ItemDefinition)
 {
 	const UF4ItemFragment_Spawnable* SpawnableFrag = ItemDefinition->FindFragmentByClass<UF4ItemFragment_Spawnable>();
 	if (!SpawnableFrag)
-	{
-		return;
-	}
-
-	const UF4ItemFragment_PickupVisual* VisualFrag = ItemDefinition->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
-	if (!VisualFrag)
 	{
 		return;
 	}

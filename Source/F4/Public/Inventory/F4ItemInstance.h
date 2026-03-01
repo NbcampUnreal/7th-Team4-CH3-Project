@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "GameplayAbilitySpecHandle.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "UObject/NoExportTypes.h"
 #include "F4ItemInstance.generated.h"
 
@@ -24,6 +26,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Stats")
 	TMap<FGameplayTag, float> DynamicStats;
+
+	UPROPERTY()
+	TArray<FGameplayAbilitySpecHandle> GrantedAbilityHandles;
+
+	UPROPERTY()
+	FActiveGameplayEffectHandle ActiveGEHandle;
+
+	UPROPERTY()
+	FGameplayAbilitySpecHandle QuickSlotAbilityHandle;
 
 	UFUNCTION(BlueprintCallable, Category = "Item|Stats")
 	void AddStatValue(FGameplayTag StatTag, float Value);

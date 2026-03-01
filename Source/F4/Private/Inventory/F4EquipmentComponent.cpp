@@ -1,14 +1,12 @@
 #include "Inventory/F4EquipmentComponent.h"
 
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
 #include "GameFramework/Character.h"
 #include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemFragment.h"
 #include "Inventory/F4ItemFragment_Equipment.h"
-#include "Inventory/F4ItemFragment_Firearm.h"
 #include "Inventory/F4ItemInstance.h"
 #include "Items/Weapons/F4WeaponActor.h"
-#include "System/F4GameplayTags.h"
 
 UF4EquipmentComponent::UF4EquipmentComponent()
 {
@@ -174,58 +172,6 @@ FName UF4EquipmentComponent::GetHolsterSocketName(EWeaponSlot Slot) const
 	}
 }
 
-void UF4EquipmentComponent::ApplyWeaponStatEffect(UF4ItemInstance* ItemInstance, const UF4ItemFragment_Firearm* FirearmFragment)
-{
-	if (!FirearmFragment || !FirearmFragment->EquipStatEffect || !ASC)
-	{
-		return;
-	}
-
-	FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
-	ContextHandle.AddInstigator(GetOwner(), GetOwner());
-	ContextHandle.AddSourceObject(ItemInstance);
-
-	FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(FirearmFragment->EquipStatEffect, 1.0f, ContextHandle);
-
-	if (SpecHandle.IsValid())
-	{
-		CurrentWeaponGEHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-	}
-}
-
-void UF4EquipmentComponent::GrantWeaponAbilities(UF4ItemInstance* Item, const UF4ItemFragment_Equipment* Fragment)
-{
-	if (!Item || !Fragment || !ASC)
-	{
-		return;
-	}
-
-	FEquipmentHandles NewHandles;
-	for (TSubclassOf<UGameplayAbility> AbilityClass : Fragment->GrantedAbilities)
-	{
-		if (AbilityClass)
-		{
-			FGameplayAbilitySpec Spec(AbilityClass, 1, INDEX_NONE, Item);
-			NewHandles.AbilitySpecHandles.Add(ASC->GiveAbility(Spec));
-		}
-	}
-	GrantedHandlesMap.Add(Item, NewHandles);
-}
-
-void UF4EquipmentComponent::RemoveWeaponAbilities(UF4ItemInstance* Item)
-{
-	if (!Item || !ASC || !GrantedHandlesMap.Contains(Item))
-	{
-		return;
-	}
-
-	for (const FGameplayAbilitySpecHandle& Handle : GrantedHandlesMap[Item].AbilitySpecHandles)
-	{
-		ASC->ClearAbility(Handle);
-	}
-	GrantedHandlesMap.Remove(Item);
-}
-
 void UF4EquipmentComponent::CleanUpOldWeapon(UF4ItemInstance* OldItem, EWeaponSlot OldSlot)
 {
 	if (!OldItem)
@@ -243,17 +189,9 @@ void UF4EquipmentComponent::CleanUpOldWeapon(UF4ItemInstance* OldItem, EWeaponSl
 
 	if (ASC)
 	{
-		if (ASC->HasAttributeSetForAttribute(UF4AttributeSetWeapon::GetCurrentAmmoAttribute()))
+		for (UF4ItemFragment* Fragment : OldItem->ItemDefinition->Fragments)
 		{
-			float LeftAmmo = ASC->GetNumericAttribute(UF4AttributeSetWeapon::GetCurrentAmmoAttribute());
-			OldItem->DynamicStats.Add(F4GameplayTags::Weapon_Ammo_Loaded, LeftAmmo);
-		}
-
-		RemoveWeaponAbilities(OldItem);
-		if (CurrentWeaponGEHandle.IsValid())
-		{
-			ASC->RemoveActiveGameplayEffect(CurrentWeaponGEHandle);
-			CurrentWeaponGEHandle.Invalidate();
+			Fragment->OnItemUnequipped(ASC, OldItem);
 		}
 	}
 }
@@ -275,15 +213,10 @@ void UF4EquipmentComponent::SetupNewWeapon(UF4ItemInstance* NewItem)
 
 	NewWeaponActor->AttachToComponent(CharacterMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, NewFragment->HandSocketName);
 
-	if (const UF4ItemFragment_Firearm* FirearmFragment = NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Firearm>())
+	for (UF4ItemFragment* Fragment : NewItem->ItemDefinition->Fragments)
 	{
-		ApplyWeaponStatEffect(NewItem, FirearmFragment);
+		Fragment->OnItemEquipped(ASC, NewItem);
 	}
-
-	float SavedAmmo = NewItem->GetStatValue(F4GameplayTags::Weapon_Ammo_Loaded);
-	ASC->SetNumericAttributeBase(UF4AttributeSetWeapon::GetCurrentAmmoAttribute(), SavedAmmo);
-
-	GrantWeaponAbilities(NewItem, NewFragment);
 }
 
 EWeaponSlot UF4EquipmentComponent::DetermineTargetSlotForNewWeapon() const

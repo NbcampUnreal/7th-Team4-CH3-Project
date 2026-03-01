@@ -3,9 +3,9 @@
 #include "Characters/Player/F4PlayerCharacter.h"
 #include "Components/WidgetComponent.h"
 #include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemFragment.h"
 #include "Inventory/F4ItemFragment_UI.h"
 #include "Inventory/F4ItemInstance.h"
-#include "Items/F4ItemFragment_PickupVisual.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "UI/F4InteractionWidget.h"
 
@@ -43,31 +43,13 @@ void AF4PickupActor::BeginPlay()
 
 	if (ItemDefinition)
 	{
-		const UF4ItemFragment_PickupVisual* VisualFrag = ItemDefinition->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
-
-		if (VisualFrag)
+		for (UF4ItemFragment* Fragment : ItemDefinition->Fragments)
 		{
-			if (VisualFrag->PickupMesh)
+			if (Fragment)
 			{
-				ItemMeshComp->SetStaticMesh(VisualFrag->PickupMesh);
-				ItemMeshComp->SetRelativeScale3D(VisualFrag->PickupScale);
-			}
-
-			if (VisualFrag->SubPickupMesh)
-			{
-				SubMeshComp->SetStaticMesh(VisualFrag->SubPickupMesh);
-				SubMeshComp->AttachToComponent(
-					ItemMeshComp,
-					FAttachmentTransformRules::SnapToTargetIncludingScale,
-					VisualFrag->SubMeshSocketName
-				);
-			}
-			else
-			{
-				SubMeshComp->SetStaticMesh(nullptr);
+				Fragment->OnPickupActorSpawned(ItemMeshComp, SubMeshComp);
 			}
 		}
-
 	}
 
 	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AF4PickupActor::OnSphereBeginOverlap);
@@ -132,21 +114,12 @@ void AF4PickupActor::InitializePickup(UF4ItemDefinition* InItemDefinition)
 {
 	if (!InItemDefinition) return;
 	ItemDefinition = InItemDefinition;
-	
-	const UF4ItemFragment_PickupVisual* VisualFrag = ItemDefinition->FindFragmentByClass<UF4ItemFragment_PickupVisual>();
-	
-	if (VisualFrag)
+
+	for (UF4ItemFragment* Fragment : ItemDefinition->Fragments)
 	{
-		ItemMeshComp->SetStaticMesh(VisualFrag->PickupMesh);
-		ItemMeshComp->SetRelativeScale3D(VisualFrag->PickupScale);
-		
-		if (VisualFrag->SubPickupMesh)
+		if (Fragment)
 		{
-			SubMeshComp->SetStaticMesh(VisualFrag->SubPickupMesh);
-		}
-		else
-		{
-			SubMeshComp->SetStaticMesh(nullptr);
+			Fragment->OnPickupActorSpawned(ItemMeshComp, SubMeshComp);
 		}
 	}
 }

@@ -71,6 +71,7 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Weapon_Switch);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Montage_Switching);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Trigger_Invisible);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Event_Trigger_UseConsumable);
 
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look);

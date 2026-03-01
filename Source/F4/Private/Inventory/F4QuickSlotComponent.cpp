@@ -5,8 +5,8 @@
 #include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemDefinition.h"
-#include "Inventory/F4ItemFragment_Consumable.h"
-#include "Inventory/F4ItemFragment_Usable.h"
+#include "Inventory/F4ItemFragment.h"
+#include "Inventory/F4ItemFragment.h"
 #include "Inventory/F4ItemInstance.h"
 
 UF4QuickSlotComponent::UF4QuickSlotComponent()
@@ -31,7 +31,11 @@ void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemT
 
 	if (!IsWeaponSlot(SlotIndex))
 	{
-		GrantConsumableAbility(SlotIndex, ItemToRegister);
+		UAbilitySystemComponent* ASC = GetOwnerASC();
+		for (UF4ItemFragment* Fragment : ItemToRegister->ItemDefinition->Fragments)
+		{
+			Fragment->OnItemAddedToQuickSlot(ASC, ItemToRegister, SlotIndex);
+		}
 	}
 
 	if (OnQuickSlotUpdated.IsBound())
@@ -53,7 +57,12 @@ void UF4QuickSlotComponent::ClearSlot(int32 SlotIndex)
 	}
 	else
 	{
-		ClearConsumableAbility(SlotIndex);
+		UF4ItemInstance* Item = QuickSlots[SlotIndex];
+		UAbilitySystemComponent* ASC = GetOwnerASC();
+		for (UF4ItemFragment* Fragment : Item->ItemDefinition->Fragments)
+		{
+			Fragment->OnItemRemovedFromQuickSlot(ASC, Item, SlotIndex);
+		}
 	}
 
 	QuickSlots[SlotIndex] = nullptr;
@@ -63,41 +72,42 @@ void UF4QuickSlotComponent::ClearSlot(int32 SlotIndex)
 void UF4QuickSlotComponent::UseSlot(int32 SlotIndex)
 {
 	UF4ItemInstance* Item = GetItemAtIndex(SlotIndex);
-	if (!Item || !Item->ItemDefinition)
+	if (!Item || !Item->ItemDefinition || Item->Quantity <= 0)
 	{
 		return;
 	}
 
 
-	if (const UF4ItemFragment_Usable* UsableFragment = Item->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Usable>())
+	FGameplayTag UsageTag;
+	for (UF4ItemFragment* Fragment : Item->ItemDefinition->Fragments)
 	{
-		IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(GetOwner());
-		if (!ASInterface)
+		UsageTag = Fragment->GetUsageEventTag();
+		if (UsageTag.IsValid())
 		{
-			return;
+			break;
 		}
+	}
 
-		if (UAbilitySystemComponent* ASC = GetOwnerASC())
-		{
-			FGameplayEventData Payload;
-			Payload.Instigator = GetOwner();
-			Payload.OptionalObject = Item;
-			Payload.EventTag = UsableFragment->UsageEventTag;
-			Payload.EventMagnitude = static_cast<float>(SlotIndex);
+	if (!UsageTag.IsValid())
+	{
+		return;
+	}
 
-			ASC->HandleGameplayEvent(UsableFragment->UsageEventTag, &Payload);
-		}
+	if (UAbilitySystemComponent* ASC = GetOwnerASC())
+	{
+		FGameplayEventData Payload;
+		Payload.Instigator = GetOwner();
+		Payload.OptionalObject = Item;
+		Payload.EventTag = UsageTag;
+		Payload.EventMagnitude = static_cast<float>(SlotIndex);
+
+		ASC->HandleGameplayEvent(UsageTag, &Payload);
 	}
 }
 
 void UF4QuickSlotComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (GrantedAbilityHandles.Num() < 8)
-	{
-		GrantedAbilityHandles.SetNum(8);
-	}
 
 	if (AActor* Owner = GetOwner())
 	{
@@ -113,45 +123,6 @@ void UF4QuickSlotComponent::BeginPlay()
 		{
 			EquipmentComp->OnWeaponEquippedToSlot.AddDynamic(this, &ThisClass::OnWeaponEquippedToQuickSlot);
 		}
-	}
-}
-
-void UF4QuickSlotComponent::GrantConsumableAbility(int32 SlotIndex, UF4ItemInstance* Item)
-{
-	if (!GrantedAbilityHandles.IsValidIndex(SlotIndex))
-	{
-		GrantedAbilityHandles.SetNum(SlotIndex + 1);
-	}
-
-	if (!Item || !Item->ItemDefinition)
-	{
-		return;
-	}
-
-	const UF4ItemFragment_Consumable* ConsumableFrag = Item->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Consumable>();
-	if (!ConsumableFrag)
-	{
-		return;
-	}
-
-	if (UAbilitySystemComponent* ASC = GetOwnerASC())
-	{
-		FGameplayAbilitySpec Spec(ConsumableFrag->ConsumeAbility, 1, INDEX_NONE, Item);
-		GrantedAbilityHandles[SlotIndex] = ASC->GiveAbility(Spec);
-	}
-}
-
-void UF4QuickSlotComponent::ClearConsumableAbility(int32 SlotIndex)
-{
-	if (!GrantedAbilityHandles.IsValidIndex(SlotIndex) || !GrantedAbilityHandles[SlotIndex].IsValid())
-	{
-		return;
-	}
-
-	if (UAbilitySystemComponent* ASC = GetOwnerASC())
-	{
-		ASC->ClearAbility(GrantedAbilityHandles[SlotIndex]);
-		GrantedAbilityHandles[SlotIndex] = FGameplayAbilitySpecHandle();
 	}
 }
 

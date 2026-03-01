@@ -21,4 +21,6 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Pickup|SubVisual")
 	FName SubMeshSocketName = TEXT("Socket_Magazine");
+
+	virtual void OnPickupActorSpawned(UStaticMeshComponent* MeshComp, UStaticMeshComponent* SubMeshComp) override;
 };
