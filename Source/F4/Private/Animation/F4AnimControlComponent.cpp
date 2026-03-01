@@ -3,7 +3,7 @@
 #include "GameFramework/Character.h"
 #include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4ItemDefinition.h"
-#include "Inventory/F4ItemFragment_Equipment.h"
+#include "Inventory/F4ItemFragment.h"
 #include "Inventory/F4ItemInstance.h"
 
 UF4AnimControlComponent::UF4AnimControlComponent()
@@ -52,10 +52,13 @@ void UF4AnimControlComponent::UpdateAnimationLayer(UF4ItemInstance* NewItem)
 
 	if (NewItem && NewItem->ItemDefinition)
 	{
-		const UF4ItemFragment_Equipment* EquipmentFrag = NewItem->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>();
-		if (EquipmentFrag && EquipmentFrag->AnimLayerClass)
+		for (const UF4ItemFragment* Fragment : NewItem->ItemDefinition->Fragments)
 		{
-			TargetLayer = EquipmentFrag->AnimLayerClass;
+			if (TSubclassOf<UAnimInstance> Layer = Fragment->GetEquipAnimLayer())
+			{
+				TargetLayer = Layer;
+				break;
+			}
 		}
 	}
 

@@ -32,4 +32,5 @@ public:
 
 	virtual void OnItemEquipped(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance) override;
 	virtual void OnItemUnequipped(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance) override;
+	virtual TSubclassOf<UAnimInstance> GetEquipAnimLayer() const override { return AnimLayerClass; }
 };
