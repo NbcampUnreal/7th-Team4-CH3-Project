@@ -19,6 +19,7 @@ UGA_Reload::UGA_Reload()
 	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Combat_Reload));
 
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Reloading);
+	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Sprinting);
 	ActivationBlockedTags.AddTag(F4GameplayTags::State_Firing);
 	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Rolling);
 
