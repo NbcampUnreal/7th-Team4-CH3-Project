@@ -129,6 +129,31 @@ bool ADynamicSky::IsDayTime() const
 	return (TimeOfDay >= GetEffectiveDawnTime() && TimeOfDay <= GetEffectiveDuskTime());
 }
 
+float ADynamicSky::CalculateDayNightBlend() const
+{
+	const float TimeOfDay = GetEffectiveTimeOfDay();
+	const float DawnTime = GetEffectiveDawnTime();
+	const float DuskTime = GetEffectiveDuskTime();
+
+	// 새벽 전환 구간: 서서히 밝아짐
+	if (TimeOfDay >= DawnTime - TransitionHours && TimeOfDay <= DawnTime + TransitionHours)
+	{
+		return FMath::SmoothStep(DawnTime - TransitionHours, DawnTime + TransitionHours, TimeOfDay);
+	}
+	// 황혼 전환 구간: 서서히 어두워짐
+	if (TimeOfDay >= DuskTime - TransitionHours && TimeOfDay <= DuskTime + TransitionHours)
+	{
+		return 1.0f - FMath::SmoothStep(DuskTime - TransitionHours, DuskTime + TransitionHours, TimeOfDay);
+	}
+	// 완전한 낮
+	if (TimeOfDay > DawnTime && TimeOfDay < DuskTime)
+	{
+		return 1.0f;
+	}
+	// 완전한 밤
+	return 0.0f;
+}
+
 void ADynamicSky::UpdateSky()
 {
 	if (!CachedGameState)
@@ -137,15 +162,6 @@ void ADynamicSky::UpdateSky()
 	}
 
 	CalculateTargetRotation();
-
-	const bool bIsNowDayTime = IsDayTime();
-	if (bWasDayTime != bIsNowDayTime)
-	{
-		SunLight->SetVisibility(bIsNowDayTime);
-		MoonLight->SetVisibility(!bIsNowDayTime);
-		bWasDayTime = bIsNowDayTime;
-	}
-
 	UpdateSkySettings();
 	UpdateExponentialHeightFogSettings();
 }
@@ -197,60 +213,53 @@ void ADynamicSky::UpdateSkySettings()
 		return;
 	}
 
-	const bool bIsDayTime = IsDayTime();
+	const float DayBlend = CalculateDayNightBlend();
 
-	SunLight->SetVisibility(bIsDayTime);
-	MoonLight->SetVisibility(!bIsDayTime);
-
-	if (bIsDayTime)
-	{
-		bStarVisibility = false;
-		bMoonVisibility = false;
-		UpdateSunSettings();
-	}
-	else
-	{
-		bStarVisibility = true;
-		bMoonVisibility = true;
-		UpdateMoonSettings();
-	}
+	UpdateSunSettings(DayBlend);
+	UpdateMoonSettings(DayBlend);
 
 	if (SkySphereDynamicMaterial)
 	{
-		SkySphereDynamicMaterial->SetScalarParameterValue(FName("MoonVisibility"), bMoonVisibility ? 1.0f : 0.f);
+		SkySphereDynamicMaterial->SetScalarParameterValue(FName("MoonVisibility"), 1.0f - DayBlend);
 	}
 
 	UpdateStarSettings();
 	UpdateSkyLightSettings();
 }
 
-void ADynamicSky::UpdateSunSettings()
+void ADynamicSky::UpdateSunSettings(float DayBlend)
 {
 	const FDirectionalLightSettings SunLightSettings = WeatherData->GetDirectionalLightSettings(true);
 
 	float SunPitch = TargetSunRotation.Pitch;
-	float SunAlpha = FMath::GetMappedRangeValueClamped(
+	float SunPitchAlpha = FMath::GetMappedRangeValueClamped(
 		FVector2D(0.0f, -10.0f),
 		FVector2D(0.0f, 1.0f),
 		SunPitch
 	);
 
-	SunLight->SetIntensity(SunLightSettings.Intensity * SunAlpha);
+	float FinalAlpha = SunPitchAlpha * DayBlend;
+
+	SunLight->SetIntensity(SunLightSettings.Intensity * FinalAlpha);
 	SunLight->SetLightColor(SunLightSettings.LightColor);
 	SunLight->SetLightSourceAngle(SunLightSettings.SourceAngle);
 	SunLight->SetTemperature(SunLightSettings.Temperature);
 
-	SunLight->SetVisibility(SunAlpha > 0.001f);
+	SunLight->SetVisibility(FinalAlpha > 0.001f);
 }
 
-void ADynamicSky::UpdateMoonSettings()
+void ADynamicSky::UpdateMoonSettings(float DayBlend)
 {
 	const FDirectionalLightSettings MoonLightSettings = WeatherData->GetDirectionalLightSettings(false);
 
-	MoonLight->SetIntensity(MoonLightSettings.Intensity);
+	float NightBlend = 1.0f - DayBlend;
+
+	MoonLight->SetIntensity(MoonLightSettings.Intensity * NightBlend);
 	MoonLight->SetLightColor(MoonLightSettings.LightColor);
 	MoonLight->SetLightSourceAngle(MoonLightSettings.SourceAngle);
 	MoonLight->SetTemperature(MoonLightSettings.Temperature);
+
+	MoonLight->SetVisibility(NightBlend > 0.001f);
 }
 
 void ADynamicSky::UpdateStarSettings()
@@ -260,12 +269,15 @@ void ADynamicSky::UpdateStarSettings()
 		return;
 	}
 
-	SkySphereDynamicMaterial->SetScalarParameterValue("StarVisibility", bStarVisibility ? 1.f : 0.f);
+	SkySphereDynamicMaterial->SetScalarParameterValue("StarVisibility", 1.0f - CalculateDayNightBlend());
 }
 
 void ADynamicSky::UpdateSkyLightSettings()
 {
-	SkyLight->SetIntensity(WeatherData->GetSkyLightSettings(IsDayTime()).Intensity);
+	const float DayBlend = CalculateDayNightBlend();
+	const float DayIntensity = WeatherData->GetSkyLightSettings(true).Intensity;
+	const float NightIntensity = WeatherData->GetSkyLightSettings(false).Intensity;
+	SkyLight->SetIntensity(FMath::Lerp(NightIntensity, DayIntensity, DayBlend));
 }
 
 void ADynamicSky::UpdateExponentialHeightFogSettings()

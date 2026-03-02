@@ -33,9 +33,9 @@ protected:
 
 	void UpdateSkySettings();
 
-	void UpdateSunSettings();
+	void UpdateSunSettings(float DayBlend);
 
-	void UpdateMoonSettings();
+	void UpdateMoonSettings(float DayBlend);
 
 	void UpdateStarSettings();
 
@@ -50,6 +50,9 @@ private:
 	float GetEffectiveTimeOfDay() const;
 	float GetEffectiveDawnTime() const;
 	float GetEffectiveDuskTime() const;
+
+	// 0.0 (완전한 밤) ~ 1.0 (완전한 낮), TransitionHours 구간에서 부드럽게 전환
+	float CalculateDayNightBlend() const;
 
 private:
 	UPROPERTY(VisibleAnywhere, Blueprintable, Category = "Component", meta = (AllowPrivateAccess = true))
@@ -87,9 +90,9 @@ protected:
 	FTimerHandle SkyUpdateTimerHandle;
 	const float SkyUpdateInterval = 0.1f;
 
-	bool bWasDayTime = true;
-	bool bStarVisibility = false;
-	bool bMoonVisibility = false;
+	// 낮밤 전환 시간 (시간 단위, 0.5 = 30분)
+	UPROPERTY(EditAnywhere, Category = "Day Night Cycle")
+	float TransitionHours = 0.5f;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather Settings")
