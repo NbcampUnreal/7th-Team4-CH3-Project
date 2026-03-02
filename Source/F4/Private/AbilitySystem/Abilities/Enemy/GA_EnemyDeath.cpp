@@ -4,7 +4,6 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "Components/CapsuleComponent.h"
-#include "DataTable/ItemDropData.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "System/F4GameplayTags.h"
@@ -63,35 +62,7 @@ void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UGA_EnemyDeath::HandleDropItem()
 {
-	
-	AF4DropItem::TryDropItem(GetAvatarActorFromActorInfo(),0.5f);
-}
-
-void UGA_EnemyDeath::SpawnDropItem(const FItemDropData* Data)
-{
-	if (!Data)
-	{
-		return;
-	}
-	
-	UWorld* World = GetWorld();
-	AActor* OwnerActor = GetAvatarActorFromActorInfo();
-	if (!World || !OwnerActor)
-	{
-		return;
-	}
-	
-	TSubclassOf<AActor> ItemClass = Data->ItemClass.LoadSynchronous();
-	
-	if (ItemClass)
-	{
-		FVector SpawnLocation = OwnerActor->GetActorLocation();
-       
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		World->SpawnActor<AActor>(ItemClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
-	}
+	AF4DropItem::TryDropItem(GetAvatarActorFromActorInfo(),0.33f);
 }
 
 void UGA_EnemyDeath::EnableRagdoll(AF4EnemyBase* Enemy)
@@ -107,29 +78,4 @@ void UGA_EnemyDeath::EnableRagdoll(AF4EnemyBase* Enemy)
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		Mesh->SetSimulatePhysics(true);
 	}
-}
-
-void UGA_EnemyDeath::SpawnDropFixItem(const TSubclassOf<AActor> FixItem)
-{
-	if (!FixItem)
-	{
-		return;
-	}
-	
-	UWorld* World = GetWorld();
-	AActor* OwnerActor = GetAvatarActorFromActorInfo();
-	if (!World || !OwnerActor)
-	{
-		return;
-	}
-	
-	FVector SpawnLocation = OwnerActor->GetActorLocation();
-        
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	// 즉시 소환
-	World->SpawnActor<AActor>(FixItem, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
-        
-	UE_LOG(LogTemp, Log, TEXT("Fixed Item Spawned: %s"), *FixItem->GetName());
 }
