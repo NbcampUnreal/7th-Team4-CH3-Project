@@ -46,7 +46,14 @@ void UGA_SwitchWeapon::ActivateAbility(
 	UF4EquipmentComponent* EquipComp = Character ? Character->FindComponentByClass<UF4EquipmentComponent>() : nullptr;
 
 	EWeaponSlot TargetSlot = static_cast<EWeaponSlot>(TriggerEventData->EventMagnitude);
-	if (!EquipComp || EquipComp->GetActiveSlot() == TargetSlot)
+
+	if (!EquipComp || !EquipComp->GetWeaponInSlot(TargetSlot))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
+
+	if (EquipComp->GetActiveSlot() == TargetSlot)
 	{
 		TargetSlot = EWeaponSlot::None;
 	}
