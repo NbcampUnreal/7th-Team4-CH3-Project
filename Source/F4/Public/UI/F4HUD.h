@@ -30,6 +30,8 @@ public:
 	
 	void InitializeHealthBar(); 
 	
+	void InitializeTimeText();
+	
 	void OnHealthChanged(const FOnAttributeChangeData& Data);
 	
 	void UpdateHealthBar(const float Current, const float Max) const;
@@ -44,6 +46,9 @@ public:
 	UFUNCTION()
 	void HandleWeaponChange(UF4ItemInstance* NewWeapon);
 
+	UFUNCTION()
+	void UpdateTimeDisplay(int32 Hour, int32 Minute);
+	
 	void RefreshTotalAmmoUI();
 	
 protected:
@@ -62,6 +67,11 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> TotalAmmoText;
 
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> Time;
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> TimeText; 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI | Crosshair")
 	float AimingSpread = 15.f;
@@ -92,4 +102,15 @@ private:
 	
 	float CurrentSpread = 15.f;
 	float RecoilSpread = 0.f;
+	
+protected:
+	float DawnTime = -1.f;
+	float DuskTime = -1.f;
+	                                                                      
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
+	FString DayTimeText;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
+	FString NightTimeText;
+	
 };
