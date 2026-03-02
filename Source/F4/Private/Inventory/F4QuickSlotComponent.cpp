@@ -6,7 +6,6 @@
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment.h"
-#include "Inventory/F4ItemFragment.h"
 #include "Inventory/F4ItemInstance.h"
 
 UF4QuickSlotComponent::UF4QuickSlotComponent()
@@ -25,7 +24,15 @@ void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemT
 
 	if (QuickSlots[SlotIndex] != nullptr)
 	{
-		ClearSlot(SlotIndex);
+		if (IsWeaponSlot(SlotIndex))
+		{
+			QuickSlots[SlotIndex] = nullptr;
+			OnQuickSlotUpdated.Broadcast(SlotIndex, nullptr);
+		}
+		else
+		{
+			ClearSlot(SlotIndex);
+		}
 	}
 	QuickSlots[SlotIndex] = ItemToRegister;
 
