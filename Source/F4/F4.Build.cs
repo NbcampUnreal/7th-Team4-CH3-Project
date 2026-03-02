@@ -18,10 +18,11 @@ public class F4 : ModuleRules
 			"GameplayStateTreeModule",
 			"AIModule",
 			"NavigationSystem",
-			"AnimGraphRuntime"
+			"AnimGraphRuntime",
+			"Niagara"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput", "AnimGraphRuntime" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput", "AnimGraphRuntime"});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
