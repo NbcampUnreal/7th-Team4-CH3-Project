@@ -43,8 +43,8 @@ void ABattleGameMode::HandlePlayerDeath(APlayerController* PlayerController)
 	UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetWorld()->GetGameInstance());
 	if (GameInstance)
 	{
-		// 데이터 초기화 
-		GameInstance->WipeData(); 
+		GameInstance->WipeData();
+		GameInstance->MarkDeathTransition();
 	}
 	
 	if (AF4PlayerController* F4Controller =Cast<AF4PlayerController>(PlayerController))
@@ -62,10 +62,7 @@ void ABattleGameMode::HandlePlayerEvacuation(APlayerController* PlayerController
 	//플레이어 귀환 
 	UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetGameInstance());
 	AF4PlayerCharacter* PlayerCharacter = Cast<AF4PlayerCharacter>(PlayerController->GetPawn());
-	
-	// 캐릭터 인벤토리 저장 
-	
-	
+
 	// 로비로 이동 
 	if (LobbyLevelName.IsValid())
 	{

@@ -1,20 +1,18 @@
 #include "Characters/Player/F4PlayerCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Items/ConsumableItems/F4ConsumableDataAsset.h"
 #include "EnhancedInputSubsystems.h"
 #include "Input/F4InputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "Animation/AnimInst/F4BaseAnimInst.h"
 #include "System/F4GameplayTags.h"
-#include "Items/Weapons/F4WeaponActor.h"
-#include "Items/Weapons/F4WeaponDataAsset.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Inventory/F4QuickSlotComponent.h"
 #include "UI/F4HUD.h"
 #include "UI/GaugeWidget.h"
+#include "System/F4GameInstance.h"
 
 
 AF4PlayerCharacter::AF4PlayerCharacter()
@@ -45,14 +43,39 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 void AF4PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	CreateHUD(); 
+
+	if (UF4GameInstance* GI = GetGameInstance<UF4GameInstance>())
+	{
+		if (GI->HasSavedData())
+		{
+			GI->RestoreData(this);
+		}
+	}
+
+	CreateHUD();
 	
 	if (!StaminaGaugeWidget && StaminaGaugeComponent)
 	{
 		StaminaGaugeWidget = Cast<UGaugeWidget>(StaminaGaugeComponent->GetUserWidgetObject());
 	}
 	
+}
+
+void AF4PlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (EndPlayReason == EEndPlayReason::LevelTransition && IsLocallyControlled())
+	{
+		if (UF4GameInstance* GI = GetGameInstance<UF4GameInstance>())
+		{
+			if (!GI->IsDeathTransition())
+			{
+				GI->SaveData(this);
+			}
+			GI->WipeData();
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void AF4PlayerCharacter::Tick(float DeltaTime)
