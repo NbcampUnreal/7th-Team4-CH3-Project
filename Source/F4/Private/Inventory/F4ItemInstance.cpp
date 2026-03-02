@@ -26,3 +26,48 @@ float UF4ItemInstance::GetStatValue(FGameplayTag StatTag) const
 
 	return 0.0f;
 }
+
+void UF4ItemInstance::AddGrantedAbilityHandle(const FGameplayAbilitySpecHandle& Handle)
+{
+	GrantedAbilityHandles.Add(Handle);
+}
+
+const TArray<FGameplayAbilitySpecHandle>& UF4ItemInstance::GetGrantedAbilityHandles() const
+{
+	return GrantedAbilityHandles;
+}
+
+void UF4ItemInstance::ResetGrantedAbilityHandles()
+{
+	GrantedAbilityHandles.Reset();
+}
+
+void UF4ItemInstance::SetActiveGEHandle(FActiveGameplayEffectHandle Handle)
+{
+	ActiveGEHandle = Handle;
+}
+
+FActiveGameplayEffectHandle UF4ItemInstance::GetActiveGEHandle() const
+{
+	return ActiveGEHandle;
+}
+
+void UF4ItemInstance::InvalidateActiveGEHandle()
+{
+	ActiveGEHandle.Invalidate();
+}
+
+void UF4ItemInstance::SetQuickSlotAbilityHandle(const FGameplayAbilitySpecHandle& Handle)
+{
+	QuickSlotAbilityHandle = Handle;
+}
+
+FGameplayAbilitySpecHandle UF4ItemInstance::GetQuickSlotAbilityHandle() const
+{
+	return QuickSlotAbilityHandle;
+}
+
+void UF4ItemInstance::InvalidateQuickSlotAbilityHandle()
+{
+	QuickSlotAbilityHandle = FGameplayAbilitySpecHandle();
+}

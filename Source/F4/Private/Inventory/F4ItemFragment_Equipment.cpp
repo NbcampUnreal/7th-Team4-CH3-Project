@@ -15,7 +15,7 @@ void UF4ItemFragment_Equipment::OnItemEquipped(UAbilitySystemComponent* ASC, UF4
 		if (AbilityClass)
 		{
 			FGameplayAbilitySpec Spec(AbilityClass, 1, INDEX_NONE, Instance);
-			Instance->GrantedAbilityHandles.Add(ASC->GiveAbility(Spec));
+			Instance->AddGrantedAbilityHandle(ASC->GiveAbility(Spec));
 		}
 	}
 }
@@ -27,9 +27,9 @@ void UF4ItemFragment_Equipment::OnItemUnequipped(UAbilitySystemComponent* ASC, U
 		return;
 	}
 
-	for (const FGameplayAbilitySpecHandle& Handle : Instance->GrantedAbilityHandles)
+	for (const FGameplayAbilitySpecHandle& Handle : Instance->GetGrantedAbilityHandles())
 	{
 		ASC->ClearAbility(Handle);
 	}
-	Instance->GrantedAbilityHandles.Reset();
+	Instance->ResetGrantedAbilityHandles();
 }

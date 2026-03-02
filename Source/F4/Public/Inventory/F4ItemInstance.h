@@ -27,6 +27,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Stats")
 	TMap<FGameplayTag, float> DynamicStats;
 
+	UFUNCTION(BlueprintCallable, Category = "Item|Stats")
+	void AddStatValue(FGameplayTag StatTag, float Value);
+
+	UFUNCTION(BlueprintPure, Category = "Item|Stats")
+	float GetStatValue(FGameplayTag StatTag) const;
+
+	void AddGrantedAbilityHandle(const FGameplayAbilitySpecHandle& Handle);
+	const TArray<FGameplayAbilitySpecHandle>& GetGrantedAbilityHandles() const;
+	void ResetGrantedAbilityHandles();
+
+	void SetActiveGEHandle(FActiveGameplayEffectHandle Handle);
+	FActiveGameplayEffectHandle GetActiveGEHandle() const;
+	void InvalidateActiveGEHandle();
+
+	void SetQuickSlotAbilityHandle(const FGameplayAbilitySpecHandle& Handle);
+	FGameplayAbilitySpecHandle GetQuickSlotAbilityHandle() const;
+	void InvalidateQuickSlotAbilityHandle();
+
+private:
 	UPROPERTY()
 	TArray<FGameplayAbilitySpecHandle> GrantedAbilityHandles;
 
@@ -35,10 +54,4 @@ public:
 
 	UPROPERTY()
 	FGameplayAbilitySpecHandle QuickSlotAbilityHandle;
-
-	UFUNCTION(BlueprintCallable, Category = "Item|Stats")
-	void AddStatValue(FGameplayTag StatTag, float Value);
-
-	UFUNCTION(BlueprintPure, Category = "Item|Stats")
-	float GetStatValue(FGameplayTag StatTag) const;
 };

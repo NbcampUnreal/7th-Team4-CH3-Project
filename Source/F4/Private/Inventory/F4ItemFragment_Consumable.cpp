@@ -11,17 +11,17 @@ void UF4ItemFragment_Consumable::OnItemAddedToQuickSlot(UAbilitySystemComponent*
 	}
 
 	FGameplayAbilitySpec Spec(ConsumeAbility, 1, INDEX_NONE, Instance);
-	Instance->QuickSlotAbilityHandle = ASC->GiveAbility(Spec);
+	Instance->SetQuickSlotAbilityHandle(ASC->GiveAbility(Spec));
 }
 
 void UF4ItemFragment_Consumable::OnItemRemovedFromQuickSlot(UAbilitySystemComponent* ASC, UF4ItemInstance* Instance, int32 SlotIndex)
 {
-	if (!ASC || !Instance || !Instance->QuickSlotAbilityHandle.IsValid())
+	if (!ASC || !Instance || !Instance->GetQuickSlotAbilityHandle().IsValid())
 	{
 		return;
 	}
 
-	if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Instance->QuickSlotAbilityHandle))
+	if (FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Instance->GetQuickSlotAbilityHandle()))
 	{
 		if (Spec->IsActive())
 		{
@@ -30,9 +30,9 @@ void UF4ItemFragment_Consumable::OnItemRemovedFromQuickSlot(UAbilitySystemCompon
 		}
 		else
 		{
-			ASC->ClearAbility(Instance->QuickSlotAbilityHandle);
+			ASC->ClearAbility(Instance->GetQuickSlotAbilityHandle());
 		}
 	}
 
-	Instance->QuickSlotAbilityHandle = FGameplayAbilitySpecHandle();
+	Instance->InvalidateQuickSlotAbilityHandle();
 }

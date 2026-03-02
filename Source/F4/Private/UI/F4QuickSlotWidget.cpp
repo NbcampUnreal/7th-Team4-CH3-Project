@@ -2,7 +2,6 @@
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_UI.h"
 #include "Inventory/F4ItemInstance.h"
@@ -14,9 +13,14 @@ void UF4QuickSlotWidget::UpdateSlotUI(UF4ItemInstance* NewItem)
 
 	if (!BoundItem || !BoundItem->ItemDefinition)
 	{
-		if (ItemIcon) ItemIcon->SetVisibility(ESlateVisibility::Hidden);
-		if (ItemQuantityText) ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
-		UpdateSelectionBorder(nullptr);
+		if (ItemIcon)
+		{
+			ItemIcon->SetVisibility(ESlateVisibility::Hidden);
+		}
+		if (ItemQuantityText)
+		{
+			ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
+		}
 		return;
 	}
 
@@ -39,28 +43,6 @@ void UF4QuickSlotWidget::UpdateSlotUI(UF4ItemInstance* NewItem)
 			ItemQuantityText->SetVisibility(ESlateVisibility::Collapsed);
 		}
 	}
-
-	APawn* OwningPawn = GetOwningPlayerPawn();
-	if (!OwningPawn)
-	{
-		return;
-	}
-
-	if (UF4EquipmentComponent* EquipmentComp = OwningPawn->FindComponentByClass<UF4EquipmentComponent>())
-	{
-		UpdateSelectionBorder(EquipmentComp->GetActiveWeaponInstance());
-	}
-}
-
-void UF4QuickSlotWidget::UpdateSelectionBorder(UF4ItemInstance* ActiveItem)
-{
-	if (!SelectionBorder)
-	{
-		return;
-	}
-
-	const bool bIsActive = (BoundItem != nullptr) && (BoundItem == ActiveItem);
-	SelectionBorder->SetVisibility(bIsActive ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
 }
 
 void UF4QuickSlotWidget::NativeConstruct()
@@ -69,8 +51,8 @@ void UF4QuickSlotWidget::NativeConstruct()
 
 	if (HotkeyText)
 	{
-		FString KeyString = FString::FromInt(SlotIndex + 1);
-		HotkeyText->SetText(FText::FromString(KeyString));
+		// 소비 슬롯 단축키: 키 3(슬롯0)부터 시작
+		HotkeyText->SetText(FText::AsNumber(SlotIndex + 3));
 	}
 
 	APawn* OwningPawn = GetOwningPlayerPawn();
@@ -84,11 +66,6 @@ void UF4QuickSlotWidget::NativeConstruct()
 		QuickSlotComp->OnQuickSlotUpdated.AddDynamic(this, &ThisClass::OnQuickSlotUpdatedCallback);
 	}
 
-	if (UF4EquipmentComponent* EquipComp = OwningPawn->FindComponentByClass<UF4EquipmentComponent>())
-	{
-		EquipComp->OnActiveWeaponChanged.AddUniqueDynamic(this, &ThisClass::UpdateSelectionBorder);
-	}
-
 	UpdateSlotUI(nullptr);
 }
 
@@ -96,13 +73,13 @@ FReply UF4QuickSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
 {
 	if (InMouseEvent.GetEffectingButton() != EKeys::RightMouseButton)
 	{
-		return Super::NativeOnMouseButtonDown(InGeometry,InMouseEvent);
+		return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	}
 
 	APawn* OwningPawn = GetOwningPlayerPawn();
 	if (!OwningPawn)
 	{
-		return Super::NativeOnMouseButtonDown(InGeometry,InMouseEvent);
+		return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	}
 
 	if (UF4QuickSlotComponent* QuickSlotComp = OwningPawn->FindComponentByClass<UF4QuickSlotComponent>())

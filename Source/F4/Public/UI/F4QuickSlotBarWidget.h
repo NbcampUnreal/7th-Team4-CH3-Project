@@ -7,6 +7,7 @@
 class UF4ItemInstance;
 class UF4QuickSlotComponent;
 class UF4QuickSlotWidget;
+class UF4WeaponSlotWidget;
 class UHorizontalBox;
 
 UCLASS()
@@ -25,7 +26,13 @@ protected:
 	TObjectPtr<UHorizontalBox> QuickSlotBox;
 
 	UPROPERTY(EditDefaultsOnly, Category = "QuickSlot")
+	TSubclassOf<UF4WeaponSlotWidget> WeaponSlotWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "QuickSlot")
 	TSubclassOf<UF4QuickSlotWidget> QuickSlotWidgetClass;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UF4WeaponSlotWidget>> WeaponSlotWidgets;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UF4QuickSlotWidget>> SlotWidgets;
