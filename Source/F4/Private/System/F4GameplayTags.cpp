@@ -6,8 +6,6 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Character_Player, TEXT("Character.Player"));
 	UE_DEFINE_GAMEPLAY_TAG(Character_Enemy, TEXT("Character.Enemy"));
 	
-	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Invisible, TEXT("Ability.Combat.Invisible"));
-
 	// Ability Tags
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Jump, TEXT("Ability.Movement.Jump"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Movement_Sprint, TEXT("Ability.Movement.Sprint"));
@@ -23,6 +21,10 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Melee, TEXT("Ability.Combat.Melee"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_HurricaneKick,TEXT("Ability.Combat.HurricaneKick"));
 	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_SwitchWeapon,TEXT("Ability.Combat.SwitchWeapon"));
+	
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Combat_Invisible, TEXT("Ability.Combat.Invisible"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Item_Health, TEXT("Ability.Item.Health"));
+	UE_DEFINE_GAMEPLAY_TAG(Ability_Item_Stamina, TEXT("Ability.Item.Stamina"));
 
 	// Character State
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_InAir, TEXT("Character.State.InAir"));
@@ -60,7 +62,6 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Event_Interaction_Pickup, TEXT("Event.Interaction.Pickup"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Combat_Equip, TEXT("Event.Combat.Equip"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Weapon_Switch, TEXT("Event.Weapon.Switch"));
-	UE_DEFINE_GAMEPLAY_TAG(Event_Trigger_Invisible, TEXT("Event.Trigger.Invisible"));
 	UE_DEFINE_GAMEPLAY_TAG(Event_Trigger_UseConsumable, TEXT("Event.Trigger.UseConsumable"));
 
 	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_Fire, TEXT("Event.Montage.Fire"));

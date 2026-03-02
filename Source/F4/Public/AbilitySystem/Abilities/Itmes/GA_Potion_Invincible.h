@@ -20,9 +20,6 @@ protected:
 	virtual void OnConsumeEnded() override;
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Potion|Effect")
-	TSubclassOf<UGameplayEffect> InvincibilityEffectClass;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Potion|Visual")
 	TObjectPtr<UMaterialInterface> TransparentMaterial;
 

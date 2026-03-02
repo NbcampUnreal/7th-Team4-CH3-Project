@@ -29,10 +29,14 @@ protected:
 		bool bReplicateEndAbility,
 		bool bWasCancelled
 	) override;
-
+	
 	// 자식 클래스에서 구현: 아이템 효과 적용 + 어빌리티 태스크 셋업
 	virtual void OnConsumeActivated(UF4ItemInstance* Item) {}
 
 	// 자식 클래스에서 구현: 어빌리티 종료 시 정리 (GE 제거, 시각 효과 복구 등)
 	virtual void OnConsumeEnded() {}
+	
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Potion|Effect")
+	TSubclassOf<UGameplayEffect> ConsumableEffectClass;
 };
