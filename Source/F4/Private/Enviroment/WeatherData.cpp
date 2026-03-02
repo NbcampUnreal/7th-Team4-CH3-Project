@@ -1,5 +1,1 @@
-
-
-
 #include "Enviroment/WeatherData.h"
-
