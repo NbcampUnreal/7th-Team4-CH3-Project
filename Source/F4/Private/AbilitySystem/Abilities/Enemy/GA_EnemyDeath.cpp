@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "System/F4GameplayTags.h"
+#include "Items/F4DropItem.h"
 
 UGA_EnemyDeath::UGA_EnemyDeath()
 {
@@ -62,62 +63,8 @@ void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UGA_EnemyDeath::HandleDropItem()
 {
-	/*AActor* OwnerActor = GetAvatarActorFromActorInfo();
-	if (!OwnerActor || !DropItemData)
-	{
-		return;
-	}
 	
-	TArray<FName> RowNames = DropItemData->GetRowNames();
-	if (RowNames.IsEmpty())
-	{
-		return;
-	}
-	
-	float TotalRate =  0.f;
-	TArray<FItemDropData*> ValidDrops;
-	
-	for (const FName& RowName : RowNames)
-	{
-		FItemDropData* DropData = DropItemData->FindRow<FItemDropData>(RowName, TEXT(""));
-		if (DropData && DropData->DropRate > 0.f)
-		{
-			TotalRate+=DropData->DropRate;
-			ValidDrops.Add(DropData);
-		}
-	}
-	
-	if (TotalRate <=  0.f)
-	{
-		return;
-	}
-	
-	const float RandomRoll = FMath::RandRange(0.f, TotalRate);
-	float CumulativeProbability = 0.f;
-	
-	for (const FName& RowName: RowNames)
-	{
-		for (FItemDropData* DropData : ValidDrops)
-		{
-			CumulativeProbability += DropData->DropRate;
-        
-			if (RandomRoll >= CumulativeProbability)
-			{
-				SpawnDropItem(DropData);
-				break;
-			}
-		}
-	}*/
-	
-	if (!HasAuthority(&CurrentActivationInfo))
-	{
-		return;
-	}
-	
-	if (FixDropItem)
-	{
-		SpawnDropFixItem(FixDropItem);
-	}
+	AF4DropItem::TryDropItem(GetAvatarActorFromActorInfo(),0.5f);
 }
 
 void UGA_EnemyDeath::SpawnDropItem(const FItemDropData* Data)
