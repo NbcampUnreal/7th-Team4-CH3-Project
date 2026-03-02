@@ -4,10 +4,10 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "Components/CapsuleComponent.h"
-#include "DataTable/ItemDropData.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "System/F4GameplayTags.h"
+#include "Items/F4DropItem.h"
 
 UGA_EnemyDeath::UGA_EnemyDeath()
 {
@@ -62,89 +62,7 @@ void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UGA_EnemyDeath::HandleDropItem()
 {
-	/*AActor* OwnerActor = GetAvatarActorFromActorInfo();
-	if (!OwnerActor || !DropItemData)
-	{
-		return;
-	}
-	
-	TArray<FName> RowNames = DropItemData->GetRowNames();
-	if (RowNames.IsEmpty())
-	{
-		return;
-	}
-	
-	float TotalRate =  0.f;
-	TArray<FItemDropData*> ValidDrops;
-	
-	for (const FName& RowName : RowNames)
-	{
-		FItemDropData* DropData = DropItemData->FindRow<FItemDropData>(RowName, TEXT(""));
-		if (DropData && DropData->DropRate > 0.f)
-		{
-			TotalRate+=DropData->DropRate;
-			ValidDrops.Add(DropData);
-		}
-	}
-	
-	if (TotalRate <=  0.f)
-	{
-		return;
-	}
-	
-	const float RandomRoll = FMath::RandRange(0.f, TotalRate);
-	float CumulativeProbability = 0.f;
-	
-	for (const FName& RowName: RowNames)
-	{
-		for (FItemDropData* DropData : ValidDrops)
-		{
-			CumulativeProbability += DropData->DropRate;
-        
-			if (RandomRoll >= CumulativeProbability)
-			{
-				SpawnDropItem(DropData);
-				break;
-			}
-		}
-	}*/
-	
-	if (!HasAuthority(&CurrentActivationInfo))
-	{
-		return;
-	}
-	
-	if (FixDropItem)
-	{
-		SpawnDropFixItem(FixDropItem);
-	}
-}
-
-void UGA_EnemyDeath::SpawnDropItem(const FItemDropData* Data)
-{
-	if (!Data)
-	{
-		return;
-	}
-	
-	UWorld* World = GetWorld();
-	AActor* OwnerActor = GetAvatarActorFromActorInfo();
-	if (!World || !OwnerActor)
-	{
-		return;
-	}
-	
-	TSubclassOf<AActor> ItemClass = Data->ItemClass.LoadSynchronous();
-	
-	if (ItemClass)
-	{
-		FVector SpawnLocation = OwnerActor->GetActorLocation();
-       
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		World->SpawnActor<AActor>(ItemClass, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
-	}
+	AF4DropItem::TryDropItem(GetAvatarActorFromActorInfo(),0.33f);
 }
 
 void UGA_EnemyDeath::EnableRagdoll(AF4EnemyBase* Enemy)
@@ -160,29 +78,4 @@ void UGA_EnemyDeath::EnableRagdoll(AF4EnemyBase* Enemy)
 		Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		Mesh->SetSimulatePhysics(true);
 	}
-}
-
-void UGA_EnemyDeath::SpawnDropFixItem(const TSubclassOf<AActor> FixItem)
-{
-	if (!FixItem)
-	{
-		return;
-	}
-	
-	UWorld* World = GetWorld();
-	AActor* OwnerActor = GetAvatarActorFromActorInfo();
-	if (!World || !OwnerActor)
-	{
-		return;
-	}
-	
-	FVector SpawnLocation = OwnerActor->GetActorLocation();
-        
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-	// 즉시 소환
-	World->SpawnActor<AActor>(FixItem, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
-        
-	UE_LOG(LogTemp, Log, TEXT("Fixed Item Spawned: %s"), *FixItem->GetName());
 }
