@@ -1,6 +1,7 @@
 #include "Inventory/F4EquipmentComponent.h"
 
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment.h"
@@ -19,8 +20,6 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 	{
 		return;
 	}
-
-	OnWeaponEquippedToSlot.Broadcast(static_cast<int32>(TargetSlot), ItemToEquip);
 
 	if (WeaponLoadout.Contains(TargetSlot))
 	{
@@ -46,6 +45,8 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 		WeaponLoadout.Add(TargetSlot, ItemToEquip);
 		SpawnedWeapons.Add(ItemToEquip, NewWeaponActor);
 
+		OnWeaponEquippedToSlot.Broadcast(static_cast<int32>(TargetSlot), ItemToEquip);
+
 		if (ActiveSlot == EWeaponSlot::None)
 		{
 			SetActiveWeapon(TargetSlot);
@@ -60,15 +61,25 @@ void UF4EquipmentComponent::UnequipItemFromSlot(EWeaponSlot TargetSlot)
 		return;
 	}
 
-	if (ActiveSlot == TargetSlot)
-	{
-		SetActiveWeapon(EWeaponSlot::None);
-	}
-
 	UF4ItemInstance* ItemToRemove = WeaponLoadout[TargetSlot];
 	if (!ItemToRemove)
 	{
 		return;
+	}
+
+	if (ActiveSlot == TargetSlot)
+	{
+		SetActiveWeapon(EWeaponSlot::None);
+	}
+	else if (ASC && ItemToRemove->ItemDefinition)
+	{
+		for (UF4ItemFragment* Fragment : ItemToRemove->ItemDefinition->Fragments)
+		{
+			if (Fragment)
+			{
+				Fragment->OnItemUnequipped(ASC, ItemToRemove);
+			}
+		}
 	}
 
 	AF4WeaponActor* WeaponActorToDestroy = SpawnedWeapons.FindRef(ItemToRemove);
@@ -152,9 +163,12 @@ void UF4EquipmentComponent::BeginPlay()
 	Super::BeginPlay();
 
 	AActor* Owner = GetOwner();
+	if (IAbilitySystemInterface* ASInterface = Cast<IAbilitySystemInterface>(Owner))
+	{
+		ASC = ASInterface->GetAbilitySystemComponent();
+	}
 	if (ACharacter* OwnerCharacter = Cast<ACharacter>(Owner))
 	{
-		ASC = OwnerCharacter->FindComponentByClass<UAbilitySystemComponent>();
 		CharacterMesh = OwnerCharacter->GetMesh();
 	}
 }

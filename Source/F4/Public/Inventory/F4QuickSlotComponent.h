@@ -18,6 +18,10 @@ class F4_API UF4QuickSlotComponent : public UActorComponent
 public:
 	UF4QuickSlotComponent();
 
+	static constexpr int32 WeaponSlotCount     = 2;  // EWeaponSlot Primary=0, Secondary=1
+	static constexpr int32 ConsumableSlotStart = WeaponSlotCount;
+	static constexpr int32 TotalSlotCount      = 8;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "QuickSlot")
 	TArray<UF4ItemInstance*> QuickSlots;
 

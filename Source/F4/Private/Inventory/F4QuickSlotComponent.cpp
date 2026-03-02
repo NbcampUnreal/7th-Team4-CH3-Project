@@ -13,7 +13,7 @@ UF4QuickSlotComponent::UF4QuickSlotComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
-	QuickSlots.Init(nullptr, 8);
+	QuickSlots.Init(nullptr, TotalSlotCount);
 }
 
 void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemToRegister)
@@ -34,6 +34,10 @@ void UF4QuickSlotComponent::RegisterItem(int32 SlotIndex, UF4ItemInstance* ItemT
 		UAbilitySystemComponent* ASC = GetOwnerASC();
 		for (UF4ItemFragment* Fragment : ItemToRegister->ItemDefinition->Fragments)
 		{
+			if (!Fragment)
+			{
+				continue;
+			}
 			Fragment->OnItemAddedToQuickSlot(ASC, ItemToRegister, SlotIndex);
 		}
 	}
@@ -61,6 +65,10 @@ void UF4QuickSlotComponent::ClearSlot(int32 SlotIndex)
 		UAbilitySystemComponent* ASC = GetOwnerASC();
 		for (UF4ItemFragment* Fragment : Item->ItemDefinition->Fragments)
 		{
+			if (!Fragment)
+			{
+				continue;
+			}
 			Fragment->OnItemRemovedFromQuickSlot(ASC, Item, SlotIndex);
 		}
 	}
@@ -81,6 +89,10 @@ void UF4QuickSlotComponent::UseSlot(int32 SlotIndex)
 	FGameplayTag UsageTag;
 	for (UF4ItemFragment* Fragment : Item->ItemDefinition->Fragments)
 	{
+		if (!Fragment)
+		{
+			continue;
+		}
 		UsageTag = Fragment->GetUsageEventTag();
 		if (UsageTag.IsValid())
 		{
@@ -133,7 +145,7 @@ bool UF4QuickSlotComponent::IsRegisteredSlot(int32 SlotIndex) const
 
 bool UF4QuickSlotComponent::IsWeaponSlot(int32 SlotIndex) const
 {
-	return SlotIndex == 0 || SlotIndex == 1;
+	return SlotIndex >= 0 && SlotIndex < WeaponSlotCount;
 }
 
 UAbilitySystemComponent* UF4QuickSlotComponent::GetOwnerASC() const
@@ -149,14 +161,14 @@ void UF4QuickSlotComponent::UnequipWeaponFromSlot(int32 SlotIndex)
 {
 	if (EquipmentComp)
 	{
-		EWeaponSlot TargetSlot = (SlotIndex == 0) ? EWeaponSlot::Primary : EWeaponSlot::Secondary;
+		EWeaponSlot TargetSlot = static_cast<EWeaponSlot>(SlotIndex);
 		EquipmentComp->UnequipItemFromSlot(TargetSlot);
 	}
 }
 
 int32 UF4QuickSlotComponent::GetEmptyConsumableSlotIndex() const
 {
-	for (int32 i = 2; i < QuickSlots.Num(); ++i)
+	for (int32 i = ConsumableSlotStart; i < QuickSlots.Num(); ++i)
 	{
 		if (QuickSlots[i] == nullptr)
 		{

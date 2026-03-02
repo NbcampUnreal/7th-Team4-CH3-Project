@@ -21,7 +21,7 @@ void UF4ItemFragment_Firearm::OnItemEquipped(UAbilitySystemComponent* ASC, UF4It
 		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(EquipStatEffect, 1.0f, ContextHandle);
 		if (SpecHandle.IsValid())
 		{
-			Instance->ActiveGEHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			Instance->SetActiveGEHandle(ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get()));
 		}
 	}
 
@@ -42,9 +42,9 @@ void UF4ItemFragment_Firearm::OnItemUnequipped(UAbilitySystemComponent* ASC, UF4
 		Instance->DynamicStats.Add(F4GameplayTags::Weapon_Ammo_Loaded, LeftAmmo);
 	}
 
-	if (Instance->ActiveGEHandle.IsValid())
+	if (Instance->GetActiveGEHandle().IsValid())
 	{
-		ASC->RemoveActiveGameplayEffect(Instance->ActiveGEHandle);
-		Instance->ActiveGEHandle.Invalidate();
+		ASC->RemoveActiveGameplayEffect(Instance->GetActiveGEHandle());
+		Instance->InvalidateActiveGEHandle();
 	}
 }
