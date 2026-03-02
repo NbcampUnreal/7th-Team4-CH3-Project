@@ -2,6 +2,7 @@
 
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "Characters/Enemy/F4EnemyBase.h"
+#include "System/F4GameInstance.h"
 #include "System/F4GameState.h"
 
 UMMC_EnemyDamage::UMMC_EnemyDamage()
@@ -32,10 +33,12 @@ float UMMC_EnemyDamage::CalculateBaseMagnitude_Implementation(const FGameplayEff
 					: nullptr;
 	if (World)
 	{
-		if (AF4GameState* GameState = World->GetGameState<AF4GameState>())
+		AF4GameState* GameState = World->GetGameState<AF4GameState>();
+		UF4GameInstance* GameInstance = World->GetGameInstance<UF4GameInstance>();
+		if (GameState && GameInstance)
 		{
-			int32 Phase = FMath::Max(GameState->DifficultyPhase, 1);
-			DifficultyMultiplier = 1.0f + (Phase - 1) * 0.2f;
+				int32 Phase = FMath::Max(GameInstance->PermanentDifficulty + GameState->LocalDifficultyPhase, 1);
+				DifficultyMultiplier = 1.0f + (Phase - 1) * 0.2f;
 		}
 	}
 	float FinalDamage = AttackPower * DifficultyMultiplier;

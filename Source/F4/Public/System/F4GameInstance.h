@@ -16,4 +16,11 @@ public:
 	
 	void SaveData();
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bAllowDifficultyScaling = true;
+	UPROPERTY()
+	int32 PermanentDifficulty = 0;
+	
+	UFUNCTION(BlueprintCallable, Category="F4|Difficulty")
+	void IncrementPermanentDifficulty();
 };

@@ -1,8 +1,10 @@
 #include "Characters/Enemy/EnemySpawner.h"
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "Components/SphereComponent.h"
+#include "Enviroment/DynamicSky.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/F4GameState.h"
+#include "System/F4GameInstance.h"
 
 AEnemySpawner::AEnemySpawner()
 {
@@ -78,18 +80,21 @@ int32 AEnemySpawner::GetCurrentMaxCount() const
 
 	if (UWorld* World = GetWorld())
 	{
-		if (AF4GameState* GameState = World->GetGameState<AF4GameState>())
+		AF4GameState* GameState = World->GetGameState<AF4GameState>();
+		UF4GameInstance* GameInstance = World->GetGameInstance<UF4GameInstance>();
+		
+		if (GameState && GameInstance)
 		{
-			int32 IncreaseAmount = (GameState->DifficultyPhase - 1) * IncreaseEnemyCount;
-			
+			// 영구 난이도 추가 필요
+			int32 IncreaseAmount = (GameInstance->PermanentDifficulty + GameState->LocalDifficultyPhase - 1) * IncreaseEnemyCount;
+		
 			// 음수 상승치 방지
 			if (IncreaseAmount < 0)
 			{
 				IncreaseAmount = 0;
 			}
-
 			FinalMaxCount += IncreaseAmount;
-			
+	
 			// 상한 적용
 			if (FinalMaxCount > SpawnLimit)
 			{
@@ -97,7 +102,6 @@ int32 AEnemySpawner::GetCurrentMaxCount() const
 			}
 		}
 	}
-
 	return FinalMaxCount;
 }
 
@@ -137,6 +141,35 @@ void AEnemySpawner::TrySpawnBatch()
 	{
 		return;
 	}
+	
+	// 보스 스폰 로직
+	ADynamicSky* DynamicSky = Cast<ADynamicSky>(UGameplayStatics::GetActorOfClass(World, ADynamicSky::StaticClass()));
+    
+	if (DynamicSky && !DynamicSky->IsDayTime())
+	{
+		if (BossClass && !IsValid(SpawnedBoss))
+		{
+			// 스포너 중심에 스폰
+			FVector SpawnPos = GetActorLocation();
+
+			FVector TraceStart = SpawnPos + FVector(0.f, 0.f, TraceHeight);
+			FVector TraceEnd = TraceStart - FVector(0.f, 0.f, TraceHeight + TraceDepth);
+			FHitResult HitResult;
+			
+			FCollisionQueryParams QueryParams;
+			QueryParams.AddIgnoredActor(this);
+            
+			if (World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility))
+			{
+				FVector BossSpawnPos = HitResult.Location + FVector(0.f, 0.f, TraceHeight + TraceDepth);
+                
+				FActorSpawnParameters Params;
+				Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+				SpawnedBoss = World->SpawnActor<AF4EnemyBase>(BossClass, BossSpawnPos, FRotator::ZeroRotator, Params);
+			}
+		}
+	}
 
 	for (int32 i = 0; i < AmountToSpawn; ++i)
 	{
@@ -145,8 +178,8 @@ void AEnemySpawner::TrySpawnBatch()
         
 		FVector TraceStart = GetActorLocation() + FVector(RandomCircle.X, RandomCircle.Y, TraceHeight);
 		FVector TraceEnd = TraceStart - FVector(0.f, 0.f, TraceHeight + TraceDepth);
-
 		FHitResult HitResult;
+		
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(this); // 스포너 자신은 레이저에 맞지 않도록 설정
 		
