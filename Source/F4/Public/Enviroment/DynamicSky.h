@@ -5,122 +5,107 @@
 #include "DynamicSky.generated.h"
 
 class UExponentialHeightFogComponent;
-class UDirectionalLightComponent; 
-
+class UDirectionalLightComponent;
 class UWeatherData;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTimeChanged, int32, Hour, int32, Minute);
+class AF4GameState;
 
 UCLASS()
 class F4_API ADynamicSky : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	ADynamicSky();
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
-	
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
-	void InitializeSky(); 
-	
-	bool IsDayTime();
-	
+	void InitializeSky();
+
 protected:
-	
 	void UpdateSky();
-	
-	void UpdateTimeOfDay(float DeltaTime);
-	
+
 	void CalculateTargetRotation();
-	
+
 	void UpdateSkySettings();
-	
+
 	void UpdateSunSettings();
-	
+
 	void UpdateMoonSettings();
-	
+
 	void UpdateStarSettings();
-	
+
 	void UpdateSkyLightSettings();
-	
+
 	void UpdateExponentialHeightFogSettings();
-	
-public:
-	
-	FORCEINLINE float GetDawnTime() const {return DawnTime;}
-	FORCEINLINE float GetDuskTime() const {return DuskTime;}
-	
+
+private:
+	bool IsDayTime() const;
+
+	// GameState가 없는 에디터 OnConstruction에서 사용하는 헬퍼
+	float GetEffectiveTimeOfDay() const;
+	float GetEffectiveDawnTime() const;
+	float GetEffectiveDuskTime() const;
+
 private:
 	UPROPERTY(VisibleAnywhere, Blueprintable, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDirectionalLightComponent> SunLight;
-	
+
 	UPROPERTY(VisibleAnywhere, Blueprintable, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UDirectionalLightComponent> MoonLight;
-	
+
 	UPROPERTY(VisibleAnywhere, Blueprintable, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> SkySphereMesh;
-	
+
 	UPROPERTY(VisibleAnywhere, Blueprintable, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkyAtmosphereComponent> SkyAtmosphere;
-	
+
 	UPROPERTY(VisibleAnywhere, Blueprintable, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<USkyLightComponent> SkyLight;
-	
+
 	UPROPERTY(VisibleAnywhere, Blueprintable, Category = "Component", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFog;
-	
+
 protected:
-	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SkySphere")
 	TObjectPtr<UMaterialInterface> SkySphereMaterial;
-	
+
 	UPROPERTY()
 	TObjectPtr<UMaterialInstanceDynamic> SkySphereDynamicMaterial;
-	
+
 protected:
 	FRotator TargetSunRotation;
 	FRotator TargetMoonRotation;
-	
+
 	float InterpSpeed = 1.0f;
 
 protected:
 	FTimerHandle SkyUpdateTimerHandle;
-	
 	const float SkyUpdateInterval = 0.1f;
-	
-	bool bTimeFlows = true;
-	
-	bool bWasDayTime = true; 
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
-	float TimeSpeed = 5.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time", meta = (ClampMin = 0.f, ClampMax = 24.f))
-	float TimeOfDay = 11.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time", meta = (ClampMin = 6.f, ClampMax = 9.f))
-	float DawnTime = 6.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time", meta = (ClampMin = 16.f, ClampMax = 20.f))
-	float DuskTime = 18.0f;
-	
-	int32 LastHour = -1;
-	int32 LastMinute = -1;
-	
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather Settings")
-	UWeatherData* WeatherData; 
-protected:
-	
+	bool bWasDayTime = true;
 	bool bStarVisibility = false;
 	bool bMoonVisibility = false;
-	
-public:
-	FOnTimeChanged OnTimeChanged;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weather Settings")
+	UWeatherData* WeatherData;
+
+	// 에디터 프리뷰 전용 (런타임에는 GameState 값을 사용)
+	UPROPERTY(EditAnywhere, Category = "Preview")
+	float PreviewTimeOfDay = 11.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Preview")
+	float PreviewDawnTime = 6.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Preview")
+	float PreviewDuskTime = 18.0f;
+
+private:
+	UPROPERTY()
+	TObjectPtr<AF4GameState> CachedGameState;
 };

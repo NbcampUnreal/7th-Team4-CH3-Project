@@ -11,10 +11,10 @@ class F4_API ABattleGameMode : public AGameMode
 	
 public:
 	ABattleGameMode();
-	
+
 	virtual void BeginPlay() override;
-	
-	// 플레이어 최초 입장 
+
+	// 플레이어 최초 입장
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	
 	// 시간에 따른 난이도 변경 

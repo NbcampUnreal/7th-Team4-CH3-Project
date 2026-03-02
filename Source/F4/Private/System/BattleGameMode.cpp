@@ -3,16 +3,24 @@
 #include "Characters/Player/F4PlayerCharacter.h"
 #include "Characters/Player/F4PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/F4GameState.h"
 #include "System/F4GameInstance.h"
 
 ABattleGameMode::ABattleGameMode()
 {
+	GameStateClass = AF4GameState::StaticClass();
 }
 
 void ABattleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (AF4GameState* GS = GetGameState<AF4GameState>())
+	{
+		GS->SetTimeOfDay(7.0f);
+		GS->SetTimeFlows(true);
+	}
+
 	// 영구 난이도 증가함수 호출
 	if (UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetGameInstance()))
 	{
