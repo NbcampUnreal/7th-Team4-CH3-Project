@@ -12,7 +12,10 @@
 void UF4InventoryContextMenu::InitMenu(UF4ItemInstance* InItemInstance)
 {
 	TargetItemInstance = InItemInstance;
-	if (!TargetItemInstance || !TargetItemInstance->ItemDefinition) return;
+	if (!TargetItemInstance || !TargetItemInstance->ItemDefinition)
+	{
+		return;
+	}
 
 	APawn* OwningPawn = GetOwningPlayerPawn();
 	if (!OwningPawn)
@@ -21,20 +24,26 @@ void UF4InventoryContextMenu::InitMenu(UF4ItemInstance* InItemInstance)
 	}
 
 	UF4QuickSlotComponent* QuickSlotComp = OwningPawn->FindComponentByClass<UF4QuickSlotComponent>();
+	UF4EquipmentComponent* EquipmentComp = OwningPawn->FindComponentByClass<UF4EquipmentComponent>();
 
 	const bool bIsEquippable = TargetItemInstance->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>() != nullptr;
 	const bool bIsConsumable = TargetItemInstance->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Consumable>() != nullptr;
 
-	bool bIsAlreadyInQuickSlot = false;
-	if (QuickSlotComp)
+	// 무기: 장착 여부 확인
+	bool bIsEquipped = false;
+	if (EquipmentComp)
 	{
-		bIsAlreadyInQuickSlot = (QuickSlotComp->FindItemSlotIndex(TargetItemInstance) != -1);
+		bIsEquipped = (EquipmentComp->FindEquippedSlot(TargetItemInstance) != EWeaponSlot::None);
 	}
 
+	// 소비 아이템: 퀵슬롯 등록 여부 및 같은 종류 등록 여부 확인
+	bool bIsAlreadyInQuickSlot = false;
 	bool bHasSameType = false;
 	if (QuickSlotComp)
 	{
-		for (int32 i = 0; i < 8; ++i)
+		bIsAlreadyInQuickSlot = (QuickSlotComp->FindItemSlotIndex(TargetItemInstance) != -1);
+
+		for (int32 i = 0; i < QuickSlotComp->QuickSlots.Num(); ++i)
 		{
 			UF4ItemInstance* SlotItem = QuickSlotComp->GetItemAtIndex(i);
 			if (SlotItem && SlotItem->ItemDefinition == TargetItemInstance->ItemDefinition)
@@ -57,7 +66,9 @@ void UF4InventoryContextMenu::InitMenu(UF4ItemInstance* InItemInstance)
 
 	if (UnregisterQuickSlotButton)
 	{
-		UnregisterQuickSlotButton->SetVisibility(bIsAlreadyInQuickSlot ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+		// 무기 장착 해제 또는 소비 아이템 퀵슬롯 해제
+		const bool bShowUnregister = (bIsEquippable && bIsEquipped) || (bIsConsumable && bIsAlreadyInQuickSlot);
+		UnregisterQuickSlotButton->SetVisibility(bShowUnregister ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
 }
 
@@ -128,7 +139,6 @@ void UF4InventoryContextMenu::OnDropClicked()
 			// TODO: 월드에 아이템 스폰 (Drop) 로직 추가
 			InventoryComponent->RemoveItem(TargetItemInstance);
 		}
-
 	}
 	RemoveFromParent();
 }
@@ -163,7 +173,7 @@ void UF4InventoryContextMenu::OnQuickSlotClicked()
 
 void UF4InventoryContextMenu::OnUnregisterQuickSlotClicked()
 {
-	if (!TargetItemInstance)
+	if (!TargetItemInstance || !TargetItemInstance->ItemDefinition)
 	{
 		return;
 	}
@@ -174,12 +184,28 @@ void UF4InventoryContextMenu::OnUnregisterQuickSlotClicked()
 		return;
 	}
 
-	if (UF4QuickSlotComponent* QuickSlotComp = OwningPawn->FindComponentByClass<UF4QuickSlotComponent>())
+	if (TargetItemInstance->ItemDefinition->FindFragmentByClass<UF4ItemFragment_Equipment>())
 	{
-		int32 QuickSlotIdx = QuickSlotComp->FindItemSlotIndex(TargetItemInstance);
-		if (QuickSlotIdx != -1)
+		// 무기: EquipmentComponent를 통해 장착 해제
+		if (UF4EquipmentComponent* EquipmentComp = OwningPawn->FindComponentByClass<UF4EquipmentComponent>())
 		{
-			QuickSlotComp->ClearSlot(QuickSlotIdx);
+			const EWeaponSlot EquippedSlot = EquipmentComp->FindEquippedSlot(TargetItemInstance);
+			if (EquippedSlot != EWeaponSlot::None)
+			{
+				EquipmentComp->UnequipItemFromSlot(EquippedSlot);
+			}
+		}
+	}
+	else
+	{
+		// 소비 아이템: QuickSlotComponent에서 제거
+		if (UF4QuickSlotComponent* QuickSlotComp = OwningPawn->FindComponentByClass<UF4QuickSlotComponent>())
+		{
+			const int32 SlotIdx = QuickSlotComp->FindItemSlotIndex(TargetItemInstance);
+			if (SlotIdx != -1)
+			{
+				QuickSlotComp->ClearSlot(SlotIdx);
+			}
 		}
 	}
 	RemoveFromParent();

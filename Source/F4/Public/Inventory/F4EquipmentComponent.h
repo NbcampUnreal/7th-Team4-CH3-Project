@@ -6,6 +6,7 @@
 
 class UF4ItemFragment_Equipment;
 class UF4ItemInstance;
+class UF4InventoryComponent;
 class UAbilitySystemComponent;
 class AF4WeaponActor;
 
@@ -57,7 +58,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	AF4WeaponActor* GetActiveWeaponActor() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	UF4ItemInstance* GetWeaponInSlot(EWeaponSlot Slot) const;
+
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	EWeaponSlot FindEquippedSlot(UF4ItemInstance* Item) const;
+
 	EWeaponSlot GetActiveSlot() const { return ActiveSlot; }
+
+	UFUNCTION()
+	void OnInventoryItemRemoved(UF4ItemInstance* RemovedItem);
 
 protected:
 	virtual void BeginPlay() override;

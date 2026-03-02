@@ -5,7 +5,6 @@
 #include "F4QuickSlotComponent.generated.h"
 
 class UAbilitySystemComponent;
-class UF4EquipmentComponent;
 class UF4ItemInstance;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnQuickSlotUpdated, int32, SlotIndex, UF4ItemInstance*, ItemInstance);
@@ -18,9 +17,7 @@ class F4_API UF4QuickSlotComponent : public UActorComponent
 public:
 	UF4QuickSlotComponent();
 
-	static constexpr int32 WeaponSlotCount     = 2;  // EWeaponSlot Primary=0, Secondary=1
-	static constexpr int32 ConsumableSlotStart = WeaponSlotCount;
-	static constexpr int32 TotalSlotCount      = 8;
+	static constexpr int32 TotalSlotCount = 6;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "QuickSlot")
 	TArray<UF4ItemInstance*> QuickSlots;
@@ -52,18 +49,10 @@ public:
 	UFUNCTION()
 	void OnInventoryItemRemoved(UF4ItemInstance* RemovedItem);
 
-	UFUNCTION()
-	void OnWeaponEquippedToQuickSlot(int32 QuickSlotIndex, UF4ItemInstance* Item);
-
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
-	TObjectPtr<UF4EquipmentComponent> EquipmentComp;
-
 private:
 	bool IsRegisteredSlot(int32 SlotIndex) const;
-	bool IsWeaponSlot(int32 SlotIndex) const;
 	UAbilitySystemComponent* GetOwnerASC() const;
-	void UnequipWeaponFromSlot(int32 SlotIndex);
 };

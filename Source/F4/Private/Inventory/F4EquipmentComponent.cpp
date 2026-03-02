@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment.h"
 #include "Inventory/F4ItemFragment_Equipment.h"
@@ -90,6 +91,8 @@ void UF4EquipmentComponent::UnequipItemFromSlot(EWeaponSlot TargetSlot)
 
 	SpawnedWeapons.Remove(ItemToRemove);
 	WeaponLoadout.Remove(TargetSlot);
+
+	OnWeaponEquippedToSlot.Broadcast(static_cast<int32>(TargetSlot), nullptr);
 }
 
 void UF4EquipmentComponent::SetActiveWeapon(EWeaponSlot NewSlot)
@@ -145,6 +148,28 @@ UF4ItemInstance* UF4EquipmentComponent::GetActiveWeaponInstance() const
 	return WeaponLoadout.Contains(ActiveSlot) ? WeaponLoadout[ActiveSlot] : nullptr;
 }
 
+UF4ItemInstance* UF4EquipmentComponent::GetWeaponInSlot(EWeaponSlot Slot) const
+{
+	return WeaponLoadout.Contains(Slot) ? WeaponLoadout[Slot] : nullptr;
+}
+
+EWeaponSlot UF4EquipmentComponent::FindEquippedSlot(UF4ItemInstance* Item) const
+{
+	if (!Item)
+	{
+		return EWeaponSlot::None;
+	}
+
+	for (const auto& Pair : WeaponLoadout)
+	{
+		if (Pair.Value == Item)
+		{
+			return Pair.Key;
+		}
+	}
+	return EWeaponSlot::None;
+}
+
 AF4WeaponActor* UF4EquipmentComponent::GetActiveWeaponActor() const
 {
 	if (ActiveSlot != EWeaponSlot::None && WeaponLoadout.Contains(ActiveSlot))
@@ -170,6 +195,22 @@ void UF4EquipmentComponent::BeginPlay()
 	if (ACharacter* OwnerCharacter = Cast<ACharacter>(Owner))
 	{
 		CharacterMesh = OwnerCharacter->GetMesh();
+	}
+	if (UF4InventoryComponent* InventoryComp = Owner->FindComponentByClass<UF4InventoryComponent>())
+	{
+		InventoryComp->OnItemRemoved.AddDynamic(this, &ThisClass::OnInventoryItemRemoved);
+	}
+}
+
+void UF4EquipmentComponent::OnInventoryItemRemoved(UF4ItemInstance* RemovedItem)
+{
+	for (const auto& Pair : WeaponLoadout)
+	{
+		if (Pair.Value == RemovedItem)
+		{
+			UnequipItemFromSlot(Pair.Key);
+			return;
+		}
 	}
 }
 
@@ -205,6 +246,10 @@ void UF4EquipmentComponent::CleanUpOldWeapon(UF4ItemInstance* OldItem, EWeaponSl
 	{
 		for (UF4ItemFragment* Fragment : OldItem->ItemDefinition->Fragments)
 		{
+			if (!Fragment)
+			{
+				continue;
+			}
 			Fragment->OnItemUnequipped(ASC, OldItem);
 		}
 	}
@@ -229,6 +274,10 @@ void UF4EquipmentComponent::SetupNewWeapon(UF4ItemInstance* NewItem)
 
 	for (UF4ItemFragment* Fragment : NewItem->ItemDefinition->Fragments)
 	{
+		if (!Fragment)
+		{
+			continue;
+		}
 		Fragment->OnItemEquipped(ASC, NewItem);
 	}
 }

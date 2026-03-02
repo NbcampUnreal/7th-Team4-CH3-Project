@@ -216,13 +216,24 @@ void AF4PlayerCharacter::Input_Zoom(const FInputActionValue& Value)
 
 void AF4PlayerCharacter::Input_QuickSlot(const FInputActionValue& Value)
 {
-	float RawValue = Value.Get<float>();
+	const int32 SlotIndex = FMath::RoundToInt(Value.Get<float>()) - 1;
 
-	int32 SlotIndex = FMath::RoundToInt(RawValue) - 1;
-
-	if (QuickSlot)
+	if (SlotIndex < 2)
 	{
-		QuickSlot->UseSlot(SlotIndex);
+		// 키 1,2 → 무기 슬롯 전환 (Primary=0, Secondary=1)
+		if (UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent())
+		{
+			FGameplayEventData Payload;
+			Payload.Instigator = this;
+			Payload.EventTag = F4GameplayTags::Event_Weapon_Switch;
+			Payload.EventMagnitude = static_cast<float>(SlotIndex);
+			AbilitySystemComponent->HandleGameplayEvent(F4GameplayTags::Event_Weapon_Switch, &Payload);
+		}
+	}
+	else if (QuickSlot)
+	{
+		// 키 3-8 → 소비 슬롯 0-5
+		QuickSlot->UseSlot(SlotIndex - 2);
 	}
 }
 
