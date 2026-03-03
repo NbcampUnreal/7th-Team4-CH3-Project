@@ -5,8 +5,10 @@
 #include "Engine/StreamableManager.h"
 #include "DataTable/F4ItemSpawnRow.h"
 #include "Items/F4PickupActor.h"
+#include "Items/F4SpawnManager.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Spawnable.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AF4SpawnVolume::AF4SpawnVolume()
@@ -23,7 +25,15 @@ void AF4SpawnVolume::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SpawnItemsAsync();
+	AActor* ManagerActor = UGameplayStatics::GetActorOfClass(this, AF4SpawnManager::StaticClass());
+	if (AF4SpawnManager* Manager = Cast<AF4SpawnManager>(ManagerActor))
+	{
+		Manager->RegisterVolume(this);
+	}
+	else
+	{
+		SpawnItemsAsync();
+	}
 }
 
 void AF4SpawnVolume::SpawnItemsAsync()
@@ -201,6 +211,40 @@ void AF4SpawnVolume::OnItemsLoaded(TArray<TSoftObjectPtr<UF4ItemDefinition>> Rol
 			TrySpawnItem(ItemDef);
 		}
 	}
+}
+
+void AF4SpawnVolume::RollAndCollectPaths(TArray<FSoftObjectPath>& OutPaths)
+{
+	PrerolledItems.Empty();
+
+	for (const FSpawnTableGroup& Group : SpawnGroups)
+	{
+		const FWeightedTableEntry* Selected = SelectTableFromGroup(Group);
+		if (!Selected)
+		{
+			continue;
+		}
+
+		PrerolledItems.Append(RollItemsFromTable(Selected->Table, Selected->Count));
+	}
+
+	for (const TSoftObjectPtr<UF4ItemDefinition>& SoftPtr : PrerolledItems)
+	{
+		OutPaths.AddUnique(SoftPtr.ToSoftObjectPath());
+	}
+}
+
+void AF4SpawnVolume::SpawnPreloaded()
+{
+	for (const TSoftObjectPtr<UF4ItemDefinition>& SoftPtr : PrerolledItems)
+	{
+		if (UF4ItemDefinition* ItemDef = SoftPtr.Get())
+		{
+			TrySpawnItem(ItemDef);
+		}
+	}
+
+	PrerolledItems.Empty();
 }
 
 void AF4SpawnVolume::TrySpawnItem(UF4ItemDefinition* ItemDefinition)

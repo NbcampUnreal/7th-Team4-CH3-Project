@@ -49,6 +49,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Spawning")
 	void SpawnItemsAsync();
 
+	void RollAndCollectPaths(TArray<FSoftObjectPath>& OutPaths);
+
+	void SpawnPreloaded();
+
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UBoxComponent> SpawningBox;
@@ -64,4 +68,7 @@ private:
 
 	void OnItemsLoaded(TArray<TSoftObjectPtr<UF4ItemDefinition>> RolledItems);
 	void TrySpawnItem(UF4ItemDefinition* ItemDefinition);
+
+	// SpawnManager 배치 로드용: 추첨 결과를 임시 보관
+	TArray<TSoftObjectPtr<UF4ItemDefinition>> PrerolledItems;
 };
