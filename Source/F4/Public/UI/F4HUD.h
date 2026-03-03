@@ -10,10 +10,11 @@ class UF4EquipmentComponent;
 class UTextBlock;
 struct FOnAttributeChangeData;
 
-class UCrosshairWidget; 
+class UCrosshairWidget;
 class UStatBarWidget;
 class UAbilitySystemComponent;
 class UAttributeSet;
+class UHorizontalBox;
 
 UCLASS()
 class F4_API UF4HUD : public UUserWidget
@@ -68,10 +69,13 @@ protected:
 	TObjectPtr<UTextBlock> TotalAmmoText;
 
 	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UTextBlock> Time;
-	
+	TObjectPtr<UHorizontalBox> TimeContainer;
+
 	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UTextBlock> TimeText; 
+	TObjectPtr<UTextBlock> Time;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UTextBlock> TimeText;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI | Crosshair")
 	float AimingSpread = 15.f;

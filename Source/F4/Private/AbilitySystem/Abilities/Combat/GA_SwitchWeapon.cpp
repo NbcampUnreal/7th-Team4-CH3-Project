@@ -60,6 +60,12 @@ void UGA_SwitchWeapon::ActivateAbility(
 
 	CachedTargetSlot = TargetSlot;
 
+	if (!SwitchMontage)
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
+
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
 		NAME_None,
@@ -109,8 +115,13 @@ void UGA_SwitchWeapon::OnSwitchingGameplayEvent(FGameplayEventData EventData)
 void UGA_SwitchWeapon::PerformSwitch()
 {
 	AF4PlayerCharacter* Character = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo());
+	if (!Character)
+	{
+		return;
+	}
+
 	UF4EquipmentComponent* EquipmentComp = Character->FindComponentByClass<UF4EquipmentComponent>();
-	if (!Character || !EquipmentComp)
+	if (!EquipmentComp)
 	{
 		return;
 	}

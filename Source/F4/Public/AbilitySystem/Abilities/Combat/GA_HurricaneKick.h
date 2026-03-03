@@ -82,5 +82,5 @@ protected:
 	float TraceDistance = 500.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Trace")
-	bool bShowDebug = true;
+	bool bShowDebug = false;
 };

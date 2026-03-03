@@ -5,6 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
+#include "Components/HorizontalBox.h"
 #include "Components/TextBlock.h"
 #include "Inventory/F4EquipmentComponent.h"
 #include "System/F4GameState.h"
@@ -89,8 +90,12 @@ void UF4HUD::InitializeHealthBar()
 void UF4HUD::InitializeTimeText()
 {
 	AF4GameState* GameState = GetWorld()->GetGameState<AF4GameState>();
-	if (!GameState)
+	if (!GameState || !GameState->bUseTimeSystem)
 	{
+		if (TimeContainer)
+		{
+			TimeContainer->SetVisibility(ESlateVisibility::Collapsed);
+		}
 		return;
 	}
 

@@ -23,6 +23,8 @@ UGA_Reload::UGA_Reload()
 	ActivationBlockedTags.AddTag(F4GameplayTags::Character_State_Rolling);
 
 	ActivationOwnedTags.AddTag(F4GameplayTags::State_Reloading);
+
+	CancelAbilitiesWithTag.AddTag(F4GameplayTags::Ability_Movement_Sprint);
 }
 
 bool UGA_Reload::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

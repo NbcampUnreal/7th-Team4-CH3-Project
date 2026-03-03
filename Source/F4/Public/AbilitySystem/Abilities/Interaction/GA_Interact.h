@@ -28,7 +28,7 @@ protected:
 	float DrawTime = 1.f;  
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact|Trace")
-	bool bDrawTrace = true; 
+	bool bDrawTrace = false;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact|Trace")
 	FColor TraceColor = FColor::Yellow;

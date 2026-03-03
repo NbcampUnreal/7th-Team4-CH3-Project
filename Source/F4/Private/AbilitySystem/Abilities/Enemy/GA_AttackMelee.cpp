@@ -90,8 +90,11 @@ void UGA_AttackMelee::PerformMeleeTrace()
         Params
     );
     // ===== Debug Draw (개발용) =====
-    DrawDebugSphere(GetWorld(), Start, TraceRadius, 12, FColor::Red, false, 1.0f);
-    DrawDebugSphere(GetWorld(), End, TraceRadius, 12, FColor::Red, false, 1.0f);
+    if (bShowdebug)
+    {
+        DrawDebugSphere(GetWorld(), Start, TraceRadius, 12, FColor::Red, false, 1.0f);
+        DrawDebugSphere(GetWorld(), End, TraceRadius, 12, FColor::Red, false, 1.0f);
+    }
 
     // ===== Hit된 Actor들에게 Damage Effect 적용 =====
     TSet<AActor*> UniqueActors;

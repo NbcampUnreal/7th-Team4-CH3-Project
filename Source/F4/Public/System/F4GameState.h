@@ -54,6 +54,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Time")
 	float DifficultyUpdateInterval = 60.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Time")
+	bool bUseTimeSystem = true;
+
 protected:
 	UPROPERTY()
 	float SurvivalTimer = 0.f;
