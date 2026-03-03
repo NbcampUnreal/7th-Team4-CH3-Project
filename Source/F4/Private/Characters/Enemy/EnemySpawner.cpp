@@ -1,7 +1,6 @@
 #include "Characters/Enemy/EnemySpawner.h"
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "Components/SphereComponent.h"
-#include "Enviroment/DynamicSky.h"
 #include "Kismet/GameplayStatics.h"
 #include "System/F4GameState.h"
 #include "System/F4GameInstance.h"
@@ -143,9 +142,9 @@ void AEnemySpawner::TrySpawnBatch()
 	}
 	
 	// 보스 스폰 로직
-	ADynamicSky* DynamicSky = Cast<ADynamicSky>(UGameplayStatics::GetActorOfClass(World, ADynamicSky::StaticClass()));
-    
-	if (DynamicSky && !DynamicSky->IsDayTime())
+	AF4GameState* GameState = World->GetGameState<AF4GameState>();
+
+	if (GameState && !GameState->IsDayTime())
 	{
 		if (BossClass && !IsValid(SpawnedBoss))
 		{

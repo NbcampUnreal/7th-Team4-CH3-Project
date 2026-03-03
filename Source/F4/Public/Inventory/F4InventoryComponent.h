@@ -27,10 +27,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void ConsumeItem(UF4ItemInstance* ItemToConsume, int32 Amount);
 
-	// GameController <-> GameInstance 에 필요한 함수 
-	// initializeInventory << 저장된 정보들로 인벤토리 데이터 불러오기
-	// SaveInventory << 인벤토리 저장 
-	// clearInventory << 인벤토리 초기화 
+	// 맵 이동 저장/복원 전용
+	void LoadItem(UF4ItemInstance* NewItem);
 	
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnInventoryUpdated OnInventoryUpdated;

@@ -2,6 +2,7 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
 #include "System/F4GameplayTags.h"
+#include "CollisionQueryParams.h"
 
 AF4PlayerCameraManager::AF4PlayerCameraManager()
 {
@@ -54,6 +55,22 @@ void AF4PlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTi
 	FQuat FrameQuat = FQuat(OutVT.POV.Rotation);
 	FVector WorldOffset = FrameQuat.RotateVector(CurrentOffset);
 
-	OutVT.POV.Location = TargetActor->GetActorLocation() + WorldOffset + ShakeDelta;
+	FVector DesiredLocation = TargetActor->GetActorLocation() + WorldOffset + ShakeDelta;
+
+	FVector TraceStart = TargetActor->GetActorLocation() + FVector(0.f, 0.f, 50.f);
+	FCollisionQueryParams QueryParams(SCENE_QUERY_STAT(CameraWallCheck), false, TargetActor);
+	FHitResult HitResult;
+
+	const bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		TraceStart,
+		DesiredLocation,
+		FQuat::Identity,
+		ECC_Camera,
+		FCollisionShape::MakeSphere(12.f),
+		QueryParams
+	);
+
+	OutVT.POV.Location = bHit ? HitResult.Location : DesiredLocation;
 	OutVT.POV.Rotation += CurrentRotationOffset;
 }

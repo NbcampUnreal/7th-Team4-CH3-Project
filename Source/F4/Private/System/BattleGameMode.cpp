@@ -3,16 +3,24 @@
 #include "Characters/Player/F4PlayerCharacter.h"
 #include "Characters/Player/F4PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/F4GameState.h"
 #include "System/F4GameInstance.h"
 
 ABattleGameMode::ABattleGameMode()
 {
+	GameStateClass = AF4GameState::StaticClass();
 }
 
 void ABattleGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (AF4GameState* GS = GetGameState<AF4GameState>())
+	{
+		GS->SetTimeOfDay(7.0f);
+		GS->SetTimeFlows(true);
+	}
+
 	// 영구 난이도 증가함수 호출
 	if (UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetGameInstance()))
 	{
@@ -43,8 +51,8 @@ void ABattleGameMode::HandlePlayerDeath(APlayerController* PlayerController)
 	UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetWorld()->GetGameInstance());
 	if (GameInstance)
 	{
-		// 데이터 초기화 
-		GameInstance->WipeData(); 
+		GameInstance->WipeData();
+		GameInstance->MarkDeathTransition();
 	}
 	
 	if (AF4PlayerController* F4Controller =Cast<AF4PlayerController>(PlayerController))
@@ -62,10 +70,7 @@ void ABattleGameMode::HandlePlayerEvacuation(APlayerController* PlayerController
 	//플레이어 귀환 
 	UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetGameInstance());
 	AF4PlayerCharacter* PlayerCharacter = Cast<AF4PlayerCharacter>(PlayerController->GetPawn());
-	
-	// 캐릭터 인벤토리 저장 
-	
-	
+
 	// 로비로 이동 
 	if (LobbyLevelName.IsValid())
 	{

@@ -6,13 +6,12 @@
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
 #include "Components/TextBlock.h"
-#include "Enviroment/DynamicSky.h"
 #include "Inventory/F4EquipmentComponent.h"
+#include "System/F4GameState.h"
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Firearm.h"
 #include "Inventory/F4ItemInstance.h"
-#include "Kismet/GameplayStatics.h"
 #include "System/F4GameplayTags.h"
 
 void UF4HUD::NativeConstruct()
@@ -89,15 +88,15 @@ void UF4HUD::InitializeHealthBar()
 
 void UF4HUD::InitializeTimeText()
 {
-	AActor* SkyActor = UGameplayStatics::GetActorOfClass(GetWorld(), ADynamicSky::StaticClass());
-	ADynamicSky* DynamicSky = Cast<ADynamicSky>(SkyActor);
-	
-	if (DynamicSky)
+	AF4GameState* GameState = GetWorld()->GetGameState<AF4GameState>();
+	if (!GameState)
 	{
-		DynamicSky->OnTimeChanged.AddDynamic(this, &ThisClass::UF4HUD::UpdateTimeDisplay); 
-		DawnTime = DynamicSky->GetDawnTime();
-		DuskTime = DynamicSky->GetDuskTime();
+		return;
 	}
+
+	GameState->OnTimeChanged.AddDynamic(this, &ThisClass::UpdateTimeDisplay);
+	DawnTime = GameState->GetDawnTime();
+	DuskTime = GameState->GetDuskTime();
 }
 
 void UF4HUD::OnHealthChanged(const FOnAttributeChangeData& Data)
