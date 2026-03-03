@@ -28,6 +28,8 @@ public:
 	void UpdateCrosshair(float InDeltaTime);
 	
 	void AddRecoilImpulse(float ImpulseAmount);
+
+	void ShowHitMarker();
 	
 	void InitializeHealthBar(); 
 	
@@ -53,6 +55,9 @@ public:
 	void RefreshTotalAmmoUI();
 	
 protected:
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UWidget> HitMarker;
+
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UCrosshairWidget> Crosshair;
 	
@@ -102,8 +107,10 @@ private:
 	UPROPERTY()
 	TObjectPtr<UF4InventoryComponent> InventoryComp;
 	
-	bool bAiming = false; 
-	
+	FTimerHandle HitMarkerTimerHandle;
+
+	bool bAiming = false;
+
 	float CurrentSpread = 15.f;
 	float RecoilSpread = 0.f;
 	

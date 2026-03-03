@@ -45,18 +45,21 @@ void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			AIC->GetBrainComponent()->StopLogic("Death");
 		}
 		
-		float RagdollDelay = 3.0f; 
+		float RagdollDelay = 3.0f;
 		FTimerHandle RagdollTimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(RagdollTimerHandle, [this, Enemy]()
+		TWeakObjectPtr<UGA_EnemyDeath> WeakThis(this);
+		TWeakObjectPtr<AF4EnemyBase> WeakEnemy(Enemy);
+		GetWorld()->GetTimerManager().SetTimer(RagdollTimerHandle, [WeakThis, WeakEnemy]()
 		{
-			if (Enemy)
+			UGA_EnemyDeath* AbilityPtr = WeakThis.Get();
+			AF4EnemyBase* EnemyPtr = WeakEnemy.Get();
+			if (!AbilityPtr || !EnemyPtr)
 			{
-				this->EnableRagdoll(Enemy);
-				HandleDropItem();
-				
-				// 사망 3초후 destroy
-				Enemy->SetLifeSpan(3.0f);
+				return;
 			}
+			AbilityPtr->EnableRagdoll(EnemyPtr);
+			AF4DropItem::TryDropItem(EnemyPtr, 0.33f);
+			EnemyPtr->SetLifeSpan(3.0f);
 		}, RagdollDelay, false);
 
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

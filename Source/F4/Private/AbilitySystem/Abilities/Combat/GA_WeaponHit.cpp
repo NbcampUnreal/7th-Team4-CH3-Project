@@ -2,6 +2,8 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "System/F4GameplayTags.h"
+#include "Characters/Player/F4PlayerCharacter.h"
+#include "UI/F4HUD.h"
 
 
 UGA_WeaponHit::UGA_WeaponHit()
@@ -25,12 +27,14 @@ void UGA_WeaponHit::ActivateAbility(
 
 	if (!TriggerEventData || !TriggerEventData->Target)
 	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TriggerEventData->Target);
 	if (!TargetASC || !DamageEffectClass)
 	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
@@ -46,6 +50,17 @@ void UGA_WeaponHit::ActivateAbility(
 		ContextHandle
 	);
 
+	SpecHandle.Data->SetSetByCallerMagnitude(F4GameplayTags::Data_Damage, -TriggerEventData->EventMagnitude);
+
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+
+	if (AF4PlayerCharacter* PlayerChar = Cast<AF4PlayerCharacter>(GetAvatarActorFromActorInfo()))
+	{
+		if (PlayerChar->HUDWidget)
+		{
+			PlayerChar->HUDWidget->ShowHitMarker();
+		}
+	}
+
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

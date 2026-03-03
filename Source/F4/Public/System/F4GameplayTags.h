@@ -100,4 +100,5 @@ namespace F4GameplayTags
 
 	// Data Value Tag
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Data_Reload_Ammo);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Data_Damage);
 }

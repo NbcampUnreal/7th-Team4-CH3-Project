@@ -69,7 +69,26 @@ void UF4HUD::AddRecoilImpulse(float ImpulseAmount)
 	RecoilSpread = FMath::Min(RecoilSpread, 500.f);
 }
 
-#pragma endregion 
+void UF4HUD::ShowHitMarker()
+{
+	if (!HitMarker)
+	{
+		return;
+	}
+
+	HitMarker->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+	GetWorld()->GetTimerManager().ClearTimer(HitMarkerTimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(HitMarkerTimerHandle, [this]()
+	{
+		if (HitMarker)
+		{
+			HitMarker->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}, 0.15f, false);
+}
+
+#pragma endregion
 
 
 #pragma region HealthBar
