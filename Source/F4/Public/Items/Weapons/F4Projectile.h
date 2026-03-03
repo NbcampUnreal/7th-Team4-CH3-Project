@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "F4Projectile.generated.h"
 
+class UParticleSystem;
 class UProjectileMovementComponent;
 class USphereComponent;
 
@@ -42,6 +43,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
 	float LifeTimeSeconds = 5.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
+	TObjectPtr<UParticleSystem> BloodImpactEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
+	TObjectPtr<UParticleSystem> EnvironmentImpactEffect;
 
 	UFUNCTION()
 	virtual void OnHit(

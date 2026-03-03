@@ -4,7 +4,9 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "System/F4GameplayTags.h"
 
 AF4Projectile::AF4Projectile()
@@ -63,6 +65,23 @@ void AF4Projectile::OnHit(
 	if (!OtherActor || OtherActor == GetInstigator() || OtherActor == this)
 	{
 		return;
+	}
+	
+	if (ACharacter* HitCharacter = Cast<ACharacter>(OtherActor))
+	{
+		if (BloodImpactEffect)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetWorld(), BloodImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+		}
+	}
+	else
+	{
+		if (EnvironmentImpactEffect)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetWorld(), EnvironmentImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+		}
 	}
 
 	if (GetInstigator())
