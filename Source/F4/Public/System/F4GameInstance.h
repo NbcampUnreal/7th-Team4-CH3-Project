@@ -12,6 +12,8 @@ class UF4EquipmentComponent;
 class UF4QuickSlotComponent;
 class UF4ItemInstance;
 
+class UAudioComponent; 
+
 USTRUCT()
 struct FItemSaveData
 {
@@ -62,6 +64,8 @@ class F4_API UF4GameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
+	virtual void Init() override;
+	
 	void WipeData();
 
 	void MoveToLevel(FName LevelName); 
@@ -74,8 +78,11 @@ public:
 
 	// 사망으로 인한 맵 전환임을 표시 → EndPlay에서 SaveData 건너뜀
 	void MarkDeathTransition() { bIsDeathTransition = true; }
+	
 	bool IsDeathTransition() const { return bIsDeathTransition; }
 
+protected:
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bAllowDifficultyScaling = true;
 	UPROPERTY()
@@ -84,6 +91,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category="F4|Difficulty")
 	void IncrementPermanentDifficulty();
 
+protected:
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="BGM")
+	UAudioComponent* BGMPlayer;
+
+public:
+	void PlayBGM(USoundBase* NewBGM, bool bFade = true);
+	void StopBGM(float FadeTime = 1.0f);
+	
 private:
 	TMap<UF4ItemInstance*, int32> SaveInventoryItems(UF4InventoryComponent* InventoryComp);
 	void SaveEquipmentSlots(UF4EquipmentComponent* EquipmentComp, const TMap<UF4ItemInstance*, int32>& ItemIndexMap);

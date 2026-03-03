@@ -1,11 +1,25 @@
 #include "System/F4GameInstance.h"
 #include "Characters/Player/F4PlayerCharacter.h"
+#include "Components/AudioComponent.h"
 #include "Inventory/F4InventoryComponent.h"
 #include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4QuickSlotComponent.h"
 #include "Inventory/F4ItemInstance.h"
 
 #include "Kismet/GameplayStatics.h"
+
+void UF4GameInstance::Init()
+{
+	Super::Init();
+	
+	BGMPlayer = NewObject<UAudioComponent>(this);
+	if (BGMPlayer)
+	{
+		BGMPlayer->RegisterComponent(); 
+		BGMPlayer->bAutoDestroy = false; 
+		BGMPlayer->bIsUISound = true;   
+	}
+}
 
 void UF4GameInstance::WipeData()
 {
@@ -180,6 +194,47 @@ void UF4GameInstance::IncrementPermanentDifficulty()
 		PermanentDifficulty++;
 		UE_LOG(LogTemp, Log, TEXT("Permanent Difficulty Increased! New Level: %d"), PermanentDifficulty);
 	}
+}
+
+void UF4GameInstance::PlayBGM(USoundBase* NewBGM, bool bFade)
+{
+	if (!NewBGM || !BGMPlayer) return;
+	
+	BGMPlayer->bIsUISound = true; 
+	BGMPlayer->bAllowSpatialization = false;
+	BGMPlayer->SetVolumeMultiplier(1.5f);    // 테스트를 위해 볼륨을 크게 키움
+	
+	if (BGMPlayer->IsPlaying() && BGMPlayer->GetSound() == NewBGM) return;
+
+	
+	if (bFade)
+	{
+		BGMPlayer->FadeOut(0.5f, 0.0f);
+		BGMPlayer->Activate(true);
+		BGMPlayer->SetSound(NewBGM);
+		BGMPlayer->FadeIn(1.0f, 1.0f);
+	}
+	else
+	{
+		BGMPlayer->Stop();
+		BGMPlayer->SetSound(NewBGM);
+		BGMPlayer->Activate(true);
+		BGMPlayer->Play();
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("BGM Debug | Playing: %s | Volume: %f | Sound: %s | IsUI: %s"), 
+	BGMPlayer->IsPlaying() ? TEXT("Yes") : TEXT("No"),
+	BGMPlayer->VolumeMultiplier,
+	BGMPlayer->GetSound() ? *BGMPlayer->GetSound()->GetName() : TEXT("None"),
+	BGMPlayer->bIsUISound ? TEXT("Yes") : TEXT("No"));
+}
+
+void UF4GameInstance::StopBGM(float FadeTime)
+{
+	if (!BGMPlayer) return;
+	
+	BGMPlayer->FadeOut(FadeTime, 0.0f);
+	BGMPlayer->Stop(); 
 }
 
 void UF4GameInstance::MoveToLevel(FName LevelName)
