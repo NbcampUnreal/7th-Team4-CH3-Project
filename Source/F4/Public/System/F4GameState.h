@@ -11,13 +11,19 @@ class F4_API AF4GameState : public AGameState
 	GENERATED_BODY()
 	
 public:
+	AF4GameState();
+	
 	virtual void Tick(float DeltaTime) override;
 	
+	UPROPERTY()
+	int32 LocalDifficultyPhase = 0; 
 	
-public:
+protected:
 	UPROPERTY()
 	float SurvivalTimer = 0.f; 
 	
-	UPROPERTY()
-	int32 DifficultyPhase = 1; 
+	float DifficultyAccumulator = 0.0f;
+	
+	// 난이도 증가 주기
+	const float DifficultyUpdateInterval = 20.0f;
 };

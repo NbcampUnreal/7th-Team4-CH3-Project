@@ -9,6 +9,17 @@ ABattleGameMode::ABattleGameMode()
 {
 }
 
+void ABattleGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	// 영구 난이도 증가함수 호출
+	if (UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetGameInstance()))
+	{
+		GameInstance->IncrementPermanentDifficulty();
+	}
+}
+
 void ABattleGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);

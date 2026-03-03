@@ -1,6 +1,7 @@
 #include "AbilitySystem/Calculations/MMC_EnemyMaxHealth.h"
 #include "AbilitySystem/Attributes/F4AttributeSetCharacter.h"
 #include "System/F4GameState.h"
+#include "System/F4GameInstance.h"
 
 UMMC_EnemyMaxHealth::UMMC_EnemyMaxHealth()
 {
@@ -30,10 +31,12 @@ float UMMC_EnemyMaxHealth::CalculateBaseMagnitude_Implementation(const FGameplay
 	int32 Phase = 0;
 	if (World)
 	{
-		if (AF4GameState* GameState = World->GetGameState<AF4GameState>())
+		AF4GameState* GameState = World->GetGameState<AF4GameState>();
+		UF4GameInstance* GameInstance = World->GetGameInstance<UF4GameInstance>();
+		if (GameState && GameInstance)
 		{
-			Phase = FMath::Max(GameState->DifficultyPhase - 1, 1);
-			
+			// 영구 난이도 추가 필요
+			Phase = FMath::Max(GameState->LocalDifficultyPhase - 1, 1);
 		}
 	}
 	return BaseMaxHealth + (static_cast<float>(Phase) * 50.f);

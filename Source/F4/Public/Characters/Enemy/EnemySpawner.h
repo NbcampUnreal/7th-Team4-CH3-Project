@@ -5,6 +5,7 @@
 #include "EnemySpawner.generated.h"
 
 class USphereComponent;
+class AF4EnemyBase;
 
 UCLASS()
 class F4_API AEnemySpawner : public AActor
@@ -17,9 +18,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawner|Settings")
-	TArray<TSubclassOf<class AF4EnemyBase>> EnemyClasses;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Settings")
+	TSubclassOf<AF4EnemyBase> BossClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Settings")
+	TObjectPtr<AF4EnemyBase> SpawnedBoss;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Settings")
+	TArray<TSubclassOf<AF4EnemyBase>> EnemyClasses;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Settings")
 	float SpawnInterval = 5.0f;
 
