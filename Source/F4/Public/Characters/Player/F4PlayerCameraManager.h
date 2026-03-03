@@ -31,7 +31,7 @@ protected:
 	FRotator BaseRotationOffset = FRotator(0.0f, 0.0f, 0.0f);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
-	FVector AimingOffset = FVector(-250.0f, 130.0f, 20.0f);
+	FVector AimingOffset = FVector(-250.0f, 150.0f, 20.0f);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Camera|Offset")
 	FRotator AimingRotationOffset = FRotator(0.0f, -13.0f, 0.0f);
