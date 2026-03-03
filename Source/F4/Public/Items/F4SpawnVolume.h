@@ -41,7 +41,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UBoxComponent> SpawningBox;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawing|Tables")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning|Tables")
 	TArray<FSpawnTableEntry> SpawnTables;
 
 private:
