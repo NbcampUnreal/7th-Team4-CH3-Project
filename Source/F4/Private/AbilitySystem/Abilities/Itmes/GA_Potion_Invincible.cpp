@@ -5,7 +5,10 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
+#include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemFragment_UI.h"
 #include "Inventory/F4ItemInstance.h"
+#include "Inventory/F4BuffComponent.h"
 #include "System/F4GameplayTags.h"
 
 UGA_Potion_Invincible::UGA_Potion_Invincible()
@@ -20,6 +23,15 @@ void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 	ACharacter* AvatarCharacter = Cast<ACharacter>(CurrentActorInfo->AvatarActor.Get());
 
 	float CalculatedDuration = Duration;
+	UTexture2D* PotionIcon = nullptr;
+	
+	if (Item && Item->ItemDefinition)
+	{
+		if (const UF4ItemFragment_UI* UIFrag = Item->ItemDefinition->FindFragmentByClass<UF4ItemFragment_UI>())
+		{
+			PotionIcon = UIFrag->ItemIcon;
+		}
+	}
 	
 	if (AvatarCharacter && ASC)
 	{
