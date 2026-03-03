@@ -25,12 +25,14 @@ void UGA_WeaponHit::ActivateAbility(
 
 	if (!TriggerEventData || !TriggerEventData->Target)
 	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
 	UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TriggerEventData->Target);
 	if (!TargetASC || !DamageEffectClass)
 	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 
@@ -45,6 +47,8 @@ void UGA_WeaponHit::ActivateAbility(
 		GetAbilityLevel(),
 		ContextHandle
 	);
+
+	SpecHandle.Data->SetSetByCallerMagnitude(F4GameplayTags::Data_Damage, -TriggerEventData->EventMagnitude);
 
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
