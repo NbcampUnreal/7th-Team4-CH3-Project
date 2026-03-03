@@ -38,13 +38,13 @@ void UGA_UsePoition::OnConsumeActivated(UF4ItemInstance* Item)
 			{
 				BuffComp->AddBuffToUI(ActiveEffectHandle, PotionIcon);
 			}
+			
+			UAbilityTask_WaitGameplayEffectRemoved* WaitGERemoved = 
+				UAbilityTask_WaitGameplayEffectRemoved::WaitForGameplayEffectRemoved(this, ActiveEffectHandle);
+			WaitGERemoved->OnRemoved.AddDynamic(this, &UGA_UsePoition::OnDurationEnded);
+			WaitGERemoved->ReadyForActivation();
 		}
 	}
-	
-	UAbilityTask_WaitGameplayEffectRemoved* WaitGERemoved = 
-		UAbilityTask_WaitGameplayEffectRemoved::WaitForGameplayEffectRemoved(this, ActiveEffectHandle);
-	WaitGERemoved->OnRemoved.AddDynamic(this, &UGA_UsePoition::OnDurationEnded);
-	WaitGERemoved->ReadyForActivation();
 }
 
 void UGA_UsePoition::OnConsumeEnded()
