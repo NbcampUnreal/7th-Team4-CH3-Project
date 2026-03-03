@@ -11,4 +11,15 @@ class F4_API UGA_UsePoition : public UGA_ConsumableBase
 	
 protected:
 	virtual void OnConsumeActivated(UF4ItemInstance* Item) override;
+	
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Potion|Time")
+	float Duration = 5.0f;
+
+protected:
+	UFUNCTION()
+	void OnDurationEnded();
+	
+private:
+	FActiveGameplayEffectHandle ActiveEffectHandle;
 };
