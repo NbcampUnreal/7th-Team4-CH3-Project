@@ -28,6 +28,9 @@ protected:
 	TArray<TSubclassOf<AF4EnemyBase>> EnemyClasses;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Settings")
+	bool bIsBossSpawner = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Settings")
 	float SpawnInterval = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner|Settings")

@@ -49,14 +49,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
 	bool bTimeFlows = true;
+	
+	// 난이도 증가 주기
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Time")
+	float DifficultyUpdateInterval = 60.0f;
 
 protected:
 	UPROPERTY()
 	float SurvivalTimer = 0.f;
 	float DifficultyAccumulator = 0.0f;
-
-	// 난이도 증가 주기
-	const float DifficultyUpdateInterval = 20.0f;
 
 private:
 	int32 LastHour = -1;

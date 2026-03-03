@@ -52,7 +52,6 @@ bool AEnemySpawner::IsTargetTooClose() const
 	if (!DistanceCheckTarget) return false;
 	
 	float Distance = FVector::Distance(GetActorLocation(), DistanceCheckTarget->GetActorLocation());
-	UE_LOG(LogTemp, Log, TEXT("Distance: %f"), Distance);
 	return Distance < SafeDistance;
 }
 
@@ -144,28 +143,29 @@ void AEnemySpawner::TrySpawnBatch()
 	// 보스 스폰 로직
 	AF4GameState* GameState = World->GetGameState<AF4GameState>();
 
-	if (GameState && !GameState->IsDayTime())
+	if (bIsBossSpawner)
 	{
-		if (BossClass && !IsValid(SpawnedBoss))
+		if (GameState && !GameState->IsDayTime())
 		{
-			// 스포너 중심에 스폰
-			FVector SpawnPos = GetActorLocation();
-
-			FVector TraceStart = SpawnPos + FVector(0.f, 0.f, TraceHeight);
-			FVector TraceEnd = TraceStart - FVector(0.f, 0.f, TraceHeight + TraceDepth);
-			FHitResult HitResult;
-			
-			FCollisionQueryParams QueryParams;
-			QueryParams.AddIgnoredActor(this);
-            
-			if (World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility))
+			if (BossClass && !IsValid(SpawnedBoss))
 			{
-				FVector BossSpawnPos = HitResult.Location + FVector(0.f, 0.f, TraceHeight + TraceDepth);
-                
-				FActorSpawnParameters Params;
-				Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+				FVector SpawnerLoc = GetActorLocation();
+				FVector TraceStart = SpawnerLoc + FVector(0.f, 0.f, 500.f);
+				FVector TraceEnd = SpawnerLoc - FVector(0.f, 0.f, 1000.f);
 
-				SpawnedBoss = World->SpawnActor<AF4EnemyBase>(BossClass, BossSpawnPos, FRotator::ZeroRotator, Params);
+				FHitResult HitResult;
+				FCollisionQueryParams QueryParams;
+				QueryParams.AddIgnoredActor(this);
+				
+				if (World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility))
+				{
+					FVector BossSpawnPos = HitResult.Location + FVector(0.f, 0.f, 100.f);
+               
+					FActorSpawnParameters Params;
+					Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+					SpawnedBoss = World->SpawnActor<AF4EnemyBase>(BossClass, BossSpawnPos, FRotator::ZeroRotator, Params);
+				}
 			}
 		}
 	}
