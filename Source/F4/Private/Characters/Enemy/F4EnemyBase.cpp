@@ -48,8 +48,13 @@ void AF4EnemyBase::OnHealthChanged(const FOnAttributeChangeData& Data)
 	const float CurrentHealth = Data.NewValue;
 	const float MaxHealth = EnemyAttributeSet->GetMaxHealth();
 
-	UpdateHealthBar(CurrentHealth, MaxHealth);
+	// 체력이 감소한 경우 = 피격 → 체력바 표시 허용
+	if (Data.NewValue < Data.OldValue)
+	{
+		bHasBeenDamaged = true;
+	}
 
+	UpdateHealthBar(CurrentHealth, MaxHealth);
 	UpdateHealthBarVisibility();
 }
 
@@ -90,8 +95,8 @@ void AF4EnemyBase::UpdateHealthBarVisibility()
 	}
 
 	float CurrentHealth = EnemyAttributeSet->GetHealth();
-	float MaxHealth = EnemyAttributeSet->GetMaxHealth();
-	bool bShouldBeVisible = (CurrentHealth < MaxHealth) && (CurrentHealth > 0.f);
+	// 한 번 이상 피격된 적이 있고, 아직 살아있을 때만 체력바 표시
+	bool bShouldBeVisible = bHasBeenDamaged && (CurrentHealth > 0.f);
 
 	EnemyWidget->UpdateWidgetVisibility(bShouldBeVisible);
 }
