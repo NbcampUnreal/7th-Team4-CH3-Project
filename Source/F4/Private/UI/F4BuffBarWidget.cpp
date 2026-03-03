@@ -26,12 +26,12 @@ void UF4BuffBarWidget::NativeConstruct()
 	}
 }
 
-void UF4BuffBarWidget::OnBuffAppliedCallback(float Duration, UTexture2D* BuffIcon)
+void UF4BuffBarWidget::OnBuffAppliedCallback(FActiveGameplayEffectHandle EffectHandle, UTexture2D* BuffIcon)
 {
-	AddBuff(Duration, BuffIcon);
+	AddBuff(EffectHandle, BuffIcon);
 }
 
-void UF4BuffBarWidget::AddBuff(float Duration, UTexture2D* BuffIconTexture)
+void UF4BuffBarWidget::AddBuff(FActiveGameplayEffectHandle EffectHandle, UTexture2D* BuffIconTexture)
 {
 	/*if (!BuffTimerWidgetClass)
 	{
@@ -50,7 +50,7 @@ void UF4BuffBarWidget::AddBuff(float Duration, UTexture2D* BuffIconTexture)
 		
 		if (NewBuff)
 		{
-			NewBuff->StartBuffTimer(Duration, BuffIconTexture);
+			NewBuff->StartBuffTimer(EffectHandle, BuffIconTexture);
 			UHorizontalBoxSlot* BoxSlot = BuffBox->AddChildToHorizontalBox(NewBuff);
 			
 			if (BoxSlot)

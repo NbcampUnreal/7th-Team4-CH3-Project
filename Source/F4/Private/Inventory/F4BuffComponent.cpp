@@ -6,10 +6,10 @@ UF4BuffComponent::UF4BuffComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UF4BuffComponent::AddBuffToUI(float Duration, UTexture2D* BuffIcon)
+void UF4BuffComponent::AddBuffToUI(FActiveGameplayEffectHandle EffectHandle, UTexture2D* BuffIcon)
 {
 	if (OnBuffApplied.IsBound())
 	{
-		OnBuffApplied.Broadcast(Duration, BuffIcon);
+		OnBuffApplied.Broadcast(EffectHandle, BuffIcon);
 	}
 }

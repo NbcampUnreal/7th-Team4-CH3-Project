@@ -1,12 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "Components/ActorComponent.h"
 #include "F4BuffComponent.generated.h"
 
 class UTexture2D;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBuffAppliedSignature, float, Duration, UTexture2D*, BuffIcon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBuffAppliedSignature, FActiveGameplayEffectHandle, EffectHandle, UTexture2D*, BuffIcon);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class F4_API UF4BuffComponent : public UActorComponent
@@ -20,5 +21,5 @@ public:
 	FOnBuffAppliedSignature OnBuffApplied;
 	
 	UFUNCTION(BlueprintCallable, Category = "Buff|UI")
-	void AddBuffToUI(float Duration, UTexture2D* BuffIcon);
+	void AddBuffToUI(FActiveGameplayEffectHandle EffectHandle, UTexture2D* BuffIcon);
 };

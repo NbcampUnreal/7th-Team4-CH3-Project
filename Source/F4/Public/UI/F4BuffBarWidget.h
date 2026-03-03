@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "Blueprint/UserWidget.h"
 #include "F4BuffBarWidget.generated.h"
 
@@ -14,13 +15,13 @@ class F4_API UF4BuffBarWidget : public UUserWidget
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = "UI|Buff")
-	void AddBuff(float Duration, UTexture2D* BuffIconTexture);
+	void AddBuff(FActiveGameplayEffectHandle EffectHandle, UTexture2D* BuffIconTexture);
 	
 protected:
 	virtual void NativeConstruct() override;
 	
 	UFUNCTION()
-	void OnBuffAppliedCallback(float Duration, UTexture2D* BuffIcon);
+	void OnBuffAppliedCallback(FActiveGameplayEffectHandle EffectHandle, UTexture2D* BuffIcon);
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> BuffBox;

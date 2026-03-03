@@ -1,4 +1,7 @@
 #include "UI/F4BuffTimerWidget.h"
+
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -9,14 +12,15 @@ void UF4BuffTimerWidget::NativeConstruct()
 	Super::NativeConstruct();
 }
 
-void UF4BuffTimerWidget::StartBuffTimer(float InDuration, UTexture2D* InIcon)
+void UF4BuffTimerWidget::StartBuffTimer(FActiveGameplayEffectHandle InHandle, UTexture2D* InIcon)
 {
-	if (InDuration <= 0.0f)
+	if (!InHandle.IsValid())
 	{
 		return;
 	}
 	
-	CurrentTime = InDuration;
+	EffectHandle = InHandle;
+	ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwningPlayerPawn());
 	bIsActive = true;
 	
 	if (BuffIcon && InIcon)
@@ -32,20 +36,28 @@ void UF4BuffTimerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	
-	if (bIsActive)
+	if (bIsActive && ASC.IsValid())
 	{
-		CurrentTime -= InDeltaTime;
+		const FActiveGameplayEffect* ActiveGE = ASC->GetActiveGameplayEffect(EffectHandle);
+		if (!ActiveGE)
+		{
+			bIsActive = false;
+			RemoveFromParent();
+			return;
+		}
+		
+		float RemainingTime = ActiveGE->GetTimeRemaining(GetWorld()->GetTimeSeconds());
 		
 		if (TimeText)
 		{
-			FString TimeString = FString::Printf(TEXT("%.1f"), FMath::Max(0.0f, CurrentTime));
+			FString TimeString = FString::Printf(TEXT("%.1f초"), FMath::Max(0.0f, RemainingTime));
 			TimeText->SetText(FText::FromString(TimeString));
 		}
-	}
-	
-	if (CurrentTime <= 0.0f)
-	{
-		bIsActive = false;
-		RemoveFromParent();
+		
+		if (RemainingTime <= 0.0f)
+		{
+			bIsActive = false;
+			RemoveFromParent();
+		}
 	}
 }
