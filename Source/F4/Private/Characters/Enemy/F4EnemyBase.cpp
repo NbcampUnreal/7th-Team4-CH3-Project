@@ -44,12 +44,17 @@ void AF4EnemyBase::InitializeHealthBar()
 void AF4EnemyBase::OnHealthChanged(const FOnAttributeChangeData& Data)
 {
 	if (!EnemyAttributeSet) return;
-	
-	const float CurrentHealth = Data.NewValue; 
+
+	const float CurrentHealth = Data.NewValue;
 	const float MaxHealth = EnemyAttributeSet->GetMaxHealth();
 
+	// 체력이 감소한 경우 = 피격 → 체력바 표시 허용
+	if (Data.NewValue < Data.OldValue)
+	{
+		bHasBeenDamaged = true;
+	}
+
 	UpdateHealthBar(CurrentHealth, MaxHealth);
-	
 	UpdateHealthBarVisibility();
 }
 
@@ -77,19 +82,23 @@ void AF4EnemyBase::UpdateHealthBar(float Current, float Max)
 
 void AF4EnemyBase::UpdateHealthBarVisibility()
 {
-	if (UUserWidget* RawWidget = HealthBarWidget->GetWidget())
+	UUserWidget* RawWidget = HealthBarWidget->GetWidget();
+	if (!RawWidget)
 	{
-		if (UUW_EnemyWidget* EnemyWidget = Cast<UUW_EnemyWidget>(RawWidget))
-		{
-			// 현재 체력 상태에 따라 노출 여부 판단
-			float CurrentHealth = EnemyAttributeSet->GetHealth();
-			float MaxHealth = EnemyAttributeSet->GetMaxHealth();
-			
-			bool bShouldBeVisible = (CurrentHealth < MaxHealth) && (CurrentHealth > 0.f);
-			
-			EnemyWidget->UpdateWidgetVisibility(bShouldBeVisible);
-		}
+		return;
 	}
+
+	UUW_EnemyWidget* EnemyWidget = Cast<UUW_EnemyWidget>(RawWidget);
+	if (!EnemyWidget)
+	{
+		return;
+	}
+
+	float CurrentHealth = EnemyAttributeSet->GetHealth();
+	// 한 번 이상 피격된 적이 있고, 아직 살아있을 때만 체력바 표시
+	bool bShouldBeVisible = bHasBeenDamaged && (CurrentHealth > 0.f);
+
+	EnemyWidget->UpdateWidgetVisibility(bShouldBeVisible);
 }
 
 void AF4EnemyBase::InitializeAttributes()
@@ -136,21 +145,21 @@ void AF4EnemyBase::PossessedBy(AController* NewController)
 	{
 		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
-		
+
 		FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(
-			DifficultySideEffectClass, 
-			1.0f, 
+			DifficultySideEffectClass,
+			1.0f,
 			EffectContext
 			);
-        
+
 		if (SpecHandle.IsValid())
 		{
 			ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
-		
-		// 체력바 초기화
-		InitializeHealthBar();
 	}
+
+	// 체력바 초기화 (DifficultySideEffectClass 여부와 무관하게 항상 실행)
+	InitializeHealthBar();
 	
 	AAIController* AIC = Cast<AAIController>(NewController);
 	if (AIC && BehaviorTree)

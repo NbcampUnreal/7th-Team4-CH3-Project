@@ -44,8 +44,10 @@ protected:
 	void InitializeHealthBar();
 	void OnHealthChanged(const FOnAttributeChangeData& Data);
 	void UpdateHealthBar(float Current, float Max);
-	// 피격시에만 체력바 보이도록
 	void UpdateHealthBarVisibility();
+
+	// 플레이어에게 한 번이라도 피격된 경우에만 체력바 표시
+	bool bHasBeenDamaged = false;
 	
 	virtual void InitializeAttributes() override; 
 

@@ -35,6 +35,8 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 	StaminaGaugeComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	StaminaGaugeComponent->SetDrawSize(FVector2D(124.f, 124.f));
 	
+	AttributeSet = CreateDefaultSubobject<UF4AttributeSetCharacter>(TEXT("AttributeSet"));
+
 	Inventory = CreateDefaultSubobject<UF4InventoryComponent>(TEXT("Inventory"));
 	Equipment = CreateDefaultSubobject<UF4EquipmentComponent>(TEXT("Equipment"));
 	QuickSlot = CreateDefaultSubobject<UF4QuickSlotComponent>(TEXT("QuickSlot"));

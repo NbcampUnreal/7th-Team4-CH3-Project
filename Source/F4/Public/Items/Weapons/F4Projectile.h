@@ -50,6 +50,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effect")
 	TObjectPtr<UParticleSystem> EnvironmentImpactEffect;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Headshot")
+	float HeadshotMultiplier = 2.0f;
+
+	// 헤드샷 판정에 사용할 본 이름
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Headshot")
+	FName HeadshotBoneName = TEXT("head");
+
+	// 헤드 본을 중심으로 한 헤드샷 판정 반경 (cm)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Headshot")
+	float HeadshotRadius = 15.0f;
+
 	UFUNCTION()
 	virtual void OnHit(
 		UPrimitiveComponent* HitComp,

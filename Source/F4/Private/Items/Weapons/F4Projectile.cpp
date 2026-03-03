@@ -86,11 +86,25 @@ void AF4Projectile::OnHit(
 
 	if (GetInstigator())
 	{
+		float FinalDamage = DamagePayload;
+
+		if (ACharacter* HitCharacter = Cast<ACharacter>(OtherActor))
+		{
+			if (USkeletalMeshComponent* Mesh = HitCharacter->GetMesh())
+			{
+				const FVector HeadLocation = Mesh->GetBoneLocation(HeadshotBoneName);
+				if (FVector::DistSquared(Hit.ImpactPoint, HeadLocation) <= HeadshotRadius * HeadshotRadius)
+				{
+					FinalDamage *= HeadshotMultiplier;
+				}
+			}
+		}
+
 		FGameplayEventData Payload;
 		Payload.Instigator = GetInstigator();
 		Payload.Target = OtherActor;
 
-		Payload.EventMagnitude = DamagePayload;
+		Payload.EventMagnitude = FinalDamage;
 
 		FHitResult* MutableHit = const_cast<FHitResult*>(&Hit);
 		Payload.TargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(*MutableHit));
