@@ -35,29 +35,37 @@ void UF4BuffTimerWidget::StartBuffTimer(FActiveGameplayEffectHandle InHandle, UT
 void UF4BuffTimerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	
-	if (bIsActive && ASC.IsValid())
+	if (!bIsActive)
 	{
-		const FActiveGameplayEffect* ActiveGE = ASC->GetActiveGameplayEffect(EffectHandle);
-		if (!ActiveGE)
-		{
-			bIsActive = false;
-			RemoveFromParent();
-			return;
-		}
+		return;
+	}
+	
+	if (!ASC.IsValid())
+	{
+		bIsActive = false;
+		RemoveFromParent();
+		return;;
+	}
+	
+	const FActiveGameplayEffect* ActiveGE = ASC->GetActiveGameplayEffect(EffectHandle);
+	if (!ActiveGE)
+	{
+		bIsActive = false;
+		RemoveFromParent();
+		return;
+	}
+	
+	float RemainingTime = ActiveGE->GetTimeRemaining(GetWorld()->GetTimeSeconds());
+	
+	if (TimeText)
+	{
+		FString TimeString = FString::Printf(TEXT("%.1f초"), FMath::Max(0.0f, RemainingTime));
+		TimeText->SetText(FText::FromString(TimeString));
+	}
 		
-		float RemainingTime = ActiveGE->GetTimeRemaining(GetWorld()->GetTimeSeconds());
-		
-		if (TimeText)
-		{
-			FString TimeString = FString::Printf(TEXT("%.1f초"), FMath::Max(0.0f, RemainingTime));
-			TimeText->SetText(FText::FromString(TimeString));
-		}
-		
-		if (RemainingTime <= 0.0f)
-		{
-			bIsActive = false;
-			RemoveFromParent();
-		}
+	if (RemainingTime <= 0.0f)
+	{
+		bIsActive = false;
+		RemoveFromParent();
 	}
 }
