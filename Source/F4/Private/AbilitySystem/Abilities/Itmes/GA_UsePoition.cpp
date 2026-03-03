@@ -1,7 +1,7 @@
 #include "AbilitySystem/Abilities/Itmes/GA_UsePoition.h"
 
 #include "AbilitySystemComponent.h"
-#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEffectRemoved.h"
 #include "GameFramework/Character.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_UI.h"
@@ -13,7 +13,6 @@ void UGA_UsePoition::OnConsumeActivated(UF4ItemInstance* Item)
 	UAbilitySystemComponent* ASC = CurrentActorInfo->AbilitySystemComponent.Get();
 	ACharacter* AvatarCharacter = Cast<ACharacter>(CurrentActorInfo->AvatarActor.Get());
 	
-	float CalculatedDuration = Duration;
 	UTexture2D* PotionIcon = nullptr;
 	
 	if (Item && Item->ItemDefinition)
@@ -32,28 +31,20 @@ void UGA_UsePoition::OnConsumeActivated(UF4ItemInstance* Item)
 			FGameplayEffectSpecHandle SpecHandle =
 				ASC->MakeOutgoingSpec(ConsumableEffectClass, 1.0f, EffectContextHandle);
 
-			if (SpecHandle.IsValid())
-			{
-				float GEDuration = SpecHandle.Data->GetDuration();
-
-				if (GEDuration > 0.0f)
-				{
-					CalculatedDuration = GEDuration;
-				}
-			}
 			
 			ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		}
-		
-		if (UF4BuffComponent* BuffComp = AvatarCharacter->FindComponentByClass<UF4BuffComponent>())
-		{
-			BuffComp->AddBuffToUI(CalculatedDuration, PotionIcon);
+			
+			if (UF4BuffComponent* BuffComp = AvatarCharacter->FindComponentByClass<UF4BuffComponent>())
+			{
+				BuffComp->AddBuffToUI(ActiveEffectHandle, PotionIcon);
+			}
 		}
 	}
 	
-	UAbilityTask_WaitDelay* WaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, CalculatedDuration);
-	WaitDelay->OnFinish.AddDynamic(this, &UGA_UsePoition::OnDurationEnded);
-	WaitDelay->ReadyForActivation();
+	UAbilityTask_WaitGameplayEffectRemoved* WaitGERemoved = 
+		UAbilityTask_WaitGameplayEffectRemoved::WaitForGameplayEffectRemoved(this, ActiveEffectHandle);
+	WaitGERemoved->OnRemoved.AddDynamic(this, &UGA_UsePoition::OnDurationEnded);
+	WaitGERemoved->ReadyForActivation();
 }
 
 void UGA_UsePoition::OnDurationEnded()
