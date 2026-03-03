@@ -53,9 +53,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Headshot")
 	float HeadshotMultiplier = 2.0f;
 
-	// 캡슐 상단 몇 %를 헤드샷 판정 구역으로 볼지 (0.2 = 상위 20%)
+	// 헤드샷 판정에 사용할 본 이름
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Headshot")
-	float HeadshotZoneRatio = 0.2f;
+	FName HeadshotBoneName = TEXT("head");
+
+	// 헤드 본을 중심으로 한 헤드샷 판정 반경 (cm)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile|Headshot")
+	float HeadshotRadius = 15.0f;
 
 	UFUNCTION()
 	virtual void OnHit(
