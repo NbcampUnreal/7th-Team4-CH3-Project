@@ -3,6 +3,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
+#include "Items/F4ItemSpawnRow.h"
 #include "Items/F4PickupActor.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Spawnable.h"
@@ -76,7 +77,12 @@ TArray<TSoftObjectPtr<UF4ItemDefinition>> AF4SpawnVolume::RollItemsFromTable(UDa
 			TotalWeight += Row->SpawnWeight;
 		}
 	}
-	
+
+	if (TotalWeight <= 0.0f)
+	{
+		return SelectedItems;
+	}
+
 	for (int32 i = 0; i < Count; ++i)
 	{
 		float RandomValue = FMath::FRandRange(0.0f, TotalWeight);
@@ -141,15 +147,13 @@ bool AF4SpawnVolume::GetRandomGroundPoint(FVector& OutLocation)
 
 void AF4SpawnVolume::OnItemsLoaded(TArray<TSoftObjectPtr<UF4ItemDefinition>> RolledItems)
 {
-	UAssetManager& AssetManager = UAssetManager::Get();
-
-    for (const auto& SoftPtr : RolledItems)
-    {
-    	if (UF4ItemDefinition* ItemDef = SoftPtr.Get())
-    	{
-    		TrySpawnItem(ItemDef);
-    	}
-    }
+	for (const TSoftObjectPtr<UF4ItemDefinition>& SoftPtr : RolledItems)
+	{
+		if (UF4ItemDefinition* ItemDef = SoftPtr.Get())
+		{
+			TrySpawnItem(ItemDef);
+		}
+	}
 }
 
 void AF4SpawnVolume::TrySpawnItem(UF4ItemDefinition* ItemDefinition)
