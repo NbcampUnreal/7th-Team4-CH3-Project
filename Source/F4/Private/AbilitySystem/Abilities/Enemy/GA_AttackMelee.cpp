@@ -54,7 +54,15 @@ void UGA_AttackMelee::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UGA_AttackMelee::OnDamageGameplayEvent(FGameplayEventData EventData)
 {
+    ExcuteTriggerGameplayCue();
+    
     PerformMeleeTrace();
+}
+
+void UGA_AttackMelee::ExcuteTriggerGameplayCue()
+{
+    // TODO: 큐에 필요한 파라미터 전달
+    return;
 }
 
 void UGA_AttackMelee::PerformMeleeTrace()
@@ -66,7 +74,8 @@ void UGA_AttackMelee::PerformMeleeTrace()
     }
 
     // ===== Trace 시작/끝 위치 계산 =====
-    FVector Start = AvatarActor->GetActorLocation();
+    
+    FVector Start = AvatarActor->GetActorLocation() + AvatarActor->GetActorForwardVector() * 50.0f;
     FVector Forward = AvatarActor->GetActorForwardVector();
     FVector End = Start + Forward * TraceDistance;
 
