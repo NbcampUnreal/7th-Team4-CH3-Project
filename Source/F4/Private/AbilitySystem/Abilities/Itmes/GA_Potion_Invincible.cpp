@@ -41,18 +41,37 @@ void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 			
 			ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
-
+		
 		if (USkeletalMeshComponent* Mesh = AvatarCharacter->GetMesh())
 		{
-			for (int32 i = 0; i < Mesh->GetNumMaterials(); ++i)
+			if (TransparentMaterial)
 			{
-				OriginalMaterials.Add(Mesh->GetMaterial(i));
-				if (TransparentMaterial)
+				OriginalMaterials.Empty();
+				
+				for (int32 i = 0; i < Mesh->GetNumMaterials(); ++i)
 				{
-					if (GEngine)
-						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("투명화"));
+					OriginalMaterials.Add(Mesh->GetMaterial(i));
 					Mesh->SetMaterial(i, TransparentMaterial);
 				}
+				
+				if (GEngine)
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("투명화"));
+			}
+		}
+		
+		if (UF4BuffComponent* BuffComp = AvatarCharacter->FindComponentByClass<UF4BuffComponent>())
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("방송 시작"));
+			}
+			BuffComp->AddBuffToUI(CalculatedDuration, PotionIcon);
+		}
+		else
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("에러: 캐릭터한테 방송국(컴포넌트)이 없어요!"));
 			}
 		}
 	}
