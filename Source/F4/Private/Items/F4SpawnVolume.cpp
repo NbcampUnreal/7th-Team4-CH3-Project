@@ -3,7 +3,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
-#include "Items/F4ItemSpawnRow.h"
+#include "DataTable/F4ItemSpawnRow.h"
 #include "Items/F4PickupActor.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Spawnable.h"

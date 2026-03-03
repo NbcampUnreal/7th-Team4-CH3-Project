@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
-#include "Items/F4ItemSpawnRow.h"
+#include "DataTable/F4ItemSpawnRow.h"
 #include "F4SpawnVolume.generated.h"
 
 class UF4ItemDefinition;
