@@ -3,6 +3,7 @@
 #include "Components/BoxComponent.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
+#include "DataTable/F4ItemSpawnRow.h"
 #include "Items/F4PickupActor.h"
 #include "Inventory/F4ItemDefinition.h"
 #include "Inventory/F4ItemFragment_Spawnable.h"
@@ -27,26 +28,133 @@ void AF4SpawnVolume::BeginPlay()
 
 void AF4SpawnVolume::SpawnItemsAsync()
 {
-	UAssetManager& AssetManager = UAssetManager::Get();
+	TArray<TSoftObjectPtr<UF4ItemDefinition>> ItemsToLoad;
 
-	TArray<FPrimaryAssetId> AllItemIds;
-	AssetManager.GetPrimaryAssetIdList(FPrimaryAssetType("ItemDefinition"), AllItemIds);
-
-	if (AllItemIds.IsEmpty())
+	for (const FSpawnTableGroup& Group : SpawnGroups)
 	{
-		UE_LOGFMT(LogTemp, Warning, "SpawnVolume: 스폰할 아이템 ID 목록을 찾을 수 없습니다.");
+		const FWeightedTableEntry* Selected = SelectTableFromGroup(Group);
+		if (!Selected)
+		{
+			continue;
+		}
+
+		ItemsToLoad.Append(RollItemsFromTable(Selected->Table, Selected->Count));
+	}
+	
+	if (ItemsToLoad.IsEmpty())
+	{
 		return;
 	}
-
-	TArray<FPrimaryAssetId> SelectedAssetIds;
-	for (int32 i = 0; i < SpawnCount; ++i)
+	
+	TArray<FSoftObjectPath> PathsToLoad;
+	for (const TSoftObjectPtr<UF4ItemDefinition> SoftPtr : ItemsToLoad)
 	{
-		int32 RandomIndex = FMath::RandRange(0, AllItemIds.Num() - 1);
-		SelectedAssetIds.Add(AllItemIds[RandomIndex]);
+		PathsToLoad.AddUnique(SoftPtr.ToSoftObjectPath());
+	}
+	
+	UAssetManager& AssetManager = UAssetManager::Get();
+	FStreamableDelegate Delegate = 
+		FStreamableDelegate::CreateUObject(this, &AF4SpawnVolume::OnItemsLoaded, ItemsToLoad);
+	
+	AssetManager.GetStreamableManager().RequestAsyncLoad(PathsToLoad, Delegate);
+}
+
+const FWeightedTableEntry* AF4SpawnVolume::SelectTableFromGroup(const FSpawnTableGroup& Group) const
+{
+	if (Group.Tables.IsEmpty())
+	{
+		return nullptr;
 	}
 
-	FStreamableDelegate LoadDelegate = FStreamableDelegate::CreateUObject(this, &AF4SpawnVolume::OnItemsLoaded, SelectedAssetIds);
-	AssetManager.LoadPrimaryAssets(SelectedAssetIds, TArray<FName>(), LoadDelegate);
+	float TotalWeight = 0.0f;
+	for (const FWeightedTableEntry& Entry : Group.Tables)
+	{
+		if (Entry.TableWeight > 0.0f)
+		{
+			TotalWeight += Entry.TableWeight;
+		}
+	}
+
+	if (TotalWeight <= 0.0f)
+	{
+		return nullptr;
+	}
+
+	float RandomValue = FMath::FRandRange(0.0f, TotalWeight);
+	float CurrentWeight = 0.0f;
+
+	for (const FWeightedTableEntry& Entry : Group.Tables)
+	{
+		if (Entry.TableWeight <= 0.0f)
+		{
+			continue;
+		}
+
+		CurrentWeight += Entry.TableWeight;
+		if (RandomValue <= CurrentWeight)
+		{
+			return &Entry;
+		}
+	}
+
+	return nullptr;
+}
+
+TArray<TSoftObjectPtr<UF4ItemDefinition>> AF4SpawnVolume::RollItemsFromTable(UDataTable* Table, int32 Count)
+{
+	TArray<TSoftObjectPtr<UF4ItemDefinition>> SelectedItems;
+	if (!Table || Count <= 0)
+	{
+		return SelectedItems;
+	}
+	
+	TArray<FF4ItemSpawnRow*> AllRows;
+	Table->GetAllRows<FF4ItemSpawnRow>(TEXT("SpawnTableContext"), AllRows);
+	
+	if (AllRows.IsEmpty())
+	{
+		return SelectedItems;
+	}
+	
+	float TotalWeight = 0.0f;
+	for (FF4ItemSpawnRow* Row : AllRows)
+	{
+		if (Row && Row->SpawnWeight > 0.0f)
+		{
+			TotalWeight += Row->SpawnWeight;
+		}
+	}
+
+	if (TotalWeight <= 0.0f)
+	{
+		return SelectedItems;
+	}
+
+	for (int32 i = 0; i < Count; ++i)
+	{
+		float RandomValue = FMath::FRandRange(0.0f, TotalWeight);
+		float CurrentWeight = 0.0f;
+		
+		for (FF4ItemSpawnRow* Row : AllRows)
+		{
+			if (!Row || Row->SpawnWeight <= 0.0f)
+			{
+				continue;
+			}
+			
+			CurrentWeight += Row->SpawnWeight;
+			if (RandomValue <= CurrentWeight)
+			{
+				if (!Row->ItemDefinition.IsNull())
+				{
+					SelectedItems.Add(Row->ItemDefinition);
+				}
+				break;
+			}
+		}
+	}
+	
+	return SelectedItems;
 }
 
 bool AF4SpawnVolume::GetRandomGroundPoint(FVector& OutLocation)
@@ -84,17 +192,15 @@ bool AF4SpawnVolume::GetRandomGroundPoint(FVector& OutLocation)
 	return false;
 }
 
-void AF4SpawnVolume::OnItemsLoaded(TArray<FPrimaryAssetId> LoadedAssetIds)
+void AF4SpawnVolume::OnItemsLoaded(TArray<TSoftObjectPtr<UF4ItemDefinition>> RolledItems)
 {
-	UAssetManager& AssetManager = UAssetManager::Get();
-
-    for (const FPrimaryAssetId& AssetId : LoadedAssetIds)
-    {
-	    if (UF4ItemDefinition* LoadedItemDefinition = Cast<UF4ItemDefinition>(AssetManager.GetPrimaryAssetObject(AssetId)))
-        {
-	        TrySpawnItem(LoadedItemDefinition);
-        }
-    }
+	for (const TSoftObjectPtr<UF4ItemDefinition>& SoftPtr : RolledItems)
+	{
+		if (UF4ItemDefinition* ItemDef = SoftPtr.Get())
+		{
+			TrySpawnItem(ItemDef);
+		}
+	}
 }
 
 void AF4SpawnVolume::TrySpawnItem(UF4ItemDefinition* ItemDefinition)
@@ -111,6 +217,12 @@ void AF4SpawnVolume::TrySpawnItem(UF4ItemDefinition* ItemDefinition)
 		return;
 	}
 
+	const int32 Quantity = FMath::RandRange(SpawnableFrag->MinSpawnQuantity, SpawnableFrag->MaxSpawnQuantity) * SpawnableFrag->QuantityMultiplier;
+	if (Quantity <= 0)
+	{
+		return;
+	}
+
 	FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
 	AF4PickupActor* NewItem = GetWorld()->SpawnActorDeferred<AF4PickupActor>(
 		SpawnableFrag->PickupActorClass,
@@ -119,8 +231,6 @@ void AF4SpawnVolume::TrySpawnItem(UF4ItemDefinition* ItemDefinition)
 
 	if (NewItem)
 	{
-		const int32 Quantity = FMath::RandRange(SpawnableFrag->MinSpawnQuantity, SpawnableFrag->MaxSpawnQuantity) * SpawnableFrag->QuantityMultiplier;
-
 		NewItem->ItemQuantity = Quantity;
 		NewItem->InitializePickup(ItemDefinition);
 		NewItem->FinishSpawning(FTransform(SpawnRotation, SpawnLocation));
