@@ -47,11 +47,6 @@ void UF4EquipmentComponent::EquipItemToSlot(UF4ItemInstance* ItemToEquip, EWeapo
 		SpawnedWeapons.Add(ItemToEquip, NewWeaponActor);
 
 		OnWeaponEquippedToSlot.Broadcast(static_cast<int32>(TargetSlot), ItemToEquip);
-
-		if (ActiveSlot == EWeaponSlot::None)
-		{
-			SetActiveWeapon(TargetSlot);
-		}
 	}
 }
 

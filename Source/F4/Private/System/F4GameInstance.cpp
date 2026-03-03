@@ -71,8 +71,6 @@ void UF4GameInstance::RestoreData(AF4PlayerCharacter* PlayerCharacter)
 	const TArray<UF4ItemInstance*> RestoredItems = RestoreInventoryItems(InventoryComp, PlayerCharacter);
 	RestoreEquipmentSlots(EquipmentComp, RestoredItems);
 	RestoreQuickSlots(QuickSlotComp, RestoredItems);
-
-	WipeData();
 }
 
 TMap<UF4ItemInstance*, int32> UF4GameInstance::SaveInventoryItems(UF4InventoryComponent* InventoryComp)
@@ -162,12 +160,6 @@ void UF4GameInstance::RestoreEquipmentSlots(UF4EquipmentComponent* EquipmentComp
 
 	TryEquip(SavedInventory.PrimaryWeaponIndex, EWeaponSlot::Primary);
 	TryEquip(SavedInventory.SecondaryWeaponIndex, EWeaponSlot::Secondary);
-
-	EWeaponSlot SavedActiveSlot = static_cast<EWeaponSlot>(SavedInventory.ActiveWeaponSlot);
-	if (SavedActiveSlot != EWeaponSlot::None)
-	{
-		EquipmentComp->SetActiveWeapon(SavedActiveSlot);
-	}
 }
 
 void UF4GameInstance::RestoreQuickSlots(UF4QuickSlotComponent* QuickSlotComp, const TArray<UF4ItemInstance*>& RestoredItems)
