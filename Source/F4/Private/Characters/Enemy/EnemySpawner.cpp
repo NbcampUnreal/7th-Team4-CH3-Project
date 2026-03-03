@@ -30,7 +30,7 @@ AEnemySpawner::AEnemySpawner()
 void AEnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (DistanceCheckTarget == nullptr)
 	{
 		DistanceCheckTarget = UGameplayStatics::GetPlayerPawn(this, 0);
