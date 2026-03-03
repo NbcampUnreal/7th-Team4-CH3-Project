@@ -28,9 +28,8 @@ AF4CharacterBase::AF4CharacterBase()
 	
 	ASC = CreateDefaultSubobject<UF4AbilitySystemComponent>(TEXT("ASC"));
 	ASC->SetIsReplicated(true);
-	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed); 
-	
-	AttributeSet = CreateDefaultSubobject<UF4AttributeSetCharacter>(TEXT("AttributeSet"));
+	ASC->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
 	WeaponAttributeSet = CreateDefaultSubobject<UF4AttributeSetWeapon>(TEXT("WeaponAttributeSet"));
 }
 
