@@ -15,6 +15,7 @@ public class F4 : ModuleRules
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
+			"PhysicsCore",
 			"GameplayStateTreeModule",
 			"AIModule",
 			"NavigationSystem",

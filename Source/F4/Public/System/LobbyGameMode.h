@@ -23,7 +23,15 @@ public:
 	void StartMission(APlayerController* PlayerController);
 	
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "LobbyGameMode | Level")
+	UPROPERTY(EditDefaultsOnly, Category = "Lobby | Level")
 	FName BattleLevelName;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Lobby | BGM")
+	USoundBase* LobbyBGM;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Lobby | BGM")
+	float BGMVolume = 0.5f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Lobby | BGM")
+	bool bFade = true; 
 };
