@@ -29,8 +29,10 @@ void AF4SpawnVolume::SpawnItemsAsync()
 {
 	TArray<TSoftObjectPtr<UF4ItemDefinition>> ItemsToLoad;
 	
-	ItemsToLoad.Append(RollItemsFromTable(WeaponSpawnTable, WeaponSpawnCount));
-	ItemsToLoad.Append(RollItemsFromTable(PotionSpawnTable, PotionSpawnCount));
+	for (const FSpawnTableEntry& Entry : SpawnTables)
+	{
+		ItemsToLoad.Append(RollItemsFromTable(Entry.Table, Entry.Count));
+	}
 	
 	if (ItemsToLoad.IsEmpty())
 	{

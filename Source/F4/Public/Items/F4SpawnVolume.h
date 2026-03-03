@@ -22,6 +22,18 @@ public:
 	float SpawnWeight = 1.0f;
 };
 
+USTRUCT(BlueprintType)
+struct FSpawnTableEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UDataTable> Table;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
+	int32 Count = 1;
+};
+
 UCLASS()
 class F4_API AF4SpawnVolume : public AActor
 {
@@ -41,17 +53,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UBoxComponent> SpawningBox;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning|Tables")
-	TObjectPtr<UDataTable> WeaponSpawnTable;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning|Tables", meta = (ClampMin = "0"))
-	int32 WeaponSpawnCount = 3;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning|Tables")
-	TObjectPtr<UDataTable> PotionSpawnTable;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning|Tables", meta = (ClampMin = "0"))
-	int32 PotionSpawnCount = 5;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawing|Tables")
+	TArray<FSpawnTableEntry> SpawnTables;
 
 private:
 	TArray<TSoftObjectPtr<UF4ItemDefinition>> RollItemsFromTable(UDataTable* Table, int32 Count);
