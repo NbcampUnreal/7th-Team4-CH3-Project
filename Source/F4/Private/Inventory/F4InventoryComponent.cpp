@@ -9,6 +9,17 @@ UF4InventoryComponent::UF4InventoryComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void UF4InventoryComponent::LoadItem(UF4ItemInstance* NewItem)
+{
+	if (!NewItem || !NewItem->ItemDefinition)
+	{
+		return;
+	}
+
+	InventoryList.Add(NewItem);
+	OnInventoryUpdated.Broadcast();
+}
+
 void UF4InventoryComponent::AddItem(UF4ItemInstance* NewItem)
 {
 	if (!NewItem || !NewItem->ItemDefinition) return;

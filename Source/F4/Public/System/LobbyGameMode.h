@@ -12,7 +12,10 @@ class F4_API ALobbyGameMode : public AGameMode
 
 public:
 	ALobbyGameMode();
-	// 플레이어 최초 입장 
+
+	virtual void BeginPlay() override;
+
+	// 플레이어 최초 입장
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	
 	// 전투맵 입장 
