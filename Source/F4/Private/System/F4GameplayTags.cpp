@@ -44,6 +44,8 @@ namespace F4GameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Character_State_NoRegenStamina, TEXT("Character.State.NoRegenStamina"));
 	
 	UE_DEFINE_GAMEPLAY_TAG(State_Invincible, TEXT("State.Invincible"));
+	UE_DEFINE_GAMEPLAY_TAG(State_Buff_RegenHealth, TEXT("State.Buff.RegenHealth"));
+	UE_DEFINE_GAMEPLAY_TAG(State_Buff_RegenStamina, TEXT("State.Buff.RegenStamina"));
 	UE_DEFINE_GAMEPLAY_TAG(State_Switching_Weapon, TEXT("State.Switching.Weapon"));
 
 	UE_DEFINE_GAMEPLAY_TAG(Event_Montage_Switching, TEXT("Event.Montage.Switching"));
