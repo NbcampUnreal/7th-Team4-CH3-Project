@@ -53,7 +53,6 @@ public:
 protected:
 	UPROPERTY()
 	float SurvivalTimer = 0.f;
-
 	float DifficultyAccumulator = 0.0f;
 
 	// 난이도 증가 주기

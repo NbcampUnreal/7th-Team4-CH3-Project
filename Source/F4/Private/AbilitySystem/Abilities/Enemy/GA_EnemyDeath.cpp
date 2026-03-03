@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "System/F4GameplayTags.h"
 #include "Items/F4DropItem.h"
+#include "Kismet/GameplayStatics.h"
 
 UGA_EnemyDeath::UGA_EnemyDeath()
 {
@@ -33,6 +34,8 @@ void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	
 	if (Enemy)
 	{
+		PlayRandomDeathSound(Enemy);
+		
 		Enemy->SetIsDead(true);
 		Enemy->GetCharacterMovement()->StopMovementImmediately();
 		Enemy->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -58,6 +61,59 @@ void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
+}
+
+void UGA_EnemyDeath::PlayRandomDeathSound(AActor* Actor)
+{
+	if (!Actor)
+	{
+		return;
+	}
+
+	USoundBase* SelectedSound = SelectRandomSoundFromPool();
+
+	if (SelectedSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			Actor->GetWorld(),
+			SelectedSound,
+			Actor->GetActorLocation()
+		);
+	}
+}
+
+TObjectPtr<USoundBase> UGA_EnemyDeath::SelectRandomSoundFromPool() const
+{
+	if (SoundPool.Num() == 0)
+	{
+		return nullptr;
+	}
+
+	float TotalWeight = 0.0f;
+
+	for (const FSoundWeightData& Data : SoundPool)
+	{
+		TotalWeight += Data.Weight;
+	}
+
+	if (TotalWeight <= 0.0f)
+	{
+		return nullptr;
+	}
+
+	const float RandomValue = FMath::FRandRange(0.0f, TotalWeight);
+	float AccumulatedWeight = 0.0f;
+
+	for (const FSoundWeightData& Data : SoundPool)
+	{
+		AccumulatedWeight += Data.Weight;
+		if (RandomValue <= AccumulatedWeight)
+		{
+			return Data.Sound;
+		}
+	}
+
+	return nullptr;
 }
 
 void UGA_EnemyDeath::HandleDropItem()

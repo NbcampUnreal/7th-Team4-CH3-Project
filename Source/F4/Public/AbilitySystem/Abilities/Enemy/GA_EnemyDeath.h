@@ -4,6 +4,18 @@
 #include "Abilities/GameplayAbility.h"
 #include "GA_EnemyDeath.generated.h"
 
+USTRUCT(BlueprintType)
+struct FSoundWeightData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> Sound = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	float Weight = 1.0f;
+};
+
 class AF4EnemyBase;
 
 UCLASS()
@@ -22,6 +34,13 @@ public:
 	) override;
 
 protected:
+	void PlayRandomDeathSound(AActor* Actor);
+	
+	TObjectPtr<USoundBase> SelectRandomSoundFromPool() const;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound Settings")
+	TArray<FSoundWeightData> SoundPool;
+	
 	void HandleDropItem();
 	void EnableRagdoll(AF4EnemyBase* Enemy);
 };

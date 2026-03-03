@@ -17,11 +17,17 @@ void AF4DropItem::TryDropItem(AActor* Monster, float DropChance)
 	}
 
 	UAssetManager& AssetManager = UAssetManager::Get();
+	if (!UAssetManager::IsInitialized())
+	{
+		return;
+	}
+	
 	TArray<FPrimaryAssetId> AllItemIds;
-
 	AssetManager.GetPrimaryAssetIdList(FPrimaryAssetType("ItemDefinition"), AllItemIds);
-
-	if (AllItemIds.IsEmpty()) return;
+	if (AllItemIds.IsEmpty())
+	{
+		return;
+	}
 	
 	FPrimaryAssetId SelectedId = AllItemIds[FMath::RandRange(0, AllItemIds.Num() - 1)];
 	
@@ -38,20 +44,25 @@ void AF4DropItem::TryDropItem(AActor* Monster, float DropChance)
 		FinalLocation = Hit.ImpactPoint + FVector(0.f, 0.f, 10.f);
 	}
 	
-	TSoftObjectPtr<UWorld> WorldPtr(Monster->GetWorld());
-	TArray<FPrimaryAssetId> LoadList = { SelectedId };
-    
+	TWeakObjectPtr<UWorld> WorldPtr = Monster->GetWorld();
+	
 	FStreamableDelegate Delegate = FStreamableDelegate::CreateStatic(
 		&AF4DropItem::OnItemLoaded, SelectedId, FinalLocation, WorldPtr
 	);
-
-	AssetManager.LoadPrimaryAssets(LoadList, TArray<FName>(), Delegate);
+	
+	AssetManager.GetStreamableManager().RequestAsyncLoad(
+		AssetManager.GetPrimaryAssetPath(SelectedId), 
+		Delegate
+	);
 }
 
-void AF4DropItem::OnItemLoaded(FPrimaryAssetId AssetId, FVector SpawnLocation, TSoftObjectPtr<UWorld> WorldPtr)
+void AF4DropItem::OnItemLoaded(FPrimaryAssetId AssetId, FVector SpawnLocation, TWeakObjectPtr<UWorld> WorldPtr)
 {
 	UWorld* World = WorldPtr.Get();
-	if (!World) return;
+	if (!World)
+	{
+		return;
+	}
 
 	UAssetManager& AssetManager = UAssetManager::Get();
 	UF4ItemDefinition* ItemDef = Cast<UF4ItemDefinition>(AssetManager.GetPrimaryAssetObject(AssetId));
@@ -59,8 +70,11 @@ void AF4DropItem::OnItemLoaded(FPrimaryAssetId AssetId, FVector SpawnLocation, T
 	if (ItemDef)
 	{
 		const UF4ItemFragment_Spawnable* SpawnableFrag = ItemDef->FindFragmentByClass<UF4ItemFragment_Spawnable>();
-		if (!SpawnableFrag) return;
-
+		if (!SpawnableFrag || !SpawnableFrag->PickupActorClass) 
+		{
+			return;
+		}
+		
 		FRotator SpawnRot = FRotator(0.f, FMath::RandRange(0.f, 360.f), 0.f);
 		
 		AF4PickupActor* NewItem = World->SpawnActorDeferred<AF4PickupActor>(
@@ -71,9 +85,10 @@ void AF4DropItem::OnItemLoaded(FPrimaryAssetId AssetId, FVector SpawnLocation, T
 		if (NewItem)
 		{
 			int32 Quantity = FMath::RandRange(SpawnableFrag->MinSpawnQuantity, SpawnableFrag->MaxSpawnQuantity) 
-							 * SpawnableFrag->QuantityMultiplier;
+							* SpawnableFrag->QuantityMultiplier;
 
 			NewItem->ItemQuantity = FMath::Max(1, Quantity);
+			
 			NewItem->InitializePickup(ItemDef);
 			NewItem->FinishSpawning(FTransform(SpawnRot, SpawnLocation));
 		}

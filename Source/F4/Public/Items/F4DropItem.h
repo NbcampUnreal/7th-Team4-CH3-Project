@@ -13,8 +13,8 @@ public:
 	AF4DropItem();
 	
 public:
-	static void TryDropItem(AActor* Monster, float DropChance = 0.5f);
+	static void TryDropItem(AActor* Monster, float DropChance = 0.1f);
 
 private:
-	static void OnItemLoaded(FPrimaryAssetId AssetId, FVector SpawnLocation, TSoftObjectPtr<UWorld> WorldPtr);
+	static void OnItemLoaded(FPrimaryAssetId AssetId, FVector SpawnLocation, TWeakObjectPtr<UWorld> WorldPtr);
 };
