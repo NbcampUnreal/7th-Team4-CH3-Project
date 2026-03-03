@@ -14,6 +14,10 @@ void AF4PlayerController::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+		if (MouseLookMappingContext)
+		{
+			Subsystem->AddMappingContext(MouseLookMappingContext, 1);
+		}
 	}
 }
 

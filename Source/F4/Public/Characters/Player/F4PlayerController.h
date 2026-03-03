@@ -27,7 +27,10 @@ public:
 	TSubclassOf<UF4InventoryWidget> InventoryWidgetClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-    TObjectPtr<UInputMappingContext> DefaultMappingContext;
+	TObjectPtr<UInputMappingContext> DefaultMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputMappingContext> MouseLookMappingContext;
 
 private:
 	UPROPERTY()
