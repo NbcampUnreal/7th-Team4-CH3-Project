@@ -19,12 +19,26 @@ void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 	UAbilitySystemComponent* ASC = CurrentActorInfo->AbilitySystemComponent.Get();
 	ACharacter* AvatarCharacter = Cast<ACharacter>(CurrentActorInfo->AvatarActor.Get());
 
+	float CalculatedDuration = Duration;
+	
 	if (AvatarCharacter && ASC)
 	{
 		if (ConsumableEffectClass)
 		{
 			FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ConsumableEffectClass, 1.0f, EffectContext);
+			FGameplayEffectSpecHandle SpecHandle = 
+				ASC->MakeOutgoingSpec(ConsumableEffectClass, 1.0f, EffectContext);
+			
+			if (SpecHandle.IsValid())
+			{
+				float GEDuration = SpecHandle.Data->GetDuration();
+				
+				if (GEDuration > 0.0f)
+				{
+					CalculatedDuration = GEDuration;
+				}
+			}
+			
 			ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 
@@ -53,7 +67,7 @@ void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 	WaitSprintTag->Added.AddDynamic(this, &UGA_Potion_Invincible::OnActionDetected);
 	WaitSprintTag->ReadyForActivation();
 
-	UAbilityTask_WaitDelay* WaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, Duration);
+	UAbilityTask_WaitDelay* WaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, CalculatedDuration);
 	WaitDelay->OnFinish.AddDynamic(this, &UGA_Potion_Invincible::OnDurationEnded);
 	WaitDelay->ReadyForActivation();
 }
