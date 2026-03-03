@@ -3,24 +3,12 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
+#include "Items/F4ItemSpawnRow.h"
 #include "F4SpawnVolume.generated.h"
 
 class UF4ItemDefinition;
 class AF4PickupActor;
 class UBoxComponent;
-
-USTRUCT(BlueprintType)
-struct FF4ItemSpawnRow : public FTableRowBase
-{
-	GENERATED_BODY()
-	
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn")
-	TSoftObjectPtr<UF4ItemDefinition> ItemDefinition;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawn", meta = (ClampMin = "0.0"))
-	float SpawnWeight = 1.0f;
-};
 
 USTRUCT(BlueprintType)
 struct FSpawnTableEntry
