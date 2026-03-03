@@ -33,8 +33,16 @@ void ALevelMoveActor::DoInteract(AActor* Interactor)
 	}
 }
 
+void ALevelMoveActor::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnSphereBeginOverlap);
+	CollisionSphere->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnSphereEndOverlap);
+}
+
 void ALevelMoveActor::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	WidgetComponent->SetVisibility(true);
 }
