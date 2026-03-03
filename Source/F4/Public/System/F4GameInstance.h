@@ -65,6 +65,10 @@ public:
 
 	void WipeData();
 	
+	void SaveData();
+	
+	void MoveToLevel(FName LevelName); 
+	
 	void SaveData(AF4PlayerCharacter* PlayerCharacter);
 
 	void RestoreData(AF4PlayerCharacter* PlayerCharacter);
