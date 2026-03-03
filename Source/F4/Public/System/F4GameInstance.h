@@ -62,8 +62,9 @@ class F4_API UF4GameInstance : public UGameInstance
 	GENERATED_BODY()
 
 public:
-
 	void WipeData();
+
+	void MoveToLevel(FName LevelName); 
 	
 	void SaveData(AF4PlayerCharacter* PlayerCharacter);
 

@@ -5,6 +5,8 @@
 #include "Inventory/F4QuickSlotComponent.h"
 #include "Inventory/F4ItemInstance.h"
 
+#include "Kismet/GameplayStatics.h"
+
 void UF4GameInstance::WipeData()
 {
 	SavedInventory = FInventorySaveData();
@@ -178,4 +180,9 @@ void UF4GameInstance::IncrementPermanentDifficulty()
 		PermanentDifficulty++;
 		UE_LOG(LogTemp, Log, TEXT("Permanent Difficulty Increased! New Level: %d"), PermanentDifficulty);
 	}
+}
+
+void UF4GameInstance::MoveToLevel(FName LevelName)
+{
+	UGameplayStatics::OpenLevel(GetWorld(), LevelName);
 }
