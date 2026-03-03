@@ -23,12 +23,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Potion|Visual")
 	TObjectPtr<UMaterialInterface> TransparentMaterial;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Potion|Time")
-	float Duration = 5.0f;
-
 protected:
 	UFUNCTION()
-	void OnDurationEnded();
+	void OnDurationEnded(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo);
 
 	UFUNCTION()
 	void OnActionDetected();

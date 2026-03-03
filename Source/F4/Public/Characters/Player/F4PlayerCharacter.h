@@ -9,6 +9,7 @@
 #include "F4PlayerCharacter.generated.h"
 
 class UF4QuickSlotComponent;
+class UF4BuffComponent;
 struct FInputActionValue;
 
 class UF4ItemDataAsset;
@@ -95,6 +96,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | QuickSlot", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UF4QuickSlotComponent> QuickSlot;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Buff", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UF4BuffComponent> BuffSystem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components | Animation",
 		meta = (AllowPrivateAccess = "true"))

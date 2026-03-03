@@ -3,9 +3,12 @@
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEffectRemoved.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayTag.h"
+#include "Inventory/F4ItemDefinition.h"
+#include "Inventory/F4ItemFragment_UI.h"
 #include "Inventory/F4ItemInstance.h"
+#include "Inventory/F4BuffComponent.h"
 #include "System/F4GameplayTags.h"
 
 UGA_Potion_Invincible::UGA_Potion_Invincible()
@@ -18,25 +21,41 @@ void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 {
 	UAbilitySystemComponent* ASC = CurrentActorInfo->AbilitySystemComponent.Get();
 	ACharacter* AvatarCharacter = Cast<ACharacter>(CurrentActorInfo->AvatarActor.Get());
-
+	
+	UTexture2D* PotionIcon = nullptr;
+	
+	if (Item && Item->ItemDefinition)
+	{
+		if (const UF4ItemFragment_UI* UIFrag = Item->ItemDefinition->FindFragmentByClass<UF4ItemFragment_UI>())
+		{
+			PotionIcon = UIFrag->ItemIcon;
+		}
+	}
+	
 	if (AvatarCharacter && ASC)
 	{
 		if (ConsumableEffectClass)
 		{
 			FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
-			FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(ConsumableEffectClass, 1.0f, EffectContext);
+			FGameplayEffectSpecHandle SpecHandle = 
+				ASC->MakeOutgoingSpec(ConsumableEffectClass, 1.0f, EffectContext);
+			
 			ActiveEffectHandle = ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			
+			if (UF4BuffComponent* BuffComp = AvatarCharacter->FindComponentByClass<UF4BuffComponent>())
+			{
+				BuffComp->AddBuffToUI(ActiveEffectHandle, PotionIcon);
+			}
 		}
-
 		if (USkeletalMeshComponent* Mesh = AvatarCharacter->GetMesh())
 		{
-			for (int32 i = 0; i < Mesh->GetNumMaterials(); ++i)
+			if (TransparentMaterial)
 			{
-				OriginalMaterials.Add(Mesh->GetMaterial(i));
-				if (TransparentMaterial)
+				OriginalMaterials.Empty();
+				
+				for (int32 i = 0; i < Mesh->GetNumMaterials(); ++i)
 				{
-					if (GEngine)
-						GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("투명화"));
+					OriginalMaterials.Add(Mesh->GetMaterial(i));
 					Mesh->SetMaterial(i, TransparentMaterial);
 				}
 			}
@@ -53,9 +72,10 @@ void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 	WaitSprintTag->Added.AddDynamic(this, &UGA_Potion_Invincible::OnActionDetected);
 	WaitSprintTag->ReadyForActivation();
 
-	UAbilityTask_WaitDelay* WaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, Duration);
-	WaitDelay->OnFinish.AddDynamic(this, &UGA_Potion_Invincible::OnDurationEnded);
-	WaitDelay->ReadyForActivation();
+	UAbilityTask_WaitGameplayEffectRemoved* WaitGERemoved = 
+		UAbilityTask_WaitGameplayEffectRemoved::WaitForGameplayEffectRemoved(this, ActiveEffectHandle);
+	WaitGERemoved->OnRemoved.AddDynamic(this, &UGA_Potion_Invincible::OnDurationEnded);
+	WaitGERemoved->ReadyForActivation();
 }
 
 void UGA_Potion_Invincible::OnConsumeEnded()
@@ -84,7 +104,7 @@ void UGA_Potion_Invincible::OnConsumeEnded()
 	OriginalMaterials.Empty();
 }
 
-void UGA_Potion_Invincible::OnDurationEnded()
+void UGA_Potion_Invincible::OnDurationEnded(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo)
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
