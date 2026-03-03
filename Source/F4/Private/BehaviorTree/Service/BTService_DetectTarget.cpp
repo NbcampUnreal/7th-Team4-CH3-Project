@@ -62,15 +62,30 @@ void UBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	
 	if (TargetActor)
 	{
-		// 서비스 TickNode 내부 핵심 로직
 		const float Distance = FVector::Dist(Enemy->GetActorLocation(), TargetActor->GetActorLocation());
 
 		if (Distance <= TraceRange)
 		{
-			// 1. 타겟 세팅
+			AActor*  OldTarget = Cast<AActor>(BlackBoard->GetValueAsObject(TargetActorKey.SelectedKeyName));
+			
+			if (!OldTarget)
+			{
+				USoundBase* SoundToPlay = Enemy->GetDetectSound();
+				
+				if (SoundToPlay)
+				{
+					UGameplayStatics::PlaySoundAtLocation(
+						GetWorld(),
+						SoundToPlay,
+						Enemy->GetActorLocation(),
+						1.0f, 1.0f, 0.0f,
+						nullptr
+					);
+				}
+			}
+			
 			BlackBoard->SetValueAsObject(TargetActorKey.SelectedKeyName, TargetActor);
       
-			// 2. 공격 사거리 판정
 			bool bInAttackRange = (Distance <= AttackRange);
 			BlackBoard->SetValueAsBool(TEXT("bIsInAttackRange"), bInAttackRange);
 			if (Enemy->EnemyType == EEnemyType::Ranged)
@@ -81,8 +96,7 @@ void UBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 			{
 				Enemy->SetIsAiming(false);
 			}
-    
-			// 3. 추적 사거리 판정
+			
 			bool bInTraceRange = (Distance <= TraceRange);
 			BlackBoard->SetValueAsBool(TEXT("bIsInTraceRange"), bInTraceRange);
 		}

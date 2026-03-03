@@ -38,6 +38,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "F4 | UI")
 	TObjectPtr<UWidgetComponent> HealthBarWidget;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "F4 | SFX")
+	TObjectPtr<USoundBase> DetectSound;
+	
 	void InitializeHealthBar();
 	void OnHealthChanged(const FOnAttributeChangeData& Data);
 	void UpdateHealthBar(float Current, float Max);
@@ -50,6 +53,7 @@ public:
 	// 서비스에서 쉽게 가져다 쓸 수 있도록 만든 Getter
 	FORCEINLINE FName GetEnemyRowName() const { return CombatDataHandle.RowName; }
 	FORCEINLINE TObjectPtr<const UDataTable> GetCombatDataTable() const { return CombatDataHandle.DataTable; }
+	USoundBase* GetDetectSound() const { return DetectSound; }
 	
 protected:
 	virtual void BeginPlay() override;
