@@ -56,7 +56,7 @@ protected:
 	float DifficultyAccumulator = 0.0f;
 
 	// 난이도 증가 주기
-	const float DifficultyUpdateInterval = 20.0f;
+	const float DifficultyUpdateInterval = 300.0f;
 
 private:
 	int32 LastHour = -1;
