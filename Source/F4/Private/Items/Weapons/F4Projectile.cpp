@@ -3,6 +3,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -86,11 +87,29 @@ void AF4Projectile::OnHit(
 
 	if (GetInstigator())
 	{
+		float FinalDamage = DamagePayload;
+
+		if (ACharacter* HitCharacter = Cast<ACharacter>(OtherActor))
+		{
+			UCapsuleComponent* Capsule = HitCharacter->GetCapsuleComponent();
+			if (Capsule)
+			{
+				const float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+				const float CapsuleTopZ = HitCharacter->GetActorLocation().Z + HalfHeight;
+				const float HeadshotThresholdZ = CapsuleTopZ - HalfHeight * 2.0f * HeadshotZoneRatio;
+
+				if (Hit.ImpactPoint.Z >= HeadshotThresholdZ)
+				{
+					FinalDamage *= HeadshotMultiplier;
+				}
+			}
+		}
+
 		FGameplayEventData Payload;
 		Payload.Instigator = GetInstigator();
 		Payload.Target = OtherActor;
 
-		Payload.EventMagnitude = DamagePayload;
+		Payload.EventMagnitude = FinalDamage;
 
 		FHitResult* MutableHit = const_cast<FHitResult*>(&Hit);
 		Payload.TargetData.Add(new FGameplayAbilityTargetData_SingleTargetHit(*MutableHit));
