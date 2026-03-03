@@ -208,6 +208,7 @@ void UGA_Fire::SpawnProjectile()
     FHitResult HitResult;
     FCollisionQueryParams TraceParams;
     TraceParams.AddIgnoredActor(AvatarCharacter);
+    TraceParams.AddIgnoredActor(ActiveWeapon);
 
     GetWorld()->LineTraceSingleByChannel(HitResult, CameraLocation, TraceEnd, ECC_GameTraceChannel1, TraceParams);
     if (HitResult.bBlockingHit && HitResult.GetActor() && bIsDebugMode)
