@@ -15,12 +15,6 @@ void UF4BuffBarWidget::NativeConstruct()
 			if (UF4BuffComponent* BuffComp = OwningPawn->FindComponentByClass<UF4BuffComponent>())
 			{
 				BuffComp->OnBuffApplied.AddDynamic(this, &UF4BuffBarWidget::OnBuffAppliedCallback);
-				
-				/*if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(
-						-1, 5.0f, FColor::Green, TEXT("버프 UI 바인딩 성공"));
-				}*/
 			}
 		}
 	}
@@ -33,17 +27,6 @@ void UF4BuffBarWidget::OnBuffAppliedCallback(FActiveGameplayEffectHandle EffectH
 
 void UF4BuffBarWidget::AddBuff(FActiveGameplayEffectHandle EffectHandle, UTexture2D* BuffIconTexture)
 {
-	/*if (!BuffTimerWidgetClass)
-	{
-		FString ErrorMsg = FString::Printf(TEXT("[%s] 클래스가 비어있음"), *GetName());
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1, 5.f, FColor::Red, ErrorMsg);
-		}
-		return;
-	}*/
-	
 	if (BuffTimerWidgetClass && BuffBox)
 	{
 		UF4BuffTimerWidget* NewBuff = CreateWidget<UF4BuffTimerWidget>(GetOwningPlayer(), BuffTimerWidgetClass);
@@ -57,12 +40,6 @@ void UF4BuffBarWidget::AddBuff(FActiveGameplayEffectHandle EffectHandle, UTextur
 			{
 				BoxSlot->SetPadding(FMargin(0.0f, 0.0f, 10.0f, 0.0f));
 			}
-
-			/*if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(
-					-1, 5.f, FColor::Cyan, FString::Printf(TEXT("위젯 생성 완료")));
-			}*/
 		}
 	}
 }
