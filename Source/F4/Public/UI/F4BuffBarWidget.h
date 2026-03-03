@@ -17,6 +17,11 @@ public:
 	void AddBuff(float Duration, UTexture2D* BuffIconTexture);
 	
 protected:
+	virtual void NativeConstruct() override;
+	
+	UFUNCTION()
+	void OnBuffAppliedCallback(float Duration, UTexture2D* BuffIcon);
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UHorizontalBox> BuffBox;
 	

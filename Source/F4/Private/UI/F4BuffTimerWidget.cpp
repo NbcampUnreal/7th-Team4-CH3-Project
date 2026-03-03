@@ -2,11 +2,11 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "UI/F4BuffBarWidget.h"
 
 void UF4BuffTimerWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-	SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UF4BuffTimerWidget::StartBuffTimer(float InDuration, UTexture2D* InIcon)

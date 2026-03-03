@@ -6,6 +6,7 @@
 
 class UTextBlock;
 class UImage;
+class UTexture2D;
 
 UCLASS()
 class F4_API UF4BuffTimerWidget : public UUserWidget
@@ -25,8 +26,9 @@ protected:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> TimeText;
+
 	
 private:
 	float CurrentTime;
-	bool bIsActive;
+	bool bIsActive = false;
 };
