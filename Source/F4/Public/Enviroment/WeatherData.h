@@ -41,7 +41,7 @@ public:
 	float MultiScattering = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FLinearColor RayleightScattering;
+	FLinearColor RayleightScattering = FLinearColor(0.1750f, 0.4082f, 1.0f, 1.0f);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MieSactteringScale = 0.003996f;
