@@ -4,6 +4,8 @@
 #include "CollisionQueryParams.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Animation/Data/FootStepSoundDataAsset.h"
+#include "Animation/AnimTypes.h"
+#include "Characters/Player/F4PlayerCharacter.h"
 
 void UAN_PlayFootStepSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
                                    const FAnimNotifyEventReference& EventReference)
@@ -14,6 +16,9 @@ void UAN_PlayFootStepSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 	if (!MeshComp || !MeshComp->GetOwner() || !FootstepDataAsset) return;
 	ACharacter* Character = Cast<ACharacter>(MeshComp->GetOwner());
 	if (!Character || Character->GetCurrentMontage() != nullptr) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *Character->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("Anim : %s"), *Animation->GetName());
 	
 	UWorld* World = Character->GetWorld();
 	if (!World) return;
@@ -50,7 +55,17 @@ void UAN_PlayFootStepSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 		
 		if (SoundToPlay)
 		{
-			UGameplayStatics::PlaySoundAtLocation(World, SoundToPlay, HitResult.Location);
+			UGameplayStatics::PlaySoundAtLocation(
+				World, 
+				SoundToPlay, 
+				HitResult.Location, 
+				FRotator::ZeroRotator, 
+				FootStepSoundVolume, 
+				1.0f,  
+				0.0f,  
+				FootstepAttenuation
+			);
+			
 			UE_LOG(LogTemp, Warning, TEXT("PM : %s"), *PhysMat->GetName()); 
 		}
 	}

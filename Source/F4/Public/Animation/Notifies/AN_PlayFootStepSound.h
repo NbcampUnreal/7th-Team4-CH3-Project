@@ -27,4 +27,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
 	FName FootBoneName;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	TObjectPtr<USoundAttenuation> FootstepAttenuation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	float FootStepSoundVolume = 1.f; 
 };
