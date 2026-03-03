@@ -47,7 +47,19 @@ void UGA_UsePoition::OnConsumeActivated(UF4ItemInstance* Item)
 	WaitGERemoved->ReadyForActivation();
 }
 
-void UGA_UsePoition::OnDurationEnded()
+void UGA_UsePoition::OnConsumeEnded()
+{
+	if (UAbilitySystemComponent* ASC = CurrentActorInfo->AbilitySystemComponent.Get())
+	{
+		if (ActiveEffectHandle.IsValid())
+		{
+			ASC->RemoveActiveGameplayEffect(ActiveEffectHandle);
+			ActiveEffectHandle.Invalidate();
+		}
+	}
+}
+
+void UGA_UsePoition::OnDurationEnded(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo)
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
