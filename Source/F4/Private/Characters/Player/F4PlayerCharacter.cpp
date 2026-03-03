@@ -10,6 +10,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/WidgetComponent.h"
 #include "Inventory/F4QuickSlotComponent.h"
+#include "Inventory/F4BuffComponent.h"
 #include "UI/F4HUD.h"
 #include "UI/GaugeWidget.h"
 #include "System/F4GameInstance.h"
@@ -37,6 +38,7 @@ AF4PlayerCharacter::AF4PlayerCharacter()
 	Inventory = CreateDefaultSubobject<UF4InventoryComponent>(TEXT("Inventory"));
 	Equipment = CreateDefaultSubobject<UF4EquipmentComponent>(TEXT("Equipment"));
 	QuickSlot = CreateDefaultSubobject<UF4QuickSlotComponent>(TEXT("QuickSlot"));
+	BuffSystem = CreateDefaultSubobject<UF4BuffComponent>(TEXT("BuffSystem"));
 	AnimationControl = CreateDefaultSubobject<UF4AnimControlComponent>(TEXT("AnimationControl"));
 }
 
