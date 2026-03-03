@@ -81,7 +81,7 @@ public:
 	
 	bool IsDeathTransition() const { return bIsDeathTransition; }
 
-protected:
+public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bAllowDifficultyScaling = true;
