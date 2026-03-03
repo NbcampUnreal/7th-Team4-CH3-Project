@@ -92,8 +92,8 @@ void UGA_HurricaneKick::ActivateAbility(
 void UGA_HurricaneKick::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	ToggleTimers(false); 
-	
+	ToggleTimers(false);
+
 	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo())
 	{
 		if (SpeedEffectHandle.IsValid())
@@ -174,16 +174,21 @@ void UGA_HurricaneKick::DetectEnemies()
 	
 	if (bHit && OutHits.Num() != 0)
 	{
+		AActor* Instigator = GetAvatarActorFromActorInfo();
 		for (int32 i = 0; i < OutHits.Num(); i++)
 		{
 			AActor* HitActor = OutHits[i].GetActor();
-			if (HitActor) continue;
-			
+			if (!HitActor)
+			{
+				continue;
+			}
+
 			FGameplayEventData Payload;
-			Payload.Instigator = GetAvatarActorFromActorInfo(); 
+			Payload.Instigator = Instigator;
 			Payload.Target = HitActor;
-			
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(HitActor, F4GameplayTags::Event_Hit_Damage, Payload);
+			Payload.EventMagnitude = KickDamage;
+
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Instigator, F4GameplayTags::Event_Hit_Damage, Payload);
 		}
 	}
 }
