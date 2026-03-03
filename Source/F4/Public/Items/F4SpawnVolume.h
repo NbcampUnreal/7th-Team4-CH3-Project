@@ -11,15 +11,27 @@ class AF4PickupActor;
 class UBoxComponent;
 
 USTRUCT(BlueprintType)
-struct FSpawnTableEntry
+struct FWeightedTableEntry
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UDataTable> Table;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.0"))
+	float TableWeight = 1.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
 	int32 Count = 1;
+};
+
+USTRUCT(BlueprintType)
+struct FSpawnTableGroup
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FWeightedTableEntry> Tables;
 };
 
 UCLASS()
@@ -42,11 +54,12 @@ public:
 	TObjectPtr<UBoxComponent> SpawningBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning|Tables")
-	TArray<FSpawnTableEntry> SpawnTables;
+	TArray<FSpawnTableGroup> SpawnGroups;
 
 private:
+	const FWeightedTableEntry* SelectTableFromGroup(const FSpawnTableGroup& Group) const;
 	TArray<TSoftObjectPtr<UF4ItemDefinition>> RollItemsFromTable(UDataTable* Table, int32 Count);
-	
+
 	bool GetRandomGroundPoint(FVector& OutLocation);
 
 	void OnItemsLoaded(TArray<TSoftObjectPtr<UF4ItemDefinition>> RolledItems);

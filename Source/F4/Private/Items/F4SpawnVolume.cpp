@@ -29,10 +29,16 @@ void AF4SpawnVolume::BeginPlay()
 void AF4SpawnVolume::SpawnItemsAsync()
 {
 	TArray<TSoftObjectPtr<UF4ItemDefinition>> ItemsToLoad;
-	
-	for (const FSpawnTableEntry& Entry : SpawnTables)
+
+	for (const FSpawnTableGroup& Group : SpawnGroups)
 	{
-		ItemsToLoad.Append(RollItemsFromTable(Entry.Table, Entry.Count));
+		const FWeightedTableEntry* Selected = SelectTableFromGroup(Group);
+		if (!Selected)
+		{
+			continue;
+		}
+
+		ItemsToLoad.Append(RollItemsFromTable(Selected->Table, Selected->Count));
 	}
 	
 	if (ItemsToLoad.IsEmpty())
@@ -51,6 +57,47 @@ void AF4SpawnVolume::SpawnItemsAsync()
 		FStreamableDelegate::CreateUObject(this, &AF4SpawnVolume::OnItemsLoaded, ItemsToLoad);
 	
 	AssetManager.GetStreamableManager().RequestAsyncLoad(PathsToLoad, Delegate);
+}
+
+const FWeightedTableEntry* AF4SpawnVolume::SelectTableFromGroup(const FSpawnTableGroup& Group) const
+{
+	if (Group.Tables.IsEmpty())
+	{
+		return nullptr;
+	}
+
+	float TotalWeight = 0.0f;
+	for (const FWeightedTableEntry& Entry : Group.Tables)
+	{
+		if (Entry.TableWeight > 0.0f)
+		{
+			TotalWeight += Entry.TableWeight;
+		}
+	}
+
+	if (TotalWeight <= 0.0f)
+	{
+		return nullptr;
+	}
+
+	float RandomValue = FMath::FRandRange(0.0f, TotalWeight);
+	float CurrentWeight = 0.0f;
+
+	for (const FWeightedTableEntry& Entry : Group.Tables)
+	{
+		if (Entry.TableWeight <= 0.0f)
+		{
+			continue;
+		}
+
+		CurrentWeight += Entry.TableWeight;
+		if (RandomValue <= CurrentWeight)
+		{
+			return &Entry;
+		}
+	}
+
+	return nullptr;
 }
 
 TArray<TSoftObjectPtr<UF4ItemDefinition>> AF4SpawnVolume::RollItemsFromTable(UDataTable* Table, int32 Count)
@@ -170,6 +217,12 @@ void AF4SpawnVolume::TrySpawnItem(UF4ItemDefinition* ItemDefinition)
 		return;
 	}
 
+	const int32 Quantity = FMath::RandRange(SpawnableFrag->MinSpawnQuantity, SpawnableFrag->MaxSpawnQuantity) * SpawnableFrag->QuantityMultiplier;
+	if (Quantity <= 0)
+	{
+		return;
+	}
+
 	FRotator SpawnRotation = FRotator(0.0f, FMath::RandRange(0.0f, 360.0f), 0.0f);
 	AF4PickupActor* NewItem = GetWorld()->SpawnActorDeferred<AF4PickupActor>(
 		SpawnableFrag->PickupActorClass,
@@ -178,8 +231,6 @@ void AF4SpawnVolume::TrySpawnItem(UF4ItemDefinition* ItemDefinition)
 
 	if (NewItem)
 	{
-		const int32 Quantity = FMath::RandRange(SpawnableFrag->MinSpawnQuantity, SpawnableFrag->MaxSpawnQuantity) * SpawnableFrag->QuantityMultiplier;
-
 		NewItem->ItemQuantity = Quantity;
 		NewItem->InitializePickup(ItemDefinition);
 		NewItem->FinishSpawning(FTransform(SpawnRotation, SpawnLocation));
