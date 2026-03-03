@@ -50,6 +50,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time")
 	bool bTimeFlows = true;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Time")
+	bool bUseTimeSystem = true;
+
 protected:
 	UPROPERTY()
 	float SurvivalTimer = 0.f;
