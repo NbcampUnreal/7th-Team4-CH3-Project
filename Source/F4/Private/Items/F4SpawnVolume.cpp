@@ -40,7 +40,7 @@ void AF4SpawnVolume::SpawnItemsAsync()
 	}
 	
 	TArray<FSoftObjectPath> PathsToLoad;
-	for (const auto& SoftPtr : ItemsToLoad)
+	for (const TSoftObjectPtr<UF4ItemDefinition> SoftPtr : ItemsToLoad)
 	{
 		PathsToLoad.AddUnique(SoftPtr.ToSoftObjectPath());
 	}
