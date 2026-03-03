@@ -13,12 +13,14 @@ AF4PickupActor::AF4PickupActor()
 {
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
 	SetRootComponent(CollisionSphere);
+	CollisionSphere->SetSphereRadius(200.0f);
 
-	CollisionSphere->SetCollisionProfileName(TEXT("Custom"));
+	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	CollisionSphere->SetCollisionObjectType(ECC_WorldDynamic);
 	CollisionSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	CollisionSphere->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Overlap); // Player 채널
 	CollisionSphere->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	CollisionSphere->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Ignore);
 	CollisionSphere->SetGenerateOverlapEvents(true);
 
 	ItemMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
@@ -33,7 +35,7 @@ AF4PickupActor::AF4PickupActor()
 	WidgetComponent->SetupAttachment(RootComponent);
 	WidgetComponent->SetWidgetSpace(EWidgetSpace::World);
 	WidgetComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 60.0f));
-	WidgetComponent->SetDrawSize(FVector2D(200.0f, 50.0f));
+	WidgetComponent->SetDrawAtDesiredSize(true);
 	WidgetComponent->SetVisibility(false);
 }
 
