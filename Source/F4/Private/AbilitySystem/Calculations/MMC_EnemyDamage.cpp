@@ -37,8 +37,8 @@ float UMMC_EnemyDamage::CalculateBaseMagnitude_Implementation(const FGameplayEff
 		UF4GameInstance* GameInstance = World->GetGameInstance<UF4GameInstance>();
 		if (GameState && GameInstance)
 		{
-				int32 Phase = FMath::Max(GameInstance->PermanentDifficulty + GameState->LocalDifficultyPhase, 1);
-				DifficultyMultiplier = 1.0f + (Phase - 1) * 0.2f;
+			int32 Phase = FMath::Max(GameInstance->PermanentDifficulty + GameState->LocalDifficultyPhase, 1);
+			DifficultyMultiplier = 1.0f + (Phase - 1) * 0.2f;
 		}
 	}
 	float FinalDamage = AttackPower * DifficultyMultiplier;
