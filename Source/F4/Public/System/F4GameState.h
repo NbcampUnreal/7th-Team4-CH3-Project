@@ -5,6 +5,7 @@
 #include "F4GameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTimeChanged, int32, Hour, int32, Minute);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNightStartedSignature);
 
 UCLASS()
 class F4_API AF4GameState : public AGameState
@@ -16,6 +17,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(BlueprintAssignable, Category = "Time")
+	FOnNightStartedSignature OnNightStarted;
 	bool IsDayTime() const;
 
 	void SetTimeOfDay(float NewTimeOfDay);
@@ -61,7 +64,8 @@ protected:
 	UPROPERTY()
 	float SurvivalTimer = 0.f;
 	float DifficultyAccumulator = 0.0f;
-
+	bool bWasDayTime = true;
+	
 private:
 	int32 LastHour = -1;
 	int32 LastMinute = -1;

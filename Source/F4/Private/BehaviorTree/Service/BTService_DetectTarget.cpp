@@ -5,6 +5,7 @@
 #include "Characters/Enemy/F4EnemyBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DataTable.h"
+#include "System/F4GameplayTags.h"
 
 UBTService_DetectTarget::UBTService_DetectTarget()
 {
@@ -62,6 +63,18 @@ void UBTService_DetectTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 	
 	if (TargetActor)
 	{
+		if (IAbilitySystemInterface* ASI = Cast<IAbilitySystemInterface>(TargetActor))
+		{
+			if (UAbilitySystemComponent* TargetASC = ASI->GetAbilitySystemComponent())
+			{
+				if (TargetASC->HasMatchingGameplayTag(F4GameplayTags::State_Invincible))
+				{
+					ClearBlackboardValues(BlackBoard);
+					return;
+				}
+			}
+		}
+		
 		const float Distance = FVector::Dist(Enemy->GetActorLocation(), TargetActor->GetActorLocation());
 
 		if (Distance <= TraceRange)
