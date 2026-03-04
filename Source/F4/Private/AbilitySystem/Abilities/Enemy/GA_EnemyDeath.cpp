@@ -80,7 +80,8 @@ void UGA_EnemyDeath::PlayRandomDeathSound(AActor* Actor)
 		UGameplayStatics::PlaySoundAtLocation(
 			Actor->GetWorld(),
 			SelectedSound,
-			Actor->GetActorLocation()
+			Actor->GetActorLocation(),
+			SoundMultiplier
 		);
 	}
 }

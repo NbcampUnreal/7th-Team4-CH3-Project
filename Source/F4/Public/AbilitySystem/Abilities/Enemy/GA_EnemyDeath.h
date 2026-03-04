@@ -14,6 +14,8 @@ struct FSoundWeightData
 
 	UPROPERTY(EditAnywhere)
 	float Weight = 1.0f;
+	
+	
 };
 
 class AF4EnemyBase;
@@ -40,6 +42,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound Settings")
 	TArray<FSoundWeightData> SoundPool;
+	
+	UPROPERTY(EditAnywhere)
+	float SoundMultiplier = 1.0f;
 	
 	void HandleDropItem();
 	void EnableRagdoll(AF4EnemyBase* Enemy);
