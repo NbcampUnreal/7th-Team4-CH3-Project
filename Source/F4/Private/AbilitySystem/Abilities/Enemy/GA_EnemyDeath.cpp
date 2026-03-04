@@ -25,9 +25,12 @@ UGA_EnemyDeath::UGA_EnemyDeath()
 	AbilityTriggers.Add(TriggerData);
 }
 
-void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-	const FGameplayEventData* TriggerEventData)
+void UGA_EnemyDeath::ActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, 
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData
+	)
 {
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	AF4EnemyBase* Enemy = Cast<AF4EnemyBase>(Avatar);
@@ -42,27 +45,38 @@ void UGA_EnemyDeath::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		if (AAIController* AIC = Cast<AAIController>(Enemy->GetController()))
 		{
-			AIC->GetBrainComponent()->StopLogic("Death");
+			if (AIC->GetBrainComponent())
+			{
+				AIC->GetBrainComponent()->StopLogic("Death");
+			}
 		}
 		
 		float RagdollDelay = 3.0f;
 		FTimerHandle RagdollTimerHandle;
+		
 		TWeakObjectPtr<UGA_EnemyDeath> WeakThis(this);
 		TWeakObjectPtr<AF4EnemyBase> WeakEnemy(Enemy);
+		
 		GetWorld()->GetTimerManager().SetTimer(RagdollTimerHandle, [WeakThis, WeakEnemy]()
 		{
 			UGA_EnemyDeath* AbilityPtr = WeakThis.Get();
 			AF4EnemyBase* EnemyPtr = WeakEnemy.Get();
+			
 			if (!AbilityPtr || !EnemyPtr)
 			{
 				return;
 			}
+			
 			AbilityPtr->EnableRagdoll(EnemyPtr);
 			AF4DropItem::TryDropItem(EnemyPtr, 0.33f);
 			EnemyPtr->SetLifeSpan(3.0f);
+			
+			AbilityPtr->K2_EndAbility();
 		}, RagdollDelay, false);
-
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+	}
+	else
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);	
 	}
 }
 
