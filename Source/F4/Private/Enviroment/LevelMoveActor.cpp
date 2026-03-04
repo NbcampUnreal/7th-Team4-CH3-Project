@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "System/F4GameInstance.h"
+#include "Characters/Player/F4PlayerCharacter.h"
 
 
 ALevelMoveActor::ALevelMoveActor()
@@ -29,14 +30,18 @@ ALevelMoveActor::ALevelMoveActor()
 void ALevelMoveActor::DoInteract(AActor* Interactor)
 {
 	APawn* InteractorPawn = Cast<APawn>(Interactor);
-	
+
 	if (InteractorPawn && InteractorPawn->IsPlayerControlled())
 	{
 		UF4GameInstance* GI = Cast<UF4GameInstance>(GetGameInstance());
 		if (GI)
 		{
+			if (AF4PlayerCharacter* PlayerChar = Cast<AF4PlayerCharacter>(InteractorPawn))
+			{
+				GI->SaveData(PlayerChar);
+			}
 			GI->MoveToLevel(TargetLevelName);
-		}	
+		}
 	}
 }
 

@@ -72,11 +72,16 @@ void ABattleGameMode::HandlePlayerDeath(APlayerController* PlayerController)
 
 void ABattleGameMode::HandlePlayerEvacuation(APlayerController* PlayerController)
 {
-	//플레이어 귀환 
+	//플레이어 귀환
 	UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetGameInstance());
 	AF4PlayerCharacter* PlayerCharacter = Cast<AF4PlayerCharacter>(PlayerController->GetPawn());
 
-	// 로비로 이동 
+	if (GameInstance && PlayerCharacter)
+	{
+		GameInstance->SaveData(PlayerCharacter);
+	}
+
+	// 로비로 이동
 	if (LobbyLevelName.IsValid())
 	{
 		UGameplayStatics::OpenLevel(GetWorld(), LobbyLevelName);

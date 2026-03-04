@@ -48,37 +48,24 @@ void AF4PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	if (!StaminaGaugeWidget && StaminaGaugeComponent)
+	{
+		StaminaGaugeWidget = Cast<UGaugeWidget>(StaminaGaugeComponent->GetUserWidgetObject());
+	}
+
 	if (UF4GameInstance* GI = GetGameInstance<UF4GameInstance>())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("[Inventory] PossessedBy - HasSavedData: %s"), GI->HasSavedData() ? TEXT("true") : TEXT("false"));
 		if (GI->HasSavedData())
 		{
 			GI->RestoreData(this);
 		}
 	}
-
-	CreateHUD();
-	
-	if (!StaminaGaugeWidget && StaminaGaugeComponent)
-	{
-		StaminaGaugeWidget = Cast<UGaugeWidget>(StaminaGaugeComponent->GetUserWidgetObject());
-	}
-	
 }
 
 void AF4PlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (EndPlayReason == EEndPlayReason::LevelTransition && IsLocallyControlled())
-	{
-		if (UF4GameInstance* GI = GetGameInstance<UF4GameInstance>())
-		{
-			if (!GI->IsDeathTransition())
-			{
-				GI->SaveData(this);
-			}
-			GI->WipeData();
-		}
-	}
-
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -111,15 +98,18 @@ void AF4PlayerCharacter::PossessedBy(AController* NewController)
 			PC->PlayerCameraManager->ViewPitchMax = 30.0f;
 		}
 	}
-	
+
 	if (ASC)
 	{
 		ASC->InitAbilityActorInfo(this, this);
-		
+
 		ASC->AddLooseGameplayTag(F4GameplayTags::Character_Player);
 	}
-	
-	InitializeStaminaGauge(); 
+
+	CreateHUD();
+
+
+	InitializeStaminaGauge();
 }
 
 #pragma region Input 
