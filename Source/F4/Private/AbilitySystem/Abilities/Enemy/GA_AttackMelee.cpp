@@ -170,4 +170,14 @@ void UGA_AttackMelee::PerformMeleeTrace()
             }
         }
     }
+
+			if (HitBloodEffect)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(
+					GetWorld(),
+					HitBloodEffect,
+					Hit.ImpactPoint,
+					Hit.ImpactNormal.Rotation()
+				);
+			}
 }
