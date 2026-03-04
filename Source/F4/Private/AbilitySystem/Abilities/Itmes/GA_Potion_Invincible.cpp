@@ -114,7 +114,7 @@ void UGA_Potion_Invincible::AddGameplayCue(UAbilitySystemComponent* ASC, ACharac
 	{
 		return;
 	}
-	
+	ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Item_Gulp);
 	ASC->AddGameplayCue(F4GameplayTags::GameplayCue_Item_Invincible);
 }
 
