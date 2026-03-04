@@ -56,17 +56,24 @@ void UGA_Death::OnEndDelay()
 	if (!Character)
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-		return; 
+		return;
 	}
-	
+
+	// OpenLevel 이전에 포인터를 미리 캐싱
+	ABattleGameMode* GM = nullptr;
+	AF4PlayerController* PC = Cast<AF4PlayerController>(Character->GetController());
+
 	if (UWorld* World = GetWorld())
 	{
-		if (ABattleGameMode* GM = Cast<ABattleGameMode>(World->GetAuthGameMode()))
-		{
-			AF4PlayerController* PC = Cast<AF4PlayerController> (Character->GetController()); 
-			GM->HandlePlayerDeath(PC); 
-		}
+		GM = Cast<ABattleGameMode>(World->GetAuthGameMode());
 	}
-	
+
+	// OpenLevel이 월드를 파괴하기 전에 GAS 정리를 먼저 완료
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+
+	if (GM)
+	{
+		GM->HandlePlayerDeath(PC);
+	}
 }
