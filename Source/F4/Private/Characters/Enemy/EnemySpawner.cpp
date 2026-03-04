@@ -45,6 +45,11 @@ void AEnemySpawner::BeginPlay()
 		SpawnInterval, 
 		true
 		);
+	
+	if (AF4GameState* GameState = GetWorld()->GetGameState<AF4GameState>())
+	{
+		GameState->OnNightStarted.AddDynamic(this, &AEnemySpawner::TrySpawnBoss);
+	}
 }
 
 bool AEnemySpawner::IsTargetTooClose() const
@@ -121,6 +126,12 @@ void AEnemySpawner::TrySpawnBatch()
 		UE_LOG(LogTemp, Log, TEXT("Spawn skipped: Target too close."));
 		return;
 	}
+	
+	UWorld* World = GetWorld();
+	if (World == nullptr) 
+	{
+		return;
+	}
 
 	// 리스트 정리 및 부족한 수 계산
 	CleanUpList();
@@ -133,43 +144,7 @@ void AEnemySpawner::TrySpawnBatch()
 		return;
 	}
 
-	// 일괄 스폰
-	UWorld* World = GetWorld();
-	if (World == nullptr) 
-	{
-		return;
-	}
-	
-	// 보스 스폰 로직
-	AF4GameState* GameState = World->GetGameState<AF4GameState>();
-
-	if (bIsBossSpawner)
-	{
-		if (GameState && !GameState->IsDayTime())
-		{
-			if (BossClass && !IsValid(SpawnedBoss))
-			{
-				FVector SpawnerLoc = GetActorLocation();
-				FVector TraceStart = SpawnerLoc + FVector(0.f, 0.f, 500.f);
-				FVector TraceEnd = SpawnerLoc - FVector(0.f, 0.f, 1000.f);
-
-				FHitResult HitResult;
-				FCollisionQueryParams QueryParams;
-				QueryParams.AddIgnoredActor(this);
-				
-				if (World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility))
-				{
-					FVector BossSpawnPos = HitResult.Location + FVector(0.f, 0.f, 100.f);
-               
-					FActorSpawnParameters Params;
-					Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-					SpawnedBoss = World->SpawnActor<AF4EnemyBase>(BossClass, BossSpawnPos, FRotator::ZeroRotator, Params);
-				}
-			}
-		}
-	}
-
+	//  적 스폰
 	for (int32 i = 0; i < AmountToSpawn; ++i)
 	{
 		// 평면상의 랜덤 위치 계산
@@ -177,6 +152,10 @@ void AEnemySpawner::TrySpawnBatch()
         
 		FVector TraceStart = GetActorLocation() + FVector(RandomCircle.X, RandomCircle.Y, TraceHeight);
 		FVector TraceEnd = TraceStart - FVector(0.f, 0.f, TraceHeight + TraceDepth);
+		
+		// [디버그 라인 추가] 일반 적용: 빨간색 표시
+		DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, false, 30.f, 0, 1.f);
+		
 		FHitResult HitResult;
 		
 		FCollisionQueryParams QueryParams;
@@ -184,10 +163,8 @@ void AEnemySpawner::TrySpawnBatch()
 		
 		if (World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
 		{
-			// 실제 레이저가 닿은 지면 위치
-			FVector SpawnPos = HitResult.Location;
-			// 캐릭터의 발이 땅에 박히지 않게 살짝 띄워줌
-			SpawnPos.Z += 50.f;
+			// 실제 레이저가 닿은 지면 위치 + 살짝 높여서 발이 바닥에 박히지 않게
+			FVector SpawnPos = HitResult.Location + FVector(0.f, 0.f, 50.f);;
 
 			int32 RandIdx = FMath::RandRange(0, EnemyClasses.Num() - 1);
             
@@ -205,6 +182,47 @@ void AEnemySpawner::TrySpawnBatch()
 			{
 				SpawnedEnemies.Add(NewEnemy);
 			}
+		}
+	}
+}
+
+void AEnemySpawner::TrySpawnBoss()
+{
+	if (!bIsBossSpawner || !BossClass || IsValid(SpawnedBoss))
+	{
+		return;
+	}
+	
+	UWorld* World = GetWorld();
+	if (World == nullptr) 
+	{
+		return;
+	}
+	
+	// 보스 스폰 로직
+	AF4GameState* GameState = World->GetGameState<AF4GameState>();
+	
+	if (GameState && !GameState->IsDayTime())
+	{
+		FVector TraceStart = GetActorLocation() + FVector(0.f, 0.f, TraceHeight);
+		FVector TraceEnd = TraceStart - FVector(0.f, 0.f, TraceHeight + TraceDepth);
+				
+		// [디버그 라인 추가] 보스용: 보라색으로 표시
+		DrawDebugLine(World, TraceStart, TraceEnd, FColor::Purple, false, 30.f, 0, 2.f);
+				
+		FHitResult HitResult;
+				
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+				
+		if (World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams))
+		{
+			FVector BossSpawnPos = HitResult.Location + FVector(0.f, 0.f, 50.f);
+               
+			FActorSpawnParameters Params;
+			Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+			SpawnedBoss = World->SpawnActor<AF4EnemyBase>(BossClass, BossSpawnPos, FRotator::ZeroRotator, Params);
 		}
 	}
 }

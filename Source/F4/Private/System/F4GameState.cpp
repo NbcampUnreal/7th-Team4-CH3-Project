@@ -35,6 +35,18 @@ void AF4GameState::Tick(float DeltaTime)
 		TimeOfDay -= 24.0f;
 	}
 
+	// 밤 되자마자 보스소환 호출을 위한 델리게이트
+	bool bCurrentlyDay = IsDayTime();
+	if (bWasDayTime && !bCurrentlyDay)
+	{
+		if (OnNightStarted.IsBound())
+		{
+			OnNightStarted.Broadcast();
+		}
+	}
+	bWasDayTime = bCurrentlyDay;
+	
+
 	int32 CurrentHour = FMath::FloorToInt(TimeOfDay);
 	int32 CurrentMinute = FMath::FloorToInt((TimeOfDay - CurrentHour) * 60.0f);
 

@@ -65,6 +65,9 @@ protected:
 	FTimerHandle SpawnTimerHandle;
 	
 	void TrySpawnBatch();
+	UFUNCTION()
+	void TrySpawnBoss();
+	
 	int32 GetCurrentMaxCount() const;
 	void CleanUpList();
 	bool IsTargetTooClose() const;
