@@ -70,15 +70,15 @@ protected:
 public:
 	void SetIsDead(bool NewIsDead) { bIsDead = NewIsDead; }
 	
+	UPROPERTY()
+	AActor* EquippedWeapon;
+	
 protected:
 	UPROPERTY(EditAnywhere, Category = "F4 | Combat")
 	TSubclassOf<AActor> WeaponClass;
 	
 	UPROPERTY(EditAnywhere, Category = "F4 | Combat")
 	FName WeaponSocketName = TEXT("WeaponSocket");
-	
-	UPROPERTY()
-	AActor* EquippedWeapon;
 	
 	void SpawnDefaultWeapon();
 	
