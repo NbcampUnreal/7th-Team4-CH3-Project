@@ -5,6 +5,7 @@
 #include "GA_AttackRange.generated.h"
 
 class AF4Projectile;
+class UNiagaraSystem;
 
 UCLASS()
 class F4_API UGA_AttackRange : public UGA_AttackBase
@@ -23,6 +24,9 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Fire")
 	TSubclassOf<AF4Projectile> ProjectileClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	UNiagaraSystem* MuzzleFlashEffect;
 	
 	UFUNCTION()
 	void OnFireGameplayEvent(FGameplayEventData EventData);
