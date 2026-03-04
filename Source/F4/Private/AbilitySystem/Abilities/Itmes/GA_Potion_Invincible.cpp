@@ -60,6 +60,8 @@ void UGA_Potion_Invincible::OnConsumeActivated(UF4ItemInstance* Item)
 				}
 			}
 		}
+		
+		AddGameplayCue(ASC, AvatarCharacter);
 	}
 
 	UAbilityTask_WaitGameplayTagAdded* WaitFireTag = UAbilityTask_WaitGameplayTagAdded::WaitGameplayTagAdd(
@@ -99,9 +101,21 @@ void UGA_Potion_Invincible::OnConsumeEnded()
 			ASC->RemoveActiveGameplayEffect(ActiveEffectHandle);
 			ActiveEffectHandle.Invalidate();
 		}
+		
+		ASC->RemoveGameplayCue(F4GameplayTags::GameplayCue_Item_Invincible);
 	}
-
+	
 	OriginalMaterials.Empty();
+}
+
+void UGA_Potion_Invincible::AddGameplayCue(UAbilitySystemComponent* ASC, ACharacter* PlayerCharacter)
+{
+	if (!ASC || !PlayerCharacter)
+	{
+		return;
+	}
+	
+	ASC->AddGameplayCue(F4GameplayTags::GameplayCue_Item_Invincible);
 }
 
 void UGA_Potion_Invincible::OnDurationEnded(const FGameplayEffectRemovalInfo& GameplayEffectRemovalInfo)
