@@ -17,8 +17,8 @@ void UAN_PlayFootStepSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 	ACharacter* Character = Cast<ACharacter>(MeshComp->GetOwner());
 	if (!Character || Character->GetCurrentMontage() != nullptr) return;
 	
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *Character->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("Anim : %s"), *Animation->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("%s"), *Character->GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("Anim : %s"), *Animation->GetName());
 	
 	UWorld* World = Character->GetWorld();
 	if (!World) return;
@@ -66,7 +66,7 @@ void UAN_PlayFootStepSound::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 				FootstepAttenuation
 			);
 			
-			UE_LOG(LogTemp, Warning, TEXT("PM : %s"), *PhysMat->GetName()); 
+			// UE_LOG(LogTemp, Warning, TEXT("PM : %s"), *PhysMat->GetName()); 
 		}
 	}
 }
