@@ -96,6 +96,7 @@ namespace F4GameplayTags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_HurricaneKick);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_Weapon_Triggered);
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_Weapon_DryFire);
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayCue_Item_Invincible);
 
 
 	// Data Value Tag

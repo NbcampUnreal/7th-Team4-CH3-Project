@@ -4,6 +4,7 @@
 #include "AbilitySystem/Abilities/Itmes/GA_ConsumableBase.h"
 #include "GA_Potion_Invincible.generated.h"
 
+class AF4PlayerCharacter;
 class UMaterialInterface;
 class UGameplayEffect;
 
@@ -29,6 +30,9 @@ protected:
 
 	UFUNCTION()
 	void OnActionDetected();
+	
+	UFUNCTION()
+	void AddGameplayCue(UAbilitySystemComponent* ASC, ACharacter* PlayerCharacter);
 
 private:
 	FActiveGameplayEffectHandle ActiveEffectHandle;
