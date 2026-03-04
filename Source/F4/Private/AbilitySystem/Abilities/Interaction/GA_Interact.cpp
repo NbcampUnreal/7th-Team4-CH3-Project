@@ -1,5 +1,6 @@
 #include "AbilitySystem/Abilities/Interaction/GA_Interact.h"
 
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Interface/Interactable.h"
 #include "System/F4GameplayTags.h"
@@ -71,6 +72,11 @@ void UGA_Interact::ActivateAbility(
 			if (Interactable)
 			{
 				Interactable->DoInteract(AvatarPawn);
+				UAbilitySystemComponent* ASC = AvatarPawn->GetComponentByClass<UAbilitySystemComponent>();
+				if (ASC)
+				{
+					ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Ability_Interact);
+				}
 			}
 		}
 	}
