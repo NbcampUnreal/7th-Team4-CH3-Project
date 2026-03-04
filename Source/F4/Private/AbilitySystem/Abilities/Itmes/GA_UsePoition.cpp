@@ -7,6 +7,7 @@
 #include "Inventory/F4ItemFragment_UI.h"
 #include "Inventory/F4ItemInstance.h"
 #include "Inventory/F4BuffComponent.h"
+#include "System/F4GameplayTags.h"
 
 void UGA_UsePoition::OnConsumeActivated(UF4ItemInstance* Item)
 {
@@ -44,6 +45,8 @@ void UGA_UsePoition::OnConsumeActivated(UF4ItemInstance* Item)
 			WaitGERemoved->OnRemoved.AddDynamic(this, &UGA_UsePoition::OnDurationEnded);
 			WaitGERemoved->ReadyForActivation();
 		}
+		
+		ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Item_Gulp);
 	}
 }
 

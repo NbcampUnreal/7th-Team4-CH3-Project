@@ -32,10 +32,7 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interact|Trace")
 	FColor TraceColor = FColor::Yellow;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Interact|Cooldown")
-	float InteractionCoolDown = 1.0f;
 	
 	UFUNCTION()
-	void OnInteractFinished();
+	void OnInteractInputReleased();
 };

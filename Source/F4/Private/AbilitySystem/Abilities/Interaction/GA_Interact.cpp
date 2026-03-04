@@ -1,8 +1,10 @@
 #include "AbilitySystem/Abilities/Interaction/GA_Interact.h"
 
+#include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Interface/Interactable.h"
 #include "System/F4GameplayTags.h"
-#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 
 UGA_Interact::UGA_Interact()
 {
@@ -70,19 +72,28 @@ void UGA_Interact::ActivateAbility(
 			if (Interactable)
 			{
 				Interactable->DoInteract(AvatarPawn);
+				UAbilitySystemComponent* ASC = AvatarPawn->GetComponentByClass<UAbilitySystemComponent>();
+				if (ASC)
+				{
+					ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Ability_Interact);
+				}
 			}
 		}
 	}
 	
-	UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, InteractionCoolDown);
+	UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, 0.15f);
 	if (WaitDelayTask)
 	{
-		WaitDelayTask->OnFinish.AddDynamic(this, &UGA_Interact::OnInteractFinished);
+		WaitDelayTask->OnFinish.AddDynamic(this, &UGA_Interact::OnInteractInputReleased);
 		WaitDelayTask->ReadyForActivation();
+	}
+	else
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
 }
 
-void UGA_Interact::OnInteractFinished()
+void UGA_Interact::OnInteractInputReleased()
 {
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,true, false);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
