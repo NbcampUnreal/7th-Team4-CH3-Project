@@ -30,4 +30,7 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BattleGameMode | Level")
 	FName LobbyLevelName; 
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BattleGameMode | BGM")
+	USoundBase* BattleMapBGM;
 };

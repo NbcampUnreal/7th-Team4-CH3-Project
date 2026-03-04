@@ -25,6 +25,11 @@ void ABattleGameMode::BeginPlay()
 	if (UF4GameInstance* GameInstance = Cast<UF4GameInstance>(GetGameInstance()))
 	{
 		GameInstance->IncrementPermanentDifficulty();
+		
+		if (BattleMapBGM)
+		{
+			GameInstance->PlayBGM(BattleMapBGM);
+		}
 	}
 }
 
