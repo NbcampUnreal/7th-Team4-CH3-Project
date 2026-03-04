@@ -154,7 +154,7 @@ void AEnemySpawner::TrySpawnBatch()
 		FVector TraceEnd = TraceStart - FVector(0.f, 0.f, TraceHeight + TraceDepth);
 		
 		// [디버그 라인 추가] 일반 적용: 빨간색 표시
-		DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, false, 30.f, 0, 1.f);
+		// DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, false, 30.f, 0, 1.f);
 		
 		FHitResult HitResult;
 		
@@ -208,7 +208,7 @@ void AEnemySpawner::TrySpawnBoss()
 		FVector TraceEnd = TraceStart - FVector(0.f, 0.f, TraceHeight + TraceDepth);
 				
 		// [디버그 라인 추가] 보스용: 보라색으로 표시
-		DrawDebugLine(World, TraceStart, TraceEnd, FColor::Purple, false, 30.f, 0, 2.f);
+		// DrawDebugLine(World, TraceStart, TraceEnd, FColor::Purple, false, 30.f, 0, 2.f);
 				
 		FHitResult HitResult;
 				
