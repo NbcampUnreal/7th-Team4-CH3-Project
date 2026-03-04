@@ -200,25 +200,28 @@ void UF4GameInstance::PlayBGM(USoundBase* NewBGM, bool bFade)
 {
 	if (!NewBGM || !BGMPlayer) return;
 	
-	BGMPlayer->bIsUISound = true; 
-	BGMPlayer->bAllowSpatialization = false;
-	BGMPlayer->SetVolumeMultiplier(1.5f);    // 테스트를 위해 볼륨을 크게 키움
+	if (BGMPlayer->GetWorld() != GetWorld())
+	{
+		BGMPlayer->Rename(nullptr, GetWorld()); 
+		BGMPlayer->RegisterComponentWithWorld(GetWorld());
+	}
 	
 	if (BGMPlayer->IsPlaying() && BGMPlayer->GetSound() == NewBGM) return;
 
+	BGMPlayer->Stop();
+	
+	BGMPlayer->SetSound(NewBGM);
+	
+	BGMPlayer->bIsUISound = true; 
+	BGMPlayer->bAllowSpatialization = false;
+	BGMPlayer->SetVolumeMultiplier(0.1f);   
 	
 	if (bFade)
 	{
-		BGMPlayer->FadeOut(0.5f, 0.0f);
-		BGMPlayer->Activate(true);
-		BGMPlayer->SetSound(NewBGM);
 		BGMPlayer->FadeIn(1.0f, 1.0f);
 	}
 	else
 	{
-		BGMPlayer->Stop();
-		BGMPlayer->SetSound(NewBGM);
-		BGMPlayer->Activate(true);
 		BGMPlayer->Play();
 	}
 	

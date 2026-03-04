@@ -25,8 +25,8 @@ void ALobbyGameMode::BeginPlay()
 	{
 		if (LobbyBGM)
 		{
-			GI->PlayBGM(LobbyBGM, bFade);
 			UE_LOG(LogTemp, Warning, TEXT("Lobby BGM Started"));
+			GI->PlayBGM(LobbyBGM, bFade);
 		}
 	}
 	
