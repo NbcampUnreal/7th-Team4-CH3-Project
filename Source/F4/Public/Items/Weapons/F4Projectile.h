@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayEffectTypes.h"
 #include "GameFramework/Actor.h"
 #include "F4Projectile.generated.h"
 
