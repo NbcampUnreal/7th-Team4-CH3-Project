@@ -4,6 +4,8 @@
 #include "AbilitySystem/Abilities/Enemy/GA_AttackBase.h"
 #include "GA_AttackMelee.generated.h"
 
+class UParticleSystem;
+
 UCLASS()
 class F4_API UGA_AttackMelee : public UGA_AttackBase
 {
@@ -23,9 +25,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Effects")
+	TObjectPtr<UParticleSystem> HitBloodEffect;
+	
 	// Sphere Trace 거리
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
 	float TraceDistance = 100.0f;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
+	float TraceStartOffset = 50.0f;
 
 	// Sphere Trace 반경
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attack")
@@ -37,6 +45,10 @@ protected:
 	// Gameplay Event 콜백 (AnimNotify 대신)
 	UFUNCTION()
 	void OnDamageGameplayEvent(FGameplayEventData EventData);
+	
+	UFUNCTION()
+	void ExcuteTriggerGameplayCue();
+	
 	// Sphere Trace 수행
 	void PerformMeleeTrace();
 };
