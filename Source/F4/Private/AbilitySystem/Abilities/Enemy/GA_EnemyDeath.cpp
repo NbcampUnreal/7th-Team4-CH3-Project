@@ -35,6 +35,12 @@ void UGA_EnemyDeath::ActivateAbility(
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	AF4EnemyBase* Enemy = Cast<AF4EnemyBase>(Avatar);
 	
+	if (!Enemy || Enemy->IsDead())
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+	
 	if (Enemy)
 	{
 		PlayRandomDeathSound(Enemy);

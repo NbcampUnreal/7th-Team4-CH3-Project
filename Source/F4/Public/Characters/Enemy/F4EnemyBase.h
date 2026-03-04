@@ -69,6 +69,7 @@ protected:
 
 public:
 	void SetIsDead(bool NewIsDead) { bIsDead = NewIsDead; }
+	FORCEINLINE bool IsDead() const { return bIsDead; }
 	
 	UPROPERTY()
 	AActor* EquippedWeapon;
