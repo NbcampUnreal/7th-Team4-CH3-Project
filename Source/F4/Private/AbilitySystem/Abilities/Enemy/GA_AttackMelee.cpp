@@ -2,6 +2,12 @@
 #include"AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "System/F4GameplayTags.h"
+#include "Characters/Base/F4CharacterBase.h"
+#include "Inventory/F4EquipmentComponent.h"
+#include "Items/Weapons/F4WeaponActor.h"
+#include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 UGA_AttackMelee::UGA_AttackMelee()
 {
@@ -54,15 +60,35 @@ void UGA_AttackMelee::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UGA_AttackMelee::OnDamageGameplayEvent(FGameplayEventData EventData)
 {
-    ExcuteTriggerGameplayCue();
-    
-    PerformMeleeTrace();
+	ExcuteTriggerGameplayCue();
+
+	PerformMeleeTrace();
 }
 
 void UGA_AttackMelee::ExcuteTriggerGameplayCue()
 {
-    // TODO: 큐에 필요한 파라미터 전달
-    return;
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	AF4CharacterBase* AvatarChar = Cast<AF4CharacterBase>(GetAvatarActorFromActorInfo());
+
+	if (!ASC || !AvatarChar)
+	{
+		return;
+	}
+
+	UF4EquipmentComponent* EquipComp = AvatarChar->FindComponentByClass<UF4EquipmentComponent>();
+	AF4WeaponActor* ActiveWeapon = EquipComp ? EquipComp->GetActiveWeaponActor() : nullptr;
+
+	if (ActiveWeapon)
+	{
+		FGameplayCueParameters Params;
+		Params.Instigator = AvatarChar;
+		Params.Location = AvatarChar->GetActorLocation();
+		Params.Normal = AvatarChar->GetActorForwardVector();
+
+		Params.EffectCauser = ActiveWeapon;
+
+		ASC->ExecuteGameplayCue(F4GameplayTags::GameplayCue_Weapon_Triggered, Params);
+	}
 }
 
 void UGA_AttackMelee::PerformMeleeTrace()
