@@ -60,6 +60,7 @@ bool AEnemySpawner::IsTargetTooClose() const
 	return Distance < SafeDistance;
 }
 
+#if WITH_EDITOR
 void AEnemySpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
@@ -76,6 +77,7 @@ void AEnemySpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChange
 		}
 	}
 }
+#endif
 
 int32 AEnemySpawner::GetCurrentMaxCount() const
 {
