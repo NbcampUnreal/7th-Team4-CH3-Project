@@ -5,12 +5,15 @@
 #include "Inventory/F4EquipmentComponent.h"
 #include "Inventory/F4QuickSlotComponent.h"
 #include "Inventory/F4ItemInstance.h"
+#include "AbilitySystemGlobals.h"
 
 #include "Kismet/GameplayStatics.h"
 
 void UF4GameInstance::Init()
 {
 	Super::Init();
+	
+	UAbilitySystemGlobals::Get().InitGlobalData();
 	
 	BGMPlayer = NewObject<UAudioComponent>(this);
 	if (BGMPlayer)
