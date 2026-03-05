@@ -7,7 +7,15 @@
 		{
 			"Name": "F4",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"GameplayAbilities",
+				"EnhancedInput",
+				"CoreUObject",
+				"UMG",
+				"AIModule"
+			]
 		}
 	],
 	"Plugins": [

@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 using UnrealBuildTool;
 
@@ -12,13 +11,19 @@ public class F4 : ModuleRules
 			"Core",
 			"CoreUObject", "Engine",
 			"InputCore",
+			"EnhancedInput",
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",
-			"GameplayStateTreeModule"
+			"PhysicsCore",
+			"GameplayStateTreeModule",
+			"AIModule",
+			"NavigationSystem",
+			"AnimGraphRuntime",
+			"Niagara"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] {  });
+		PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput", "AnimGraphRuntime"});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

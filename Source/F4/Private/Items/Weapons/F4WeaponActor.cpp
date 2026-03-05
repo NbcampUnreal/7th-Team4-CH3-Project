@@ -1,0 +1,43 @@
+#include "Items/Weapons/F4WeaponActor.h"
+
+#include "Items/Weapons/F4WeaponDataAsset.h"
+
+AF4WeaponActor::AF4WeaponActor()
+{
+	PrimaryActorTick.bCanEverTick = false;
+
+	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
+	SetRootComponent(RootScene);
+
+	MainMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MainMesh"));
+	MainMeshComponent->SetupAttachment(RootScene);
+	MainMeshComponent->SetCollisionProfileName(TEXT("NoCollision")); // 장착용이므로 충돌 끔
+
+	AttachmentMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AttachmentMesh"));
+	AttachmentMeshComponent->SetupAttachment(MainMeshComponent);
+	AttachmentMeshComponent->SetCollisionProfileName(TEXT("NoCollision"));
+}
+
+void AF4WeaponActor::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	
+	if (AttachmentMeshComponent && MainMeshComponent)
+	{
+		AttachmentMeshComponent->AttachToComponent(
+			MainMeshComponent,
+			FAttachmentTransformRules::SnapToTargetIncludingScale,
+			TEXT("Socket_Magazine")
+		);
+	}
+}
+
+FTransform AF4WeaponActor::GetMuzzleTransform() const
+{
+	if (MainMeshComponent && MainMeshComponent->DoesSocketExist(TEXT("Socket_Muzzle")))
+	{
+		return MainMeshComponent->GetSocketTransform(TEXT("Socket_Muzzle"));
+	}
+	
+	return GetActorTransform();
+}

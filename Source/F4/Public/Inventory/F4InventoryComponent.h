@@ -1,0 +1,52 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "F4InventoryComponent.generated.h"
+
+class UF4ItemInstance;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemoved, UF4ItemInstance*, RemovedItemInstance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemQuantityChanged, UF4ItemInstance*, ItemInstance, int32, NewQuantity);
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class F4_API UF4InventoryComponent : public UActorComponent
+{
+	GENERATED_BODY()
+
+public:	
+	UF4InventoryComponent();
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void AddItem(UF4ItemInstance* NewItem);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void RemoveItem(UF4ItemInstance* ItemToRemove);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void ConsumeItem(UF4ItemInstance* ItemToConsume, int32 Amount);
+
+	// 맵 이동 저장/복원 전용
+	void LoadItem(UF4ItemInstance* NewItem);
+	
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+	FOnInventoryUpdated OnInventoryUpdated;
+
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+	FOnItemRemoved OnItemRemoved;
+
+	UPROPERTY(BlueprintAssignable, Category = "Inventory")
+	FOnItemQuantityChanged OnItemQuantityChanged;
+
+	const TArray<TObjectPtr<UF4ItemInstance>>& GetInventoryItems() const { return InventoryList; }
+
+	int32 GetTotalItemCountByDefinition(class UF4ItemDefinition* ItemDef) const;
+
+	void ConsumeItemByDefinition(class UF4ItemDefinition* ItemDef, int32 AmountToConsume);
+
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	TArray<TObjectPtr<UF4ItemInstance>> InventoryList;
+
+};

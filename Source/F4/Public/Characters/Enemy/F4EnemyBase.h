@@ -1,0 +1,97 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Characters/Base/F4CharacterBase.h"
+#include "Engine/DataTable.h"
+#include "F4EnemyBase.generated.h"
+
+
+class UWidgetComponent;
+class UF4AttributeSetEnemy;
+
+UENUM(BlueprintType)
+enum class EEnemyType : uint8 { Melee, Ranged };
+
+UCLASS()
+class F4_API AF4EnemyBase : public AF4CharacterBase
+{
+	GENERATED_BODY()
+
+public:
+	AF4EnemyBase();
+	
+	virtual void PossessedBy(AController* NewController) override;
+	
+	UPROPERTY(editAnywhere, BlueprintReadOnly, Category = "GAS | Data")
+	FDataTableRowHandle CombatDataHandle;
+	
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS | GameplayEffect")
+	TSubclassOf<UGameplayEffect> DefaultEnemyStatus;
+	
+	UPROPERTY(editAnywhere, BlueprintReadOnly, Category = "GAS | AttributeSet")
+	TObjectPtr<UF4AttributeSetEnemy> EnemyAttributeSet;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "GAS | GameplayEffect")
+	TSubclassOf<UGameplayEffect> DifficultySideEffectClass;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "F4 | UI")
+	TObjectPtr<UWidgetComponent> HealthBarWidget;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "F4 | SFX")
+	TObjectPtr<USoundBase> DetectSound;
+	
+	void InitializeHealthBar();
+	void OnHealthChanged(const FOnAttributeChangeData& Data);
+	void UpdateHealthBar(float Current, float Max);
+	void UpdateHealthBarVisibility();
+
+	// 플레이어에게 한 번이라도 피격된 경우에만 체력바 표시
+	bool bHasBeenDamaged = false;
+	
+	virtual void InitializeAttributes() override; 
+
+public:
+	// 서비스에서 쉽게 가져다 쓸 수 있도록 만든 Getter
+	FORCEINLINE FName GetEnemyRowName() const { return CombatDataHandle.RowName; }
+	FORCEINLINE TObjectPtr<const UDataTable> GetCombatDataTable() const { return CombatDataHandle.DataTable; }
+	USoundBase* GetDetectSound() const { return DetectSound; }
+	
+protected:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | AI")
+	TObjectPtr<class UBehaviorTree> BehaviorTree;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | Status")
+	bool bIsDead = false;
+
+public:
+	void SetIsDead(bool NewIsDead) { bIsDead = NewIsDead; }
+	FORCEINLINE bool IsDead() const { return bIsDead; }
+	
+	UPROPERTY()
+	AActor* EquippedWeapon;
+	
+protected:
+	UPROPERTY(EditAnywhere, Category = "F4 | Combat")
+	TSubclassOf<AActor> WeaponClass;
+	
+	UPROPERTY(EditAnywhere, Category = "F4 | Combat")
+	FName WeaponSocketName = TEXT("WeaponSocket");
+	
+	void SpawnDefaultWeapon();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "F4 | Combat")
+	bool bIsAiming = false;
+	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="F4 | Combat")
+	EEnemyType EnemyType;
+	
+	void SetIsAiming(bool bNewState) { bIsAiming = bNewState; }
+    
+	UFUNCTION(BlueprintPure, Category = "F4 | Combat")
+	bool GetIsAiming() const { return bIsAiming; }
+};

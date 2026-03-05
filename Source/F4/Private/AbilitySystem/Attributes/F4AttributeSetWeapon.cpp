@@ -1,0 +1,44 @@
+#include "AbilitySystem/Attributes/F4AttributeSetWeapon.h"
+#include "GameplayEffectExtension.h"
+
+UF4AttributeSetWeapon::UF4AttributeSetWeapon()
+{
+	InitBaseDamage(0.f);
+	InitMaxAmmo(0.f);
+	InitCurrentAmmo(0.f);
+	InitFireRate(1.0f);
+}
+
+void UF4AttributeSetWeapon::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+	
+	// CurrentAmmo를 0 ~ MaxAmmo로 Clamp
+	if (Attribute == GetCurrentAmmoAttribute())
+	{
+		// MaxAmmo가  0이면 근접무기이므로 항상 0고정
+		float LocalMaxAmmo = GetMaxAmmo();
+		if (LocalMaxAmmo <= 0.0f)
+		{
+			NewValue = 0.0f;
+		}
+		else
+		{
+			NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxAmmo());
+		}
+	}
+}
+
+void UF4AttributeSetWeapon::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+	Super::PostGameplayEffectExecute(Data);
+	
+	// Effect 적용 후 처리
+	if (Data.EvaluatedData.Attribute == GetCurrentAmmoAttribute())
+	{
+		// CurrentAmmo가 변경됐을 때
+		SetCurrentAmmo(FMath::Clamp(GetCurrentAmmo(), 0.0f,GetMaxAmmo()));
+		
+		// TODO: CurrentAmmo가 0이면 발사 못하게 처리
+	}
+}
