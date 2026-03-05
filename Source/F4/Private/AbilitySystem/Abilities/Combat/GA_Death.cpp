@@ -13,7 +13,7 @@
 
 UGA_Death::UGA_Death()
 {
-	AbilityTags.AddTag(F4GameplayTags::Ability_Death);
+	SetAssetTags(FGameplayTagContainer(F4GameplayTags::Ability_Death));
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
