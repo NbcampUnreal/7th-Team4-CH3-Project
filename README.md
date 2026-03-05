@@ -4,6 +4,7 @@
 
 [![시연 영상](https://img.shields.io/badge/YouTube-시연영상-red?logo=youtube)](https://www.youtube.com/watch?v=7bioMqeDRfw)
 [![발표 자료](https://img.shields.io/badge/Google%20Slides-발표자료-yellow?logo=google)](https://docs.google.com/presentation/d/1HMPHXYiVAFUqABqqbM5wxkKn8VwhJEK-b67LwbfZPdk/edit?usp=sharing)
+[![다운로드](https://img.shields.io/badge/Google%20Drive-배포파일(Shipping)-blue?logo=googledrive)](https://drive.google.com/file/d/1ozYzqGW6tglA0cLxiQgToMYBROqGNB4v/view?usp=sharing)
 
 덕코프에서 영감을 받은 3인칭 슈터 게임입니다.
 
